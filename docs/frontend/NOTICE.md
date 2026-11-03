@@ -1,0 +1,9 @@
+# Guidance attribution
+
+The interface and six-domain review applied the supplied Better Interface reference adapted from Jakub Krehel's Better Interface at commit `267330e1adfc66a718fb65fa6918c1f06d0a689e` (MIT). The documentation method is adapted from Paul Bakaus's Impeccable at commit `9d715cc4f5564a990ca8345abfdd5df6dc9b41c8` (Apache-2.0). The supplied notices and licenses are retained in `BETTER-INTERFACE-LICENSE`.
+
+Wallet and transaction UX also used the supplied IdentityMD wallet-connectors reference and the eth-frontend-ux adaptation of Austin Griffith's ethskills at commit `06ea4efa0807` (MIT); see `ETH-FRONTEND-UX-LICENSE`.
+
+The current Uniswap source was consulted only to investigate quoter trader authentication: [V4Quoter](https://github.com/Uniswap/v4-periphery/blob/main/src/lens/V4Quoter.sol), [BaseV4Quoter](https://github.com/Uniswap/v4-periphery/blob/main/src/base/BaseV4Quoter.sol). Current repository source is not proof of the deployed implementation. The configured deployed quoter's `msgSender()` read was tested separately and reverted; the UI therefore provides an explicit custom-minimum sell path and does not recommend registering that quoter. The deployed contract source and implementation-derived ABI exports supplied for this assignment take precedence.
+
+MetaMask, Rabby and Phantom wallet marks are the SVG assets from RainbowKit’s wallet connector directories, used as small wallet-identification marks. See [RainbowKit source](https://github.com/rainbow-me/rainbowkit/tree/main/packages/rainbowkit/src/wallets/walletConnectors) and `WALLET-MARKS-LICENSE`. The Rabby browser link follows the release `/mobile/` prefix and `_cmd=open-dapp&dapp=…` handler in [Rabby Mobile](https://github.com/RabbyHub/rabby-mobile/blob/develop/apps/mobile/src/hooks/universalLink.ts); this was checked in source, not on a physical phone.

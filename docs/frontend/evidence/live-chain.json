@@ -1,0 +1,164 @@
+{
+  "observedAt": "2026-11-03T14:22:26.810Z",
+  "mode": "Public RPC reads and eth_call simulation only. No transaction signing or broadcasting.",
+  "chainId": 1,
+  "block": "26334843",
+  "contracts": [
+    {
+      "name": "UnlockV2Token",
+      "address": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+      "codeBytes": 2546,
+      "runtimeCodeKeccak": "0x399abcd5bd485a0a5e88b287ab5d372bb6d120bf73d1f748f9b5dfacb0bbdeb3"
+    },
+    {
+      "name": "UnlockV2Hook",
+      "address": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "codeBytes": 20085,
+      "runtimeCodeKeccak": "0xbb91bad1216738c6e8f87b7c8df4f1e9a38d0f8a2587ed103602a14f9dcd63da"
+    },
+    {
+      "name": "MigrationVault",
+      "address": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+      "codeBytes": 1788,
+      "runtimeCodeKeccak": "0x32678cb7087706f5ef06d2cf3670271aea471ceb6910b4ff23ae182ffb297c0d"
+    },
+    {
+      "name": "RewardPot",
+      "address": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+      "codeBytes": 5262,
+      "runtimeCodeKeccak": "0x5c9a2dfcb9e3b3d1aae4986aced87496a3442b19e281a6bcd77c112ea8ee4f8b"
+    }
+  ],
+  "state": {
+    "owner": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+    "token": "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+    "imd": "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+    "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    "expectedChainId": "1",
+    "migrationVault": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+    "rewardPot": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+    "activated": false,
+    "poolInitialized": true,
+    "isBound": true,
+    "isReferenceAvailable": true,
+    "swarmDistributor": "0x0000000000000000000000000000000000000000",
+    "poolKey": [
+      "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+      "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+      12500,
+      60,
+      "0x4f811b89eF9a19800101705262681F715AC668CC"
+    ],
+    "officialPoolId": "0xb97e547a02a8c4d8374725d6c01fff1337f97e36ca37c25f34a8ddc04933a4be",
+    "gatesOpen": 0,
+    "pendingGatesOpen": 0,
+    "fdvUsd": [
+      "8538697203731000000000",
+      true
+    ],
+    "tokenPriceInImd": [
+      "2499999999999",
+      true
+    ]
+  },
+  "migration": {
+    "CAP": "700000000000000000000000000",
+    "remainingCapacity": "700000000000000000000000000",
+    "remainingBacking": "0",
+    "isFullyFunded": false,
+    "totalMigrated": "0",
+    "v1": "0x99fA82B022BE4575891a43b757Bc770691E18fDa",
+    "v2": "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+    "hook": "0x4f811b89eF9a19800101705262681F715AC668CC"
+  },
+  "rewards": {
+    "hook": "0x4f811b89eF9a19800101705262681F715AC668CC",
+    "imd": "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+    "totalPoints": "0",
+    "isSolvent": true,
+    "epochStart": "0",
+    "solvency": [
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0",
+      "0"
+    ]
+  },
+  "routerSupported": false,
+  "quoterSupported": false,
+  "traderInterfaces": {
+    "universalRouter": {
+      "msgSenderCall": "Succeeded",
+      "returned": "0x0000000000000000000000000000000000000000"
+    },
+    "quoter": {
+      "msgSenderCall": "Reverted. Do not register as a trusted router without a compatible implementation."
+    }
+  },
+  "ownerTransactions": [
+    {
+      "title": "Fund actual remaining migration deficit",
+      "chainId": 1,
+      "from": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+      "to": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+      "value": "0x0",
+      "data": "0xa9059cbb000000000000000000000000cf52776a56f0b6d326db9f1da7abd4dad7bd711f0000000000000000000000000000000000000000024306c4097859c43c000000",
+      "method": "transfer",
+      "args": [
+        "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+        "700000000000000000000000000"
+      ],
+      "prerequisites": [
+        "Confirm the immutable vault address and owner UNLK2 balance.",
+        "Migration principal cannot be withdrawn."
+      ],
+      "unsigned": true,
+      "broadcast": false,
+      "simulation": "Succeeded at observation time; repeat before signing."
+    },
+    {
+      "title": "Register Universal Router",
+      "chainId": 1,
+      "from": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+      "to": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "value": "0x0",
+      "data": "0xc3c6467400000000000000000000000066a9893cc07d91d95644aedd05d03f95e1dba8af0000000000000000000000000000000000000000000000000000000000000001",
+      "method": "setRouter",
+      "args": [
+        "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+        true
+      ],
+      "prerequisites": [
+        "Before permanent activation.",
+        "Verify msgSender() trader attribution."
+      ],
+      "unsigned": true,
+      "broadcast": false,
+      "simulation": "Succeeded at observation time; repeat before signing."
+    },
+    {
+      "title": "Activate and seal permanently",
+      "chainId": 1,
+      "from": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+      "to": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "value": "0x0",
+      "data": "0x0f15f4c0",
+      "method": "activate",
+      "args": [],
+      "prerequisites": [
+        "Confirm funding transaction and isFullyFunded().",
+        "Register the configured Universal Router after checking msgSender().",
+        "Set the actual launch MerkleDistributor using owner-provided address in the UI.",
+        "Verify binding, initialized pool and valid pricing references.",
+        "All owner configuration becomes immutable."
+      ],
+      "unsigned": true,
+      "broadcast": false,
+      "simulation": "Not currently executable: Execution reverted for an unknown reason."
+    }
+  ],
+  "result": "PASS: chain, nonempty application/companion code, and contract bindings verified."
+}

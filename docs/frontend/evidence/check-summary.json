@@ -1,0 +1,37 @@
+{
+  "observedAt": "2026-11-03T14:41:37.994814+00:00",
+  "productionBuild": {
+    "result": "PASS",
+    "command": "npm --prefix web run build",
+    "typecheckEnforced": true,
+    "viteVersion": "7.1.12"
+  },
+  "standaloneTypecheck": {
+    "result": "PASS",
+    "command": "npm --prefix web run typecheck"
+  },
+  "coreTests": {
+    "result": "PASS",
+    "command": "npm --prefix web test",
+    "passed": 5
+  },
+  "browserInteractions": {
+    "result": "PASS",
+    "command": "npm --prefix web run test:browser",
+    "passed": 19,
+    "engines": [
+      "Chromium 141",
+      "WebKit 26"
+    ],
+    "transport": "Synthetic wallet/RPC fixtures, plus separate actual public RPC smoke check"
+  },
+  "manifest": {
+    "result": "PASS",
+    "command": "npm --prefix web run validate",
+    "assets": 16,
+    "assetBytes": 772812,
+    "sha256": "38eb03d8e4f31195c20faf3b1fccb99690db49a48369cf219e725d557b7047bc"
+  },
+  "realTransactionsBroadcast": 0,
+  "publication": "Subsequent publisher action; not performed by worker"
+}

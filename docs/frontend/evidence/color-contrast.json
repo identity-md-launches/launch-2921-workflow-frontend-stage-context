@@ -1,0 +1,54 @@
+{
+  "method": "WCAG relative luminance calculation from final CSS semantic tokens; rendered resolved-solid-text coverage is separately measured by taste@1.",
+  "measurements": [
+    {
+      "role": "primary text / surface",
+      "foreground": "#e0eae4",
+      "background": "#0a0f0d",
+      "ratio": 15.69,
+      "threshold": 4.5
+    },
+    {
+      "role": "muted text / surface",
+      "foreground": "#9aada2",
+      "background": "#0a0f0d",
+      "ratio": 8.16,
+      "threshold": 4.5
+    },
+    {
+      "role": "link and focus / surface",
+      "foreground": "#91d7e5",
+      "background": "#0a0f0d",
+      "ratio": 12.01,
+      "threshold": 4.5
+    },
+    {
+      "role": "warning / background",
+      "foreground": "#efc47d",
+      "background": "#050807",
+      "ratio": 12.32,
+      "threshold": 4.5
+    },
+    {
+      "role": "error / background",
+      "foreground": "#ffb0a8",
+      "background": "#050807",
+      "ratio": 11.52,
+      "threshold": 4.5
+    },
+    {
+      "role": "primary button",
+      "foreground": "#05130c",
+      "background": "#a5f3ce",
+      "ratio": 14.76,
+      "threshold": 4.5
+    },
+    {
+      "role": "disabled text / hover",
+      "foreground": "#9aada2",
+      "background": "#121c17",
+      "ratio": 7.37,
+      "threshold": 4.5
+    }
+  ]
+}

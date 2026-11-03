@@ -1,0 +1,89 @@
+{
+  "observedAt": "2026-11-03T14:38:33.847Z",
+  "mode": "Unmodified production export. Actual configured public RPC requests. No injected wallet, mocks, signing or broadcasting.",
+  "viewports": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "mainAction": {
+        "x": 33,
+        "y": 751.828125,
+        "width": 254,
+        "height": 44
+      }
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "mainAction": {
+        "x": 33,
+        "y": 751.046875,
+        "width": 324,
+        "height": 44
+      }
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "mainAction": {
+        "x": 433.40625,
+        "y": 848.25,
+        "width": 289.59375,
+        "height": 44
+      }
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "mainAction": {
+        "x": 811.15625,
+        "y": 789.65625,
+        "width": 563.84375,
+        "height": 44
+      }
+    }
+  ],
+  "screens": [
+    {
+      "name": "Gates",
+      "overflow": false
+    },
+    {
+      "name": "Migrate",
+      "overflow": false
+    },
+    {
+      "name": "My Rights",
+      "overflow": false
+    },
+    {
+      "name": "Burn & Points",
+      "overflow": false
+    },
+    {
+      "name": "Weekly IMD Rewards",
+      "overflow": false
+    },
+    {
+      "name": "Golden Vault",
+      "overflow": false
+    },
+    {
+      "name": "Rules / Contracts",
+      "overflow": false
+    },
+    {
+      "name": "Founder setup",
+      "overflow": false
+    }
+  ],
+  "rpcMethods": [
+    "eth_chainId",
+    "eth_getCode",
+    "eth_call",
+    "eth_blockNumber"
+  ],
+  "consoleErrors": [],
+  "failedLocalResources": [],
+  "result": "PASS"
+}

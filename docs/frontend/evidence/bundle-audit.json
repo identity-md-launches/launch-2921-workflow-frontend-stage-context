@@ -1,0 +1,33 @@
+{
+  "observedAt": "2026-11-03T14:40:58.371259+00:00",
+  "result": "PASS",
+  "allowedRoots": [
+    "web/",
+    "dist/",
+    "docs/"
+  ],
+  "explicitDotfilePathBudget": [
+    "web/.gitignore"
+  ],
+  "candidateFileCount": 89,
+  "candidateBytes": 3167126,
+  "limitBytes": 8388608,
+  "bytesByRoot": {
+    "web": 423828,
+    "dist": 777163,
+    "docs": 1966135
+  },
+  "fileCountByRoot": {
+    "web": 39,
+    "dist": 17,
+    "docs": 33
+  },
+  "runtimeAssetCount": 16,
+  "runtimeAssetBytes": 772812,
+  "manifestSha256": "38eb03d8e4f31195c20faf3b1fccb99690db49a48369cf219e725d557b7047bc",
+  "completeAssetInventory": true,
+  "allFourAbiFilesMatchPinnedSourceBytes": true,
+  "protectedTrackedPathsUnchanged": true,
+  "noNewSubmodules": true,
+  "noDependencyCacheOrArchiveCandidates": true
+}

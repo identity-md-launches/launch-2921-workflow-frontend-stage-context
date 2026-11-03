@@ -1,0 +1,116 @@
+{
+  "generatedAt": "2026-11-03T14:38:33.013Z",
+  "scope": "Production export under /preview/. All wallet and RPC responses in interaction cases are synthetic; no real signing or broadcasting.",
+  "checks": [
+    {
+      "name": "Walletless verified reads and deployment-loaded ABIs",
+      "passed": true,
+      "durationMs": 1061
+    },
+    {
+      "name": "Metadata, relative subpath assets, and desktop rendering",
+      "passed": true,
+      "durationMs": 212
+    },
+    {
+      "name": "EIP-6963 connect, unknown-chain add, switch, address and rejection recovery",
+      "passed": true,
+      "durationMs": 1349
+    },
+    {
+      "name": "Swap validation, simulation quote and both explicit approvals",
+      "passed": true,
+      "durationMs": 3421
+    },
+    {
+      "name": "Swap execute payload, no ETH for IMD pair, receipt and duplicate-submit lock",
+      "passed": true,
+      "durationMs": 1632
+    },
+    {
+      "name": "Sell quote failure and custom-minimum router simulation",
+      "passed": true,
+      "durationMs": 5556
+    },
+    {
+      "name": "Wrong-chain state prevents sends and exposes a single switch action",
+      "passed": true,
+      "durationMs": 88
+    },
+    {
+      "name": "Migration approval, permanent-lock review, cap and balance refresh",
+      "passed": true,
+      "durationMs": 3313
+    },
+    {
+      "name": "All ten gates, three bars, rights buckets and verified swarm evidence",
+      "passed": true,
+      "durationMs": 1684
+    },
+    {
+      "name": "Exact burn preview, irreversible confirmation and point/credit units",
+      "passed": true,
+      "durationMs": 1584
+    },
+    {
+      "name": "Simulation failure, actionable retry, voluntary burn and pending state",
+      "passed": true,
+      "durationMs": 5243
+    },
+    {
+      "name": "Transaction rejection and unresolved receipt recovery never resubmits",
+      "passed": true,
+      "durationMs": 2966
+    },
+    {
+      "name": "Owner funding, router, distributor and activation prepare unsigned only",
+      "passed": true,
+      "durationMs": 5889
+    },
+    {
+      "name": "All screens at 320 / 390 / 768 / 1440 without horizontal overflow",
+      "passed": true,
+      "durationMs": 6021
+    },
+    {
+      "name": "Keyboard dialog focus, Escape return, and reduced-motion rendering",
+      "passed": true,
+      "durationMs": 304
+    },
+    {
+      "name": "Public RPC failure: honest unavailable state, disabled transactions, wallet still accessible",
+      "passed": true,
+      "durationMs": 687
+    },
+    {
+      "name": "Phone wallet-browser links, local wallet marks and passkey entry",
+      "passed": true,
+      "durationMs": 552
+    },
+    {
+      "name": "Missing deployed code and changed ABI fail closed",
+      "passed": true,
+      "durationMs": 1551
+    },
+    {
+      "name": "WebKit primary wallet / quote flow",
+      "passed": true,
+      "durationMs": 7460
+    }
+  ],
+  "screenshots": [
+    "trade-desktop.png",
+    "trade-connected.png",
+    "migrate.png",
+    "gates.png",
+    "rights.png",
+    "burn-preview.png",
+    "weekly-rewards.png",
+    "founder-setup.png",
+    "trade-mobile-390.png",
+    "offline-mobile-390.png",
+    "wallet-mobile-390.png",
+    "webkit-trade-mobile.png"
+  ],
+  "errors": []
+}
