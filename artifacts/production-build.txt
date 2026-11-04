@@ -1,0 +1,15 @@
+npm warn Unknown env config "store-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> unlock-v2-terminal@1.0.0 build
+> node scripts/offline-build.mjs
+
+
+  ...he/tmp/unlock-offline-build-Mysvu9/site/assets/index-6YAYEHKW.js  727.2kb
+  ...he/tmp/unlock-offline-build-Mysvu9/site/assets/chunk-MUSPBBTZ.js  125.5kb
+  ...e/tmp/unlock-offline-build-Mysvu9/site/assets/index-ZVM226P3.css   16.8kb
+
+⚡ Done in 121ms
+Verified ABIs; exported dist/ and web/site/ with 17 SHA-256 assets.
+Offline source build complete. This transpilation does not replace npm run typecheck.

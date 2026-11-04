@@ -18,18 +18,19 @@ export function GateProgress() {
   const { data: d, stale } = useApp();
   const next = d?.gateTable[Math.min(d.gates, 9)];
   const processed = d && d.lastGateFdv > 0n && d.lastObservation > 0n;
-  const fresh = d && Date.now() / 1000 - Number(d.lastObservation) <= 5400;
+  const age = d ? Date.now() / 1000 - Number(d.lastObservation) : Infinity;
+  const fresh = age >= 0 && age <= 5400;
   return (
     <>
       <div className="spread">
         <h2>
           {d?.gates === 10
             ? "Golden Vault · all gates open"
-            : `ACTIVE GATE ${d ? d.gates + 1 : "—"}`}
+            : `Active gate ${d ? d.gates + 1 : "pending"}`}
         </h2>
-        <span className="mint">
+        <span className="gate-status">
           {d
-            ? `${d.percents[0]}% buys / ${d.percents[1]}% other → ${next?.[0]}%`
+            ? d.gates === 10 ? "100% · every holder" : `${d.percents[0]}% buys / ${d.percents[1]}% other → ${next?.[0]}%`
             : "Awaiting state"}
         </span>
       </div>
@@ -38,24 +39,27 @@ export function GateProgress() {
           <Progress
             label="OR · Contract FDV · last processed"
             value={processed ? d.lastGateFdv : undefined}
-            target={next?.[1] ?? 1n}
+            target={next?.[1]}
             unit="USD"
             valid={!!processed && !!fresh && !!d?.gatePrice[1] && !!d?.tokenPrice[1] && !stale}
           />
           <Progress
             label="OR · Cumulative official gross USD volume"
             value={d?.volume}
-            target={next?.[2] ?? 1n}
+            target={next?.[2]}
             unit="USD"
+            valid={!!d && !stale}
           />
           <Progress
             label="OR · This gate’s UNLK2 burn contribution"
             value={d?.burnProgress}
-            target={next?.[3] ?? 1n}
+            target={next?.[3]}
             unit="UNLK2"
+            valid={!!d && !stale}
           />
         </>
       )}
+      <p className="helper">Any one trigger opens the gate permanently. {stale ? "Live state unavailable; refresh to verify progress." : "Open states come only from stored gatesOpen."}</p>
       <details>
         <summary>Market FDV, processed FDV and pending observations</summary>
         <p>
@@ -81,14 +85,14 @@ export function GateProgress() {
           {d?.gatePrice[1] && !stale
             ? `$${display(d.gatePrice[0], 18, 6)}`
             : "Unavailable"}
-          . Pending observation could reach {d?.pendingGates ?? "—"} gates; this
+          . Pending observation could reach {!stale && d?.gatePrice[1] && d?.tokenPrice[1] ? d.pendingGates : "unavailable"} gates; this
           is a preview, never an open state.
         </p>
         <p>
           The immutable hook reads the official price left by the previous block
           before the first successful official swap of a later block. It is not
           an immediate spot gate. Its IMD-per-ETH tracker moves at most 5% per
-          hour, with a four-hour gap cap (20% in that update). Gate USD uses the
+          hour, with a four-hour gap cap (upper bound ×1.20, lower bound ÷1.20 per update). Gate USD uses the
           lower of spot IMD/USD and tracker-derived IMD/USD; IMD price declines
           count immediately. Invalid or stale feed prices do not count. Gates
           opened in storage never close.
@@ -358,13 +362,11 @@ export function Trade() {
           {quoting ? "Quoting…" : quote ? display(quote.out) : "—"}
         </strong>
       </div>
-      <label htmlFor="slippage">Slippage %</label>
-      <input
-        id="slippage"
-        inputMode="decimal"
-        value={slippage}
-        onChange={(e) => setSlippage(e.target.value)}
-      />
+      <div className="slippage-setting">
+        <label htmlFor="slippage">Slippage %</label>
+        <input id="slippage" inputMode="decimal" value={slippage}
+          onChange={(e) => setSlippage(e.target.value)} />
+      </div>
       {quote && (
         <dl className="compact-dl">
           <dt>Minimum received</dt>
@@ -404,18 +406,22 @@ export function Trade() {
               : "Review swap"
           : "Get live quote"}
       </Action>
-      <p className="helper">
+      {!r.repair.quoter && <p className="swap-context amber">Wallet quoter installation pending · <a className="setup-link" href="#founder-setup">Review owner checklist ↗</a></p>}
+      <details className="swap-context">
+        <summary>Fees and quote integration</summary>
+        <p className="helper">
         Automatic wallet quotes include hook effects. 1.25% LP fee on pool
         input; 1% reward fee on the IMD leg. Spot deviation includes fees and
         pool price movement. No manual minimum or shared-identity fallback.
-      </p>
+        </p>
       {!r.repair.quoter && (
-        <Alert>
+        <p>
           Pending installation: deploy and review WalletQuoter, register it and
           the Universal Router before sealing. Stock V4Quoter is incompatible
           with wallet sell rights.
-        </Alert>
+        </p>
       )}
+      </details>
     </section>
   );
 }

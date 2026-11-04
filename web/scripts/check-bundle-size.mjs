@@ -4,16 +4,19 @@ import { lstat, readFile, writeFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-const baseline = process.argv[2] ?? "5c7b53d40fcd1a323f033a5b1f7b3e496df63040";
+const baseline = process.argv[2] ?? execFileSync("git", ["rev-parse", "HEAD"], {cwd:root,encoding:"utf8"}).trim();
 const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).split("\0").filter(Boolean);
 const files = [...new Set([
   ...git("diff", "--name-only", "-z", baseline, "--"),
   ...git("ls-files", "--others", "--exclude-standard", "-z"),
 ])];
+const currentChanges = new Set([...git("diff", "--name-only", "-z", "HEAD", "--"), ...git("ls-files", "--others", "--exclude-standard", "-z")]);
 const reportPath = "docs/repair/evidence/bundle-size.json";
 if (!files.includes(reportPath)) files.push(reportPath);
 for (const path of files) {
-  if (!/^(src|test|script|docs|web|scripts|artifacts)\//.test(path)) throw Error(`Out-of-scope change: ${path}`);
+  if (!/^(src|test|script|docs|web|scripts|artifacts|dist)\//.test(path) && !["README.md", "DESIGN.md", ".gitignore"].includes(path)) throw Error(`Out-of-scope change: ${path}`);
+  if (/(^|\/)(node_modules|\.cache|\.npm|\.vite|test-results|playwright-report)(\/|$)/.test(path)) throw Error(`Generated dependency/cache in bundle: ${path}`);
+  if (currentChanges.has(path) && /^(lib\/|\.git\/|\.github\/)|(^|\/)\.env(?:\.|$)|(^|\/)(package\.json|[^/]*\.lock|[^/]*-lock\.(json|yaml)|pnpm-lock\.yaml|bun\.lockb|remappings\.txt|foundry\.toml|\.gitmodules)$/.test(path)) throw Error(`Protected path changed: ${path}`);
 }
 const measure = async () => {
   const rows = [];

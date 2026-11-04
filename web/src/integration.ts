@@ -7,6 +7,7 @@ export const adapterAbi = parseAbi([
   "function nativeRound() view returns(uint256)",
   "function nativeRoot() view returns(bytes32)",
   "function nativeFunded() view returns(uint256)",
+  "function allocationCount() view returns(uint256)",
   "function indexOf(address) view returns(uint256)",
   "function synced(address) view returns(bool)",
   "function syncClaim(address account,uint256 amount,bytes32[] nativeProof)",
@@ -32,6 +33,8 @@ export async function verifyAuxiliary(
   target?: Address,
 ) {
   const c = r.repair[kind];
+  if (!r.repair.installationReviewed)
+    throw Error("Auxiliary installation has not completed independent review.");
   if (!c || (target && !same(c.address, target)))
     throw Error(
       `${kind} installation is pending. A reviewed address and runtime code hash must be published first.`,
@@ -59,7 +62,8 @@ export async function verifyAuxiliary(
       String(await read("nativeRoot")).toLowerCase() !==
         r.repair.nativeRoot.toLowerCase() ||
       BigInt(String(await read("nativeFunded"))) !==
-        BigInt(r.repair.nativeFunded)
+        BigInt(r.repair.nativeFunded) ||
+      BigInt(String(await read("allocationCount"))) === 0n
     )
       throw Error("Adapter native allocation binding mismatch.");
   } else if (

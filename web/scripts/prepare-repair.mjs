@@ -32,6 +32,13 @@ const client = createPublicClient({
 });
 const block = await client.getBlockNumber();
 if ((await client.getChainId()) !== 1) throw Error("Wrong chain");
+const runtimeInventory = await json("web/public/contract-runtime.json");
+if (runtimeInventory.chainId !== 1) throw Error("Runtime inventory chain mismatch");
+for (const item of runtimeInventory.contracts) {
+  const code = await client.getCode({address:item.address, blockNumber:block});
+  if (!code || code === "0x" || keccak256(code) !== item.runtimeCodeHash)
+    throw Error(`Verified deployed code changed: ${item.name}`);
+}
 const h = (functionName, args = []) =>
   client.readContract({
     address: hook,

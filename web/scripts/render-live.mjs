@@ -4,7 +4,7 @@ import { resolve, extname } from "node:path";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { root } from "./export.mjs";
-const folder = resolve(root, "docs/frontend/evidence");
+const folder = resolve(root, "artifacts/live-browser");
 await mkdir(folder, { recursive: true });
 const mime = {
   ".html": "text/html",
@@ -43,8 +43,20 @@ const result = {
   failedLocalResources: [],
 };
 try {
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({ headless: true, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE });
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  // Node fetch allows a read-only provider override in a worker harness, without changing export URLs.
+  // No wallet is injected and all responses come from an actual Ethereum provider.
+  await page.route(/^https:\/\/(ethereum-rpc.publicnode.com|eth.drpc.org)/, async route => {
+    const req = route.request(), body = req.postData();
+    const messages = JSON.parse(body);
+    if ((Array.isArray(messages) ? messages : [messages]).some(q => /send|sign|trace|filter/i.test(q.method)))
+      throw Error("Read-only browser validation refused a state-changing RPC method");
+    try {
+      const response = await fetch(req.url(), {method:"POST",headers:{"Content-Type":"application/json"},body});
+      await route.fulfill({status:response.status,contentType:"application/json",body:await response.text()});
+    } catch { await route.abort(); }
+  });
   page.on("pageerror", (e) => result.consoleErrors.push(e.message));
   page.on("request", (req) => {
     if (req.method() === "POST") {
@@ -79,11 +91,22 @@ try {
     const action = await page.locator(".swap-panel .action").boundingBox();
     if (width === 390) assert.ok(action.y + action.height <= 844);
     result.viewports.push({ ...overflow, mainAction: action });
-    if ([320, 390, 1440].includes(width))
+    if ([390, 1440].includes(width))
       await page.screenshot({
         path: resolve(folder, `live-trade-${width}.png`),
       });
   }
+  await page.getByRole("tab", {name:"Market Chart", exact:true}).click();
+  await page.getByText("Trading closed · no official trade history in this window", {exact:true}).waitFor({timeout:30000});
+  result.market = {
+    state:"Trading closed; no official swaps in the 7,200-block window",
+    unit:await page.getByLabel("Market price unit").inputValue(),
+    source:await page.locator(".chart-panel .helper").innerText(),
+    candleCanvases:await page.locator(".market-chart canvas").count(),
+  };
+  assert.equal(result.market.candleCanvases,0);
+  await page.screenshot({path:resolve(folder,"live-market-1440.png")});
+  await page.getByRole("tab", {name:"Gate Staircase", exact:true}).click();
   await page.setViewportSize({ width: 390, height: 844 });
   for (const [name, slug] of [
     ["Gates", "gates"],
@@ -102,11 +125,6 @@ try {
     );
     assert.equal(overflow, false, name);
     result.screens.push({ name, overflow });
-    if (["Gates", "Founder setup"].includes(name))
-      await page.screenshot({
-        path: resolve(folder, `live-${slug}-390.png`),
-        fullPage: true,
-      });
   }
   assert.deepEqual(result.consoleErrors, []);
   assert.deepEqual(result.failedLocalResources, []);

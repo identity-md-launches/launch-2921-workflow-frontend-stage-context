@@ -14,6 +14,7 @@ import {
   Alert,
   ContractAction,
   display,
+  exact,
   EmptyWallet,
   Field,
   Panel,
@@ -21,6 +22,8 @@ import {
 } from "./components";
 import { amount, erc20Abi, errorText, same } from "./core";
 import { GateProgress } from "./Trade";
+import { allowanceAfterOpening } from "./burn-preview";
+import type { Data } from "./state";
 const ZERO = "0x0000000000000000000000000000000000000000";
 export function Gates() {
   const { data: d, view } = useApp();
@@ -548,6 +551,10 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       gate: number;
       max: bigint;
       at: number;
+      openingAllowance?: bigint;
+      totalPoints: bigint;
+      myPoints: bigint;
+      rights: NonNullable<Data["rights"]>;
     }>();
   useEffect(() => {
     setPreview(undefined);
@@ -567,18 +574,24 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       const n = amount(input);
       if (n > (d.balance ?? 0n))
         throw Error("Amount exceeds your UNLK2 balance.");
-      const [values, q] = await Promise.all([
+      const block = await r.client.getBlockNumber();
+      const [values, q, rights, totalPoints, myPoints] = await Promise.all([
         r.client.readContract({
           address: r.addresses.UnlockV2Hook,
           abi: r.abis.UnlockV2Hook,
           functionName: "previewBurn",
           args: [w.address, n],
+          blockNumber: block,
         }),
         r.client.readContract({
           address: r.addresses.UnlockV2Hook,
           abi: r.abis.UnlockV2Hook,
           functionName: "contributionQuote",
+          blockNumber: block,
         }),
+        r.client.readContract({ address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook, functionName: "rightsOf", args: [w.address], blockNumber: block }),
+        r.client.readContract({ address: d.pot, abi: r.abis.RewardPot, functionName: "totalPoints", blockNumber: block }),
+        r.client.readContract({ address: d.pot, abi: r.abis.RewardPot, functionName: "points", args: [w.address], blockNumber: block }),
       ]);
       if (version !== previewVersion.current) return;
       const [gate, max] = q as readonly [number, bigint];
@@ -598,6 +611,12 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
         gate,
         max,
         at: Date.now(),
+        openingAllowance: contribute && n === max
+          ? allowanceAfterOpening(rights as NonNullable<typeof d.rights>, values as readonly bigint[], gate, d.gateTable[gate - 1][0], block)
+          : undefined,
+        totalPoints: totalPoints as bigint,
+        myPoints: myPoints as bigint,
+        rights: rights as NonNullable<Data["rights"]>,
       });
     } catch (e) {
       setError(errorText(e));
@@ -622,11 +641,26 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       irreversible: true,
       validUntil: preview.at + 60000,
       validate: async () => {
+        const block = await r.client.getBlockNumber();
+        const current = await r.client.readContract({
+          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook,
+          functionName: "previewBurn", args: [w.address!, preview.n],
+          blockNumber: block,
+        }) as readonly bigint[];
+        const rights = await r.client.readContract({
+          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook,
+          functionName: "rightsOf", args: [w.address!], blockNumber: block,
+        }) as NonNullable<Data["rights"]>;
+        if (current.some((value, i) => value !== preview.values[i]))
+          throw Error("Your burn debits or rights changed. Close and read a new preview.");
+        if ((Object.keys(preview.rights) as (keyof typeof rights)[]).some(key => rights[key] !== preview.rights[key]))
+          throw Error("Your origin credits changed. Close and read a new preview.");
         if (contribute) {
           const q = (await r.client.readContract({
             address: r.addresses.UnlockV2Hook,
             abi: r.abis.UnlockV2Hook,
             functionName: "contributionQuote",
+            blockNumber: block,
           })) as readonly [number, bigint];
           if (q[0] !== preview.gate || q[1] < preview.n)
             throw Error(
@@ -636,8 +670,8 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       },
     });
   };
-  const total = d?.points ?? 0n;
-  const mine = d?.myPoints ?? 0n;
+  const total = preview?.totalPoints ?? d?.points ?? 0n;
+  const mine = preview?.myPoints ?? d?.myPoints ?? 0n;
   return (
     <div className="two-col">
       <Panel
@@ -689,6 +723,7 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
         />
         <button
           className="small"
+          disabled={!w.address || !d || d.balance === undefined}
           onClick={() => {
             const max =
               contribute && d
@@ -703,7 +738,7 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
         </button>
         {contribute && (
           <p>
-            Collecting gate: {d?.contribution[0] || "None"}. Maximum
+            Collecting gate: {d ? d.contribution[0] || "None" : "Unavailable"} · Maximum
             contribution: {display(d?.contribution[1])} UNLK2.
           </p>
         )}
@@ -717,16 +752,16 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
                 "Mature buy debit",
                 "Other origin debit",
                 "Uncredited balance burned",
-                "Sell allowance afterwards",
+                "Allowance after burn at current gate",
               ].map((label, i) => (
                 <div className="dl-row" key={label}>
                   <dt>{label}</dt>
-                  <dd>{display(preview.values[i])} UNLK2</dd>
+                  <dd>{exact(preview.values[i])} UNLK2</dd>
                 </div>
               ))}
             </dl>
             <p>
-              Points added: {display(preview.n)}. Your point share becomes{" "}
+              Burned: {exact(preview.n)} UNLK2. Points added: {exact(preview.n)}. Your point share becomes{" "}
               {total + preview.n > 0n
                 ? (
                     Number(
@@ -736,6 +771,8 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
                 : "0"}
               %, before later burns by others.
             </p>
+            {preview.openingAllowance !== undefined && <p>Allowance if this contribution opens gate {preview.gate}: <strong>{exact(preview.openingAllowance)} UNLK2</strong>. This is a preview, not a stored opening.</p>}
+            <p className="helper">The debit preview uses the current gate. Reward share changes as others earn points. Review again if your rights change.</p>
             <Action onClick={burn}>
               {contribute
                 ? `Contribute UNLK2 · gate ${preview.gate}`
@@ -766,7 +803,8 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
           </Action>
         )}
       </Panel>
-      <Panel title="Points and conservative debits">
+      <details className={home ? "home-burn-notes" : "panel"} open={home ? undefined : true}>
+        <summary>Points, selling rights and weekly rewards</summary>
         <div className="metrics">
           <Stat label="Total points" value={display(d?.points)} />
           <Stat
@@ -797,7 +835,7 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
           Later fees are attributed immediately to existing points; entitlements
           mature in weekly epochs from activation.
         </p>
-      </Panel>
+      </details>
     </div>
   );
 }

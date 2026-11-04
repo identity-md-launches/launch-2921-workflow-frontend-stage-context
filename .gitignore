@@ -2,3 +2,30 @@ out/
 cache/
 broadcast/
 test/scratch/
+# Explicit path budget: generated dependencies and caches only, at any nesting level.
+# No source, manifests, lockfiles, dist/ or required offline runtime assets are excluded.
+**/node_modules/
+**/.cache/
+**/.npm/
+**/.vite/
+**/test-results/
+**/playwright-report/
+# Explicit delivery budget: these named reports and three representative live screenshots.
+# Re-include them if the contributor's global ignore excludes artifacts/.
+!/artifacts/
+!/artifacts/validation.md
+!/artifacts/production-build.txt
+!/artifacts/browser-tests.txt
+!/artifacts/typecheck.txt
+!/artifacts/frontend-tests.txt
+!/artifacts/contracts-local.txt
+!/artifacts/contracts-fork.txt
+!/artifacts/runtime-verification.json
+!/artifacts/design-probe.json
+!/artifacts/design-measurements.json
+!/artifacts/export-validation.txt
+!/artifacts/live-browser/
+!/artifacts/live-browser/live-browser.json
+!/artifacts/live-browser/live-trade-390.png
+!/artifacts/live-browser/live-trade-1440.png
+!/artifacts/live-browser/live-market-1440.png

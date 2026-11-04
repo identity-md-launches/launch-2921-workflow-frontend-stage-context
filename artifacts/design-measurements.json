@@ -1,0 +1,62 @@
+{
+  "width": 390,
+  "mainAction": {
+    "y": 667.4375,
+    "height": 44
+  },
+  "samples": [
+    {
+      "selector": "body",
+      "foreground": "rgb(229, 229, 229)",
+      "background": "rgb(0, 0, 0)",
+      "contrast": 16.67075583052387,
+      "size": "14px",
+      "weight": "400"
+    },
+    {
+      "selector": ".swap-panel h2",
+      "foreground": "rgb(229, 229, 229)",
+      "background": "rgb(11, 11, 11)",
+      "contrast": 15.624965700027102,
+      "size": "18px",
+      "weight": "600"
+    },
+    {
+      "selector": ".swap-panel .muted",
+      "foreground": "rgb(170, 170, 170)",
+      "background": "rgb(11, 11, 11)",
+      "contrast": 8.472486045439892,
+      "size": "14px",
+      "weight": "400"
+    },
+    {
+      "selector": ".swap-panel .action",
+      "foreground": "rgb(5, 5, 5)",
+      "background": "rgb(165, 243, 206)",
+      "contrast": 15.830840914766748,
+      "size": "14px",
+      "weight": "600"
+    },
+    {
+      "selector": ".home-actions a",
+      "foreground": "rgb(165, 243, 206)",
+      "background": "rgb(0, 0, 0)",
+      "contrast": 16.311349653756817,
+      "size": "13px",
+      "weight": "400"
+    },
+    {
+      "selector": ".setup-link",
+      "foreground": "rgb(239, 196, 125)",
+      "background": "rgb(11, 11, 11)",
+      "contrast": 12.05537442122558,
+      "size": "13px",
+      "weight": "400"
+    }
+  ],
+  "focus": {
+    "style": "solid",
+    "width": "2px",
+    "color": "rgb(145, 215, 229)"
+  }
+}

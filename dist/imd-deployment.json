@@ -91,20 +91,20 @@
       "sha256": "d327eec20cbed4d80c051398d4f206bf1e2c3850e943677cfd2404b738fba996"
     },
     {
-      "path": "assets/ccip-C-nYIOAd.js",
-      "sha256": "ff19880178f080475c6deafc9366c36a36dc68cba7820be1c8ebde99756d3a01"
+      "path": "assets/chunk-MUSPBBTZ.js",
+      "sha256": "ce939f0e742ab1cedc1ed070846ec1fe666f9de8e4bf07554bc9cfb46a4dd15c"
     },
     {
-      "path": "assets/index-C2EJQ64O.js",
-      "sha256": "c7940f8a9eeb38a2acbd93e8a93b3c3fb523aa86b1bcd3bbdd3b135442b3a469"
+      "path": "assets/index-6YAYEHKW.js",
+      "sha256": "8517cb091ee126d20b823d7005768bde8ccd195b8b1fc75b5d358c30a8e5dddb"
     },
     {
-      "path": "assets/index-COszpb46.css",
-      "sha256": "519f7686e84f5e96e4133ea74144aec0b3bd8b5467a36b96fb1473836fa2ee2f"
+      "path": "assets/index-ZVM226P3.css",
+      "sha256": "8433f3e52cf0a359dfafaed9cccc870ab3bed99a3b8dbc6769e4bef2565a3c3e"
     },
     {
-      "path": "assets/index-dA3snQAA.js",
-      "sha256": "be1372ac0b9ad3d7711ba3cc473d822ce1238f7c636fff03c8be4de8b5090cfa"
+      "path": "contract-runtime.json",
+      "sha256": "d0a15681ed25953f7d44cf9987e894f3f6a0e74441db37ad1b7bbf1c0eb6f258"
     },
     {
       "path": "favicon.svg",
@@ -112,11 +112,15 @@
     },
     {
       "path": "index.html",
-      "sha256": "23ac9e3ae1c9f4a06d2879982b01482ab894cdc036cd6a67f7cfa59faca84ea8"
+      "sha256": "d003b35c9c6fa2bf85ebd2ee1b223a7f30b60cf68fc74af4d224ce6257dca9ac"
     },
     {
       "path": "og-image.png",
-      "sha256": "36372f528759f28550fb07dcef4e5b89ecbfe516854998a29b9ce2942065797e"
+      "sha256": "c30fe2d2fea09371ec8b456ddb5c8703c6cca0c605e78acdaf3cc56a636bc1c4"
+    },
+    {
+      "path": "repair-config.json",
+      "sha256": "42ed619a0163c7ef5d40b51ca0ad103160467524f638a68b132264a25b16b0f5"
     },
     {
       "path": "wallet-browser.svg",

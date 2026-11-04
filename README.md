@@ -1,229 +1,77 @@
-# UNLOCK V2 (UNLK2) — token, hook, migration vault, burn points and weekly rewards
+# UNLOCK V2 terminal
 
-Ethereum (chain id 1) Uniswap v4 custom-token launch. The launch factory deploys two contracts,
-`UnlockV2Token` and `UnlockV2Hook`; the hook's constructor creates the `MigrationVault` and the
-`RewardPot` and exposes them through `migrationVault()` and `rewardPot()`.
+Continuation of [unlock-v2.identitymd.eth.limo](https://unlock-v2.identitymd.eth.limo), using the existing Ethereum deployment and source repository. The updated static hosting deliverable is **`dist/`**, with source in `web/`. `web/site/` is an identical build mirror for existing tooling. Both use relative assets and hash navigation.
 
-Foundry project at the repository root: `forge build`, `forge test`, `forge fmt --check`.
-Compiler pinned to `solc = "0.8.26"`, `via_ir`, `bytecode_hash = "none"`. All dependencies are
-vendored as plain files under `lib/` (Uniswap v4-core, OpenZeppelin v5.1, forge-std, a minimal
-solmate `Owned` used only by the test PoolManager).
+**Trading is closed and auxiliary installation is pending.** This work sends no mainnet transactions. It does not deploy, register, fund, activate or alter V1 or any deployed V2 contract. The continuation delivery service must publish `dist/` under **unlock-v2.identitymd.eth** and commit this bundle to the existing repository; no replacement identity or completed remote publication is claimed here.
 
-## Contracts
+## Install, preview and rebuild
 
-| Contract | Role |
-| --- | --- |
-| `src/UnlockV2Token.sol` | ERC-20 "UNLOCK V2" / "UNLK2", 18 decimals, exactly 1,000,000,000 minted once to the factory. `burn(amount)` is the only extra behaviour; it reports to the hook. No owner, mint, tax, blacklist, seizure, pause or upgrade. |
-| `src/UnlockV2Hook.sol` | Official pool gatekeeper: factory-only one-time initialization, trading closed until `activate()`, origin-bucketed sell rights, ten permanent gates, 1% IMD hook fee, on-chain FDV/volume pricing, swarm-claim and migration credits. |
-| `src/MigrationVault.sol` | 1 V1 -> 1 V2, V1 locked forever, hard cap 700,000,000, first come first served. No owner, no withdrawal, no deadline. |
-| `src/RewardPot.sol` | Non-transferable burn points (1 per UNLK2 burned), seven-day streaming of redeemed IMD fees into the point pot, one claim per weekly epoch per beneficiary. No owner. |
+Full development toolchain, Node 22.18+:
 
-ABI exports: `docs/abi/<Contract>.json`.
+```sh
+npm --prefix web ci
+npm --prefix web run typecheck
+npm --prefix web test
+npm --prefix web run build:vite
+npm --prefix web run preview
+```
 
-## Constructor arguments (launch manifest)
+The existing manifest and lockfile are unchanged. Preview uses Vite's printed local URL. For live source editing use `npm --prefix web run dev` after one build has generated the runtime manifest.
 
-`UnlockV2Token` takes no arguments. It mints the supply to `msg.sender` (the factory) and records it
-as `factory()`.
+A compact, pinned Linux x64 build is also retained. It needs Node 22.18+ and `xz`, and requires no npm registry, installed packages or package cache:
 
-`UnlockV2Hook(poolManager, token, imd, factory, owner, v1Token, ethUsdFeed, expectedChainId)`:
+```sh
+sh web/scripts/offline-install.sh
+npm --prefix web test
+npm --prefix web run build
+npm --prefix web run validate
+npm --prefix web run check:bundle
+python3 -m http.server 4173 --directory dist
+```
 
-| # | Argument | Value |
-| --- | --- | --- |
-| 1 | `poolManager_` | `$poolManager` |
-| 2 | `token_` | `$token` |
-| 3 | `imd_` | `0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7` (IMD, Ethereum) |
-| 4 | `factory_` | `$factory` |
-| 5 | `owner_` | `$owner` (resolves to `0x48e4e74fe1d0c14404ceb57b9fec5b21329c6ec9`) |
-| 6 | `v1Token_` | `0x99fa82b022be4575891a43b757bc770691e18fda` (UNLOCK V1) |
-| 7 | `ethUsdFeed_` | `0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419` (Chainlink ETH/USD, 8 decimals) |
-| 8 | `expectedChainId_` | `1` |
+Open the printed local server URL. The offline build compiles the current TSX source, bundles the committed dependencies and copies local assets; it **does not typecheck**. Both build paths regenerate the verified ABI/asset inventory and replace `dist/` and `web/site/` together. Required compact compiler/runtime bundles and their licenses remain in `web/vendor/offline/`; generated dependency/cache directories are excluded from Git. No paid API is required. Wallet and Ethereum reads still require network access.
 
-The hook must be deployed at an address whose low bits equal `requiredAddressFlags()`
-(`BEFORE_INITIALIZE | BEFORE_SWAP | AFTER_SWAP | BEFORE_SWAP_RETURNS_DELTA | AFTER_SWAP_RETURNS_DELTA`
-= `0x20CC`). The constructor makes a low-level call to `token.registerHook(factory)`; the token accepts
-it only while the factory still holds the entire supply (that is, inside the launch transaction) and
-only once. The constructor never requires the token to have code, so launch pre-checks on an empty
-chain pass; `isBound()` reports whether the binding succeeded.
+## What the terminal does
 
-Pool: `pool.pairedCurrency` IMD, `pool.fee` 12500, `pool.tickSpacing` 60, hooks = the hook. The hook's
-`beforeInitialize` accepts exactly this key (either currency order), only from the factory, only once.
+- A black V1-style dashboard: large gate/market chart on the left, compact IMD/UNLK2 swap on the right. Phones put the swap first; its main control fits the first 390px screen, including an RPC error state.
+- A home-page active-gate contribution panel with three **OR** tracks: processed contract FDV, cumulative official gross USD volume and this gate's UNLK2 contributions. Each shows actual, target, completion and remaining amounts. Contributions use `UnlockV2Token.contribute(expectedGate, amount)`, with capped Max, full-precision burn/points/rights preview and stale-target rejection. Gate 10 changes the home panel to voluntary Golden Vault burning and continuing fee rewards.
+- Ten interactive permanent gate steps, $250K–$25M FDV, clickable details, native keyboard/touch selectors and an alternative table. Initial official-buy rights are 20%; migration/swarm/founder rights are 0%. The gate percentages remain 25/30/35/40/50/60/70/80/90/100%.
+- Real official-pool Swap-log candles, volume, timeframes, crosshair and pan/zoom using locally bundled TradingView Lightweight Charts. USD conversion uses a valid historical IMD/USD reference at each trade block. Missing/invalid USD, RPC failure and no trades have explicit retryable states; no production example candles exist. History is bounded to 7,200 blocks; historical USD requires archive reads.
+- Wallet-driven migration, separate origin rights and previous sales, burn previews, weekly IMD claims, and a safe owner checklist with separate simulation/review and unsigned transaction downloads. EIP-6963 browser wallets, mobile wallet-browser links and Coinbase Smart Wallet share one connection dialog; no relay/project ID.
 
-## Allocation and funding (conservation)
+## Immutable integration limits
 
-| Share | Amount | Path |
-| --- | --- | --- |
-| Pool | 150,000,000 (poolBps 1500) | factory seeds the pool |
-| Native swarm | 100,000,000 | factory sends to the launch MerkleDistributor |
-| Migration reserve | 700,000,000 | owner receives it inside the 750m remainder and transfers it to `migrationVault()` before activation |
-| Founder | 50,000,000 | stays with the owner; credited as sell rights at activation |
+`fdvUsd()` is **indicative market FDV**, calculated using current `totalSupply()`. Gate decisions instead use `gateImdUsdPrice()`, settled observations and `lastFdvUsd`. Only stored `gatesOpen` marks a gate open; `pendingGatesOpen` is a preview. Invalid, missing or stale prices show unavailable.
 
-`allocation()` returns the four constants; the test `test_allocationSumsToSupply` checks they sum to
-the supply. `activate()` refuses until `migrationVault.remainingBacking() >= remainingCapacity()`
-(700m before any migration). The vault's actual balance is the backing, never a promise.
-No contract here can withdraw migration principal or participant rewards.
+The deployed hook processes the official pool price left before the first successful official swap of a later block. Its IMD/ETH tracker is rate limited to 5% per hour with a four-hour gap cap (upper ×1.20 / lower ÷1.20 per update). Gate pricing uses the lower of spot and tracker-derived IMD/USD; IMD price declines count immediately. This is **not immediate-spot gating**, and a frontend cannot remove that limitation. Openings are permanent. Supply excludes burns, includes reserves, and is never replaced by a fixed initial supply.
 
-## Owner setup guide ("After launch")
+The native distributor's `roundOf`/`claimed` interface and double-hashed account/amount leaves do not match the hook's legacy proof interface. `src/auxiliary/NativeSwarmAdapter.sol` bridges authentic completed claims after rebuilding the entire native allocation tree at construction and proving account uniqueness. The full canonical corpus is still required; one authentic proof is not a substitute. No adapter address is invented.
 
-Everything below is owner-only and must happen before `activate()`. Activation seals the hook
-forever: afterwards no setter works and nothing is owner-controlled.
+`src/auxiliary/WalletQuoter.sol` simulates the real pool with the caller's identity and rolls back all effects. It must be installed, reviewed and registered before automatic trading quotes can operate. Stock V4Quoter is incompatible with these sell rights. There is no manual-minimum workaround. `web/public/repair-config.json` keeps both auxiliary records null and installation review false.
 
-1. **Fund the migration vault.** From the owner wallet: `UNLK2.transfer(hook.migrationVault(), 700_000_000e18)`.
-   Check `migrationVault.isFullyFunded()` is true.
-2. **Register supported routers.** `hook.setRouter(router, true)` for each standard router that exposes
-   `msgSender()` (Uniswap Universal Router on Ethereum, the v4 periphery `V4Router`). Get the addresses
-   from Uniswap's published deployments for chain 1. Swaps through unregistered contracts are attributed
-   to that contract (see "Shared-account limitation").
-3. **Set the swarm distributor.** `hook.setSwarmDistributor(distributor)` with the launch's
-   MerkleDistributor address, read from the launch record. It must expose `merkleRoot()` and
-   `isClaimed(index)` with Uniswap's leaf format `keccak256(abi.encodePacked(index, account, amount))`.
-   If the launch's distributor differs, swarm claims cannot be credited; set it correctly before sealing.
-4. **Check references.** `hook.isReferenceAvailable()` must be true: the ETH/IMD v4 reference pool
-   (PoolId `0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3`, verified in
-   `test_referencePoolIdMatchesMainnet`) initialized with positive liquidity and the Chainlink feed fresh.
-5. **Activate.** `hook.activate()`. Requirements: official pool initialized by the factory, chain id 1,
-   vault fully funded, feed decimals 8, valid IMD/USD and UNLK2/IMD prices. It credits the founder's
-   exactly 50m sell-rights allocation to the owner and opens trading.
+## Owner package and verified deployment
 
-Liquidity can be added while trading is closed (the hook has no liquidity callbacks). The factory's
-fee collection (`modifyLiquidity` with zero delta) is never intercepted.
+Token: `0xbd769d71d535030e47b0a024b8edae4a923d7819`
 
-## Trading rules
+Hook: `0x4f811b89ef9a19800101705262681f715ac668cc`
 
-**Hook fee.** 1% (`HOOK_FEE_BPS = 100`) of the IMD leg of every official swap, buys and sells,
-exact-input and exact-output. It is taken from the IMD side only (beforeSwap return delta when IMD is
-the specified currency, afterSwap return delta otherwise), kept as IMD (never swapped to ETH) as an
-ERC-6909 claim owned by the hook, and moved to the RewardPot by anyone calling `redeemFees()`.
-The pool's own 1.25% LP fee is the launch policy's and is collected by the factory for the owner
-(the founder fee recipient).
+Chain: Ethereum, ID 1. The supplied deployment ABI hashes are verified during every export; the frontend also verifies deployed runtime hashes and companion bindings before enabling transactions.
 
-**Sell rights (official pool only).** Each account has separate buckets:
+Read [the integration/package guide](docs/repair-integration.md), [owner checklist](docs/frontend/OWNER-SETUP.md) and [delivery status](docs/repair/DELIVERY.md). Auxiliary ABIs, bytecode and immutable references are in `docs/repair/package/`. Owner preparation is read-only:
 
-- `buy`: UNLK2 bought in the official pool, credited to the authenticated trader, matures one block later.
-- `other`: migrated tokens, verified swarm claims, the founder's 50m.
+```sh
+npm --prefix web run check:live
+npm --prefix web run prepare:owner
+# After forge build, compare deployed runtimes, pinned ABIs and auxiliary packages:
+node --import ./web/scripts/offline-register.mjs web/scripts/runtime-inventory.mjs
+```
 
-Before gate 1 the buy bucket may sell 20% cumulative, the other bucket 0%. From gate g on, every bucket
-uses the gate's percentage. Allowance per bucket = `pct * credited / 100 - sold`, floored at zero; a
-sale debits the buy bucket first. Sales are cumulative and never reset. Balance alone and plain
-transfers create no rights. Gate 10 bypasses every quota check for every holder, including
-uncredited tokens. These quotas govern the official pool; third-party pools are not prevented.
+The owner must obtain and validate the complete allocation corpus, deploy/review both auxiliaries, publish their actual runtime hashes, register only supported integrations, and fund the remaining 700m migration reserve. Every step needs fresh state and separate simulation/review. Activation remains disabled and is absent from the owner package. The immutable hook does not itself enforce all mandatory router/distributor configuration before sealing.
 
-**Trader authentication.** If the swap's `sender` is a registered router, the trader is
-`IMsgSender(sender).msgSender()`; otherwise the trader is the `sender` contract itself. `hookData` is
-never trusted.
+## Validation
 
-**Shared-account limitation.** A swap through an unregistered contract credits and debits that
-contract's buckets, so all of its users share one allowance (tested in
-`test_unregisteredRouterIsOneSharedAccount`). Users should trade through the registered routers.
+Current worker results, with evidence and limits: [artifacts/validation.md](artifacts/validation.md). Production build, equivalent strict TypeScript check, 11 Node tests, 136 local Solidity tests, 3 isolated mainnet-fork tests and 15 Chromium interaction cases passed. Live read-only browser checks covered 320/390/768/1440px and all screens. No real wallet signature or mainnet write occurred. These are regression checks, not an independent security audit.
 
-**Burns.** `UNLK2.burn(amount)` is irreversible, reduces `totalSupply`, credits `amount` points, counts
-toward the current gate's burn target and debits credits conservatively. Formula, in order:
-pending (unmatured) buys, then held buy credits (`buyCredited - buySold`), then held other credits
-(`otherCredited - otherSold`); whatever remains is uncredited balance. Sold counters never change, so
-a partially sold holding can end with zero allowance. `previewBurn(account, amount)` returns the exact
-debits and the allowance afterwards. Burns can never create or recycle eligibility.
+The pinned design probe ran on `dist/`; its applicable geometry, target, contrast, motion and metadata checks passed. The remaining two probe flags are documented: required monospace prose and navigation mistaken for decorative labels. WebKit/native mobile wallets and assistive-technology sessions remain unverified. [DESIGN.md](DESIGN.md) describes the implemented source and six-domain review.
 
-## Gates
-
-| gate | unlocked % | FDV USD | cumulative official USD volume | burn target for this gate |
-| --- | --- | --- | --- | --- |
-| 1 | 25 | 250,000 | 125,000 | 25,000,000 |
-| 2 | 30 | 500,000 | 375,000 | 22,000,000 |
-| 3 | 35 | 1,000,000 | 750,000 | 19,000,000 |
-| 4 | 40 | 2,000,000 | 1,500,000 | 16,000,000 |
-| 5 | 50 | 3,500,000 | 2,500,000 | 13,000,000 |
-| 6 | 60 | 5,000,000 | 4,000,000 | 10,000,000 |
-| 7 | 70 | 8,000,000 | 6,000,000 | 8,000,000 |
-| 8 | 80 | 12,000,000 | 9,000,000 | 6,000,000 |
-| 9 | 90 | 18,000,000 | 12,500,000 | 4,000,000 |
-| 10 | 100 | 25,000,000 | 20,000,000 | 2,000,000 |
-
-Any one threshold opens its gate, forever. Gates open sequentially; one observation can open several.
-Falling prices never relock. Volume accumulates from activation and never resets. Burn targets are per
-gate: when a gate opens by burn the excess carries to the next gate; when it opens by FDV or volume the
-burn counter for the next gate starts from zero.
-
-**Volume** counts each successful official swap's executed IMD leg (the pool's IMD delta, excluding
-the hook fee) once, converted to USD at execution. Repeated same-account trades count. This is gross
-volume, not organic demand. Failed swaps, transfers and other pools are excluded.
-
-## On-chain pricing
-
-- IMD/USD = Chainlink ETH/USD (8 decimals, `answer > 0`, `updatedAt` within 90 minutes and not in
-  the future, `answeredInRound >= roundId`, decimals checked at activation) divided by IMD-per-ETH from
-  the v4 reference pool (native ETH / IMD, fee 10000, tickSpacing 200, hooks zero; `sqrtPriceX96 != 0`
-  and positive liquidity required). Chain id must equal `expectedChainId`.
-- UNLK2/IMD = the official pool's current `sqrtPriceX96` (either currency order).
-- FDV USD = price per UNLK2 in USD times the current `totalSupply()` (locked reserves included, burned
-  supply excluded).
-- An invalid price (stale feed, reverted feed, uninitialized or empty reference pool, wrong chain)
-  skips price and volume progress for that swap only. Trading under already granted rights, migration
-  and burns continue. No TWAP or waiting requirement.
-
-**Spot-manipulation disclosure.** Both prices are spot readings. A large swap in the official pool or
-in the ETH/IMD reference pool within one transaction moves the observed FDV and the USD value of
-volume, and gates once open never close. A deep-pocketed trader can therefore open gates early by
-pushing the price (paying the 1.25% LP fee, the 1% hook fee and the price impact); the fuzz test
-shows a single large buy can open all gates. This is an accepted property of the requested design.
-
-## Migration
-
-`MigrationVault.migrate(amount)` after approving V1: V1 is pulled and locked forever, V2 is sent 1:1,
-the hook credits the `other` bucket. Rejects zero, amounts above the remaining capacity, and amounts
-the vault's actual V2 balance cannot back. Works before and after activation. The 700m cap is smaller
-than the V1 supply, so not all V1 can migrate (`test_migrate_capCannotCoverEntireV1Supply`). A V1
-transfer that delivers less than `amount` (fee-on-transfer) reverts the migration.
-
-## Burn points and weekly rewards
-
-- Points: 1 per UNLK2 burned (18 decimals), non-transferable, never spent.
-- `redeemFees()` (anyone) moves the hook's IMD claims to the RewardPot and starts/merges a seven-day
-  linear stream. `checkpoint()` (anyone) moves streamed IMD into the point pot pro rata.
-- IMD streamed while nobody holds points is carried and goes to the first holders.
-- `claim()` sends the caller's accrued IMD to the caller, at most once per weekly epoch (epochs start
-  at the pot's deployment). Only each beneficiary can claim their own rewards.
-
-## Chosen constants (brief left open)
-
-| Constant | Value | Where |
-| --- | --- | --- |
-| Reward stream duration | 7 days | `RewardPot.STREAM_DURATION` |
-| Claim epoch length | 7 days | `RewardPot.EPOCH_LENGTH` |
-| Buy maturity | 1 block | `UnlockV2Hook._mature` |
-| Feed max age | 90 minutes | `UnlockV2Hook.MAX_FEED_AGE` |
-| Burn carry rule | excess carries after a burn-opened gate | `UnlockV2Hook._advanceGates` |
-
-## Callbacks implemented and why
-
-`beforeInitialize` (factory-only, exact key, once), `beforeSwap` + `beforeSwapReturnDelta` (trading
-gate, trader resolution, fee when IMD is the specified currency), `afterSwap` + `afterSwapReturnDelta`
-(fee when IMD is unspecified, sell-right debit / buy credit, price and volume observation). No
-liquidity or donate callbacks, so the factory's liquidity and fee collection are never blocked.
-
-## Assumptions and operational responsibilities
-
-- IMD is a plain 18-decimal ERC-20 that allows `PoolManager.take` to the RewardPot; the hook never
-  pulls IMD out of the PoolManager during a swap.
-- The launch MerkleDistributor follows Uniswap's interface and leaf format; otherwise swarm claims
-  cannot be credited (set the right address before sealing).
-- Registered routers truthfully report `msgSender()`; a malicious registered router could misattribute
-  rights, so register only Uniswap's audited routers.
-- The owner funds 700m to the vault, registers routers, sets the distributor and activates. After
-  sealing nobody can change anything; a wrong setting is permanent.
-- Chainlink or the reference pool failing only pauses gate progress by price/volume. Burn progress is
-  unaffected.
-- Tests pass does not equal an audit. An independent adversarial review is required before release.
-- Not implemented here: website, publishing, deployment transactions (IMD's deployer launches through
-  the factory; nothing here signs or broadcasts).
-
-## Tests
-
-`test/Token.t.sol` (supply, transfers wallet/contract, hook binding, burns), `test/Launch.t.sol`
-(reference PoolId, permissions, factory-only initialization, wrong keys, closed trading, activation
-requirements and sealing, pricing validity), `test/Trading.t.sol` (fee on all four swap shapes, fee
-redemption, maturity, 20% pre-gate allowance, transfers grant nothing, migrated 0%, router
-authentication, shared account, FDV multi-gate crossing, invalid prices, volume accounting, burn gates
-and gate-10 bypass, burn debit formula, fuzz), `test/Companions.t.sol` (migration success/failure/cap,
-swarm evidence, reward streaming and weekly claims, gate table, volume/burn gate logic, fuzz
-monotonicity).
-
-Run: `forge test` (fuzz seed pinned in `foundry.toml`).
+Independent fork tests opt in with `UNLOCK_REPAIR_FORK=true forge test --match-path test/RepairFork.t.sol -vv`. A process-local `UNLOCK_REPAIR_RPC_URL` can select a read provider; setup and activation occur only on the isolated fork. Normal `forge test --no-match-path 'test/*Fork*.sol'` has no mainnet writes. Deployment source, allocation, fees, ten gates, burn debits, previous-sales accounting and weekly rewards remain unchanged.

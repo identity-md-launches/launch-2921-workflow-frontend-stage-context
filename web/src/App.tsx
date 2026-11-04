@@ -87,6 +87,8 @@ export default function App() {
       ? "Reading chain"
       : state.error
         ? "RPC unavailable"
+        : state.stale
+          ? "Verifying chain"
         : d?.activated
           ? "Trading active"
           : "Trading closed";
@@ -154,7 +156,7 @@ export default function App() {
         </select>
         <span className="muted">UNLK2 / IMD</span>
       </div>
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <div className="page-heading">
           <h1 id="main-heading" tabIndex={-1}>
             {screen === "Trade" ? (
@@ -196,8 +198,7 @@ export default function App() {
         {state.error && (
           <div className="system-message" role="status">
             <span className="amber">
-              Live state unavailable. {d ? "Previous snapshot is stale. " : ""}
-              Transactions are disabled.
+              Live state unavailable; actions disabled. {d ? "Previous snapshot is stale." : ""}
             </span>
             <details>
               <summary>Connection details</summary>
@@ -245,7 +246,7 @@ export default function App() {
                   value={display(d?.supply, 18, 0)}
                   unit="UNLK2"
                 />
-                <Stat label="Gates open" value={d ? `${d.gates} / 10` : "—"} />
+                <Stat label="Gates open" value={d && !state.stale ? `${d.gates} / 10` : "Unavailable"} />
                 <Stat
                   label="Gross official volume"
                   value={display(d?.volume, 18, 0)}

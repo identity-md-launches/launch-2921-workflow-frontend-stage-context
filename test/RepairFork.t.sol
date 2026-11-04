@@ -59,7 +59,7 @@ contract RepairForkTest is Test {
             vm.skip(true);
             return;
         }
-        vm.createSelectFork("https://ethereum-rpc.publicnode.com", 26339867);
+        vm.createSelectFork(vm.envOr("UNLOCK_REPAIR_RPC_URL", string("https://ethereum-rpc.publicnode.com")), 26339867);
         trader = makeAddr("fork trader");
         assertFalse(hook.activated());
         assertEq(hook.gatesOpen(), 0);

@@ -1,63 +1,91 @@
 {
-  "generatedAt": "2026-11-04T07:52:23.027Z",
+  "generatedAt": "2026-11-04T08:30:38.080Z",
   "scope": "Production export under /preview/. All wallet and RPC responses in interaction cases are synthetic; no real signing or broadcasting.",
   "checks": [
     {
       "name": "Home staircase, stored states, three OR tracks and contribution visible",
       "passed": true,
-      "durationMs": 1112
+      "durationMs": 1333
     },
     {
       "name": "Market tab shows genuine no-trades state, units, source and retry",
       "passed": true,
-      "durationMs": 223
+      "durationMs": 409
     },
     {
       "name": "Wallet connection and automatic caller-bound buy quote",
       "passed": true,
-      "durationMs": 5235
+      "durationMs": 5220
     },
     {
       "name": "Automatic sell quote uses same wallet path; failed quotes cannot send",
       "passed": true,
-      "durationMs": 1681
+      "durationMs": 1698
     },
     {
       "name": "Home contribution max is capped and stale target is rejected",
       "passed": true,
-      "durationMs": 333
+      "durationMs": 519
     },
     {
       "name": "Gate ten exposes Golden Vault voluntary burn on home",
       "passed": true,
-      "durationMs": 1983
+      "durationMs": 2197
     },
     {
       "name": "Quote expiry during final review blocks wallet signing",
       "passed": true,
-      "durationMs": 1345
+      "durationMs": 1300
+    },
+    {
+      "name": "Migration approval and immutable vault call, rewards claim and successful sell review",
+      "passed": true,
+      "durationMs": 7207
+    },
+    {
+      "name": "Changed burn rights block the previously reviewed preview",
+      "passed": true,
+      "durationMs": 335
     },
     {
       "name": "Interactive candle/volume canvas renders observed-trade fixture with zoom and crosshair",
       "passed": true,
-      "durationMs": 1548
+      "durationMs": 1786
+    },
+    {
+      "name": "Market RPC failure retries and invalid historical USD stays unavailable",
+      "passed": true,
+      "durationMs": 511
     },
     {
       "name": "Mobile closed trading, pending owner setup and stacked dashboard",
       "passed": true,
-      "durationMs": 1006
+      "durationMs": 1175
     },
     {
       "name": "RPC outage marks prior snapshot stale and prevents actions",
       "passed": true,
-      "durationMs": 254
+      "durationMs": 281
+    },
+    {
+      "name": "Mobile wallet browser links, passkey option and keyboard dialog return",
+      "passed": true,
+      "durationMs": 1065
+    },
+    {
+      "name": "Initial RPC outage keeps the product and main action on the first phone screen",
+      "passed": true,
+      "durationMs": 301
     }
   ],
   "screenshots": [
     "desktop-home.png",
     "synthetic-market-chart.png",
     "mobile-closed.png",
-    "mobile-rpc-error.png"
+    "mobile-first-screen.png",
+    "mobile-rpc-error.png",
+    "mobile-wallet-entry.png",
+    "mobile-initial-rpc-error.png"
   ],
   "errors": []
 }

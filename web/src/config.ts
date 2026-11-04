@@ -121,7 +121,12 @@ export async function loadConfig() {
     batch: { multicall: false },
   });
   const repair = (await json("repair-config.json")) as RepairConfig;
-  return { d, abis, addresses, chain, client, repair };
+  const runtimes = (await json("contract-runtime.json")) as {
+    chainId: number;
+    contracts: { name: string; address: Address; runtimeCodeHash: `0x${string}` }[];
+  };
+  if (runtimes.chainId !== d.chainId) throw Error("Runtime inventory chain mismatch.");
+  return { d, abis, addresses, chain, client, repair, runtimes };
 }
 export type Runtime = Awaited<ReturnType<typeof loadConfig>>;
 export function withWalletReadFallback(
@@ -186,12 +191,16 @@ export async function verifyChain(r: Runtime) {
     r.d.network.uniswapV4.universalRouter,
     r.d.network.uniswapV4.quoter,
     r.d.network.uniswapV4.permit2,
+    r.d.network.uniswapV4.poolManager,
   ]) {
     const code = await r.client.getCode({ address: a });
     if (!code || code === "0x")
       throw Error(
         "A deployed contract has no code on the configured chain. Transactions disabled.",
       );
+    const pinned = r.runtimes.contracts.find(c => same(c.address, a));
+    if (!pinned || keccak256(code) !== pinned.runtimeCodeHash)
+      throw Error("Deployed runtime differs from the verified contract inventory. Transactions disabled.");
   }
   const token = r.addresses.UnlockV2Token,
     hook = r.addresses.UnlockV2Hook;
@@ -224,6 +233,9 @@ export async function verifyChain(r: Runtime) {
     const code = await r.client.getCode({ address: a as Address });
     if (!code || code === "0x")
       throw Error("A companion contract has no code.");
+    const pinned = r.runtimes.contracts.find(c => same(c.address, String(a)));
+    if (!pinned || keccak256(code) !== pinned.runtimeCodeHash)
+      throw Error("Companion runtime differs from the verified contract inventory.");
   }
   const [vh, v2, ph, pi, dec, imdDec, v1] = await Promise.all([
     r.client.readContract({

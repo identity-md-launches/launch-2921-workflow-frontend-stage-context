@@ -110,3 +110,4 @@ test("Market OHLC uses real observed trades, preserves gaps and sorts chronology
   );
   assert.deepEqual(candles([], 60, "USD"), []);
 });
+import "./dashboard.test.ts";

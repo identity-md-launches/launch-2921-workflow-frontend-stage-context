@@ -1,20 +1,15 @@
-# Owner setup — repaired integration, pending installation
+# Owner checklist before permanent sealing
 
-The previous direct-native-distributor and custom-minimum instructions were incompatible with the deployed contracts and are superseded.
+All items require fresh Ethereum chain-1 state. This contribution does **not** send these transactions. Activation is disabled in the site and absent from generated owner plans.
 
-Use [the exact integration/setup guide](../repair-integration.md), [measured validation](../repair/VALIDATION.md), and [delivery status](../repair/DELIVERY.md). The owner screen now provides separately reviewed/simulated wallet actions plus unsigned Safe exports. Activation is disabled. No mainnet deployment, funding, registration or activation was performed by this repair.
+1. Open the existing UNLOCK V2 terminal's **Founder setup** screen. Verify the token/hook from the deployment manifest and the derived migration vault/reward pot. The site checks actual runtime hashes, chain, token metadata and immutable bindings. `node --import ./web/scripts/offline-register.mjs web/scripts/runtime-inventory.mjs` additionally compares compiled source and auxiliary packages after a Foundry build.
+2. Obtain the **full canonical native round-0 account/amount allocation corpus**, not one user's proof. Rebuild its double-hashed root, strictly sort unique accounts, and reject duplicates. See `docs/repair-integration.md` and `web/scripts/native-proofs.mjs`. The adapter constructor itself rebuilds the complete tree; reconcile gas/initcode limits on a fork with the real corpus. No partial/made-up allocation file is delivered as if authentic.
+3. Independently review `src/auxiliary/NativeSwarmAdapter.sol` and `WalletQuoter.sol` and their package artifacts. Rehearse deployment on an isolated fork. Adapter native distributor/root/round/funding and quoter hook/PoolManager must match the existing deployment. Review the compiled runtime outside immutable slots and every immutable getter. Deployment is separate external owner work.
+4. Test native proof forgery, amount/account substitution, actual claimed state, replay and pre-credit burns. Test wallet buy/sell quote equality with actual Universal Router execution on the fork. Current included fork regression covers the deployed router, but installed auxiliaries and the complete authentic corpus need their own repetition/review.
+5. Publish actual deployed auxiliary addresses and actual reviewed runtime hashes in `web/public/repair-config.json`, with `installationReviewed: true` only after review. Keep records null until then. Rebuild/re-publish the frontend under the existing identity. The frontend rejects unreviewed/mismatched runtime or binding records.
+6. Re-read `remainingCapacity`, `remainingBacking` and the owner token balance. Transfer only the remaining deficit into the immutable migration vault. The initial required reserve is **700,000,000 UNLK2**; principal cannot be withdrawn. The founder's economic allocation stays 50m. The site provides a separate **Review exact reserve top-up** action with irreversible acknowledgement and simulation; it never funds automatically.
+7. Separately review/simulate/register the deployment-manifest Universal Router with `setRouter(router,true)`, the reviewed caller-bound WalletQuoter with `setRouter(quoter,true)`, and the NativeSwarmAdapter with `setSwarmDistributor(adapter)`. Refresh and verify after every receipt. Stock V4Quoter must remain unregistered; unregistered contracts share rights at their own address.
+8. Confirm bound token, intended initialized pool/liquidity, valid current price references, actual migration backing, complete proof configuration, verified installed/registered auxiliary code, and tested quote identity. The UI checklist distinguishes pending/verified/failed/unavailable states. `npm --prefix web run prepare:owner` refreshes the unsigned plan and separately estimates each proposed step. The Safe option downloads one unsigned transaction at a time; it is not a pre-approved batch.
+9. Consider `activate()` only through a separately authorized external owner review. It irreversibly opens trading and permanently seals settings. **The contract itself does not enforce every mandatory router/distributor integration**, so a successful activation simulation alone is insufficient. This delivery provides no activation control or calldata.
 
-* NativeSwarmAdapter must verify the **complete canonical native allocation corpus** and unique accounts in its constructor, then verify a native amount proof plus actual claimed state during atomic sync. The native round distributor must never be registered directly.
-* WalletQuoter authenticates its caller and executes the real PoolManager simulation. Register it and the verified Universal Router before sealing. Never register the incompatible stock V4Quoter or use a manual minimum as a quotation workaround.
-* The 700m migration reserve remains unfunded at the recorded live checkpoint. Fund only the rechecked deficit in an explicit owner transaction. Existing allocations, gates, separate origin credits, prior-sales accounting and weekly rewards are unchanged.
-* Do not reuse old activation calldata or mistake historical evidence for current authorization. The new read-only owner generator emits **no activation calldata** and withholds adapter creation without the full canonical corpus.
-
-Regenerate read-only preparation from the repository root:
-
-```
-node web/scripts/prepare-repair.mjs
-# Only with the authentic complete corpus:
-node web/scripts/prepare-repair.mjs canonical-allocations.json docs/repair/owner-plan-with-corpus.json
-```
-
-Generated files are unsigned review artifacts, not executable batches. Review deployed code/immutables and simulate each step after preceding owner receipts. No configuration can be repaired after permanent sealing.
+Current read-only checkpoints and findings are in `artifacts/validation.md`, runtime verification in `artifacts/runtime-verification.json`, and the latest prepared owner plan in `docs/repair/owner-plan.json`. A checkpoint is historical evidence, not permission to sign stale calldata. No new points, rights, gates, fees, allocation or weekly reward accounting are introduced by these auxiliaries.

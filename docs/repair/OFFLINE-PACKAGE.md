@@ -16,7 +16,7 @@ npm --prefix web run validate
 npm --prefix web run check:bundle
 ```
 
-`offline-install.sh` verifies the package; it no longer installs a registry cache. `test`, `build`, `validate` and their explicit `*:offline` counterparts do not install packages or need `node_modules`. Node runs the original component tests against the bundled viem implementation. `build` compiles the actual `web/src/main.tsx` source, copies `web/public/`, writes `web/site/`, verifies the pinned implementation ABIs and regenerates the asset inventory. It does not reuse precompiled application JS. The compiler is extracted into a temporary directory, checked, executed and removed. The output website needs no compiler, npm, xz, remote JavaScript CDN or paid API. Live Ethereum reads still require the configured RPCs.
+`offline-install.sh` verifies the package; it no longer installs a registry cache. `test`, `build`, `validate` and their explicit `*:offline` counterparts do not install packages or need `node_modules`. Node runs the original component tests against the bundled viem implementation. `build` compiles the actual `web/src/main.tsx` source, copies `web/public/`, writes `web/site/` and the identical root `dist/`, verifies the pinned implementation ABIs and regenerates the asset inventory. It does not reuse precompiled application JS. The compiler is extracted into a temporary directory, checked, executed and removed. The output website needs no compiler, npm, xz, remote JavaScript CDN or paid API. Live Ethereum reads still require the configured RPCs.
 
 Owner preparation also resolves its viem dependency from the committed bundle:
 
@@ -37,3 +37,7 @@ The compact build **transpiles and bundles; it does not typecheck**. Full develo
 * `evidence/bundle-size.json` records the conservative total size of every changed/new ordinary file relative to the delivered frontend baseline, including this documentation, dependencies and screenshots. The upload ceiling is 8,388,608 bytes. Deleted files count as zero. This conservative total counts full modified files, rather than just their changed bytes.
 
 The prior live/fork/contract results are preserved as historical evidence; this packaging-only repair does not claim new fork or live-chain results. Pending adapter installation/full canonical corpus and authenticated publication limitations remain unchanged in `DELIVERY.md` and `repair-integration.md`.
+
+## Current continuation
+
+The preceding size-repair results are historical. Current functional, live/fork, design and export results are recorded in `../../artifacts/validation.md`. The latest export is root `dist/`; `web/site/` is an identical mirror. Package manifests, lockfiles and required compact dependencies are unchanged in this continuation.

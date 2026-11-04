@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir, stat } from "node:fs/promises";
+import { readFile, writeFile, readdir, stat, cp, rm } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -78,8 +78,11 @@ export async function generate() {
     resolve(root, "web/site/imd-deployment.json"),
     JSON.stringify(m, null, 2) + "\n",
   );
+  // Both supported build paths finish here. The continuation publisher serves root dist/.
+  await rm(resolve(root, "dist"), { recursive: true, force: true });
+  await cp(resolve(root, "web/site"), resolve(root, "dist"), { recursive: true });
   console.log(
-    `Verified ABIs; wrote deployment manifest with ${assets.length} SHA-256 assets.`,
+    `Verified ABIs; exported dist/ and web/site/ with ${assets.length} SHA-256 assets.`,
   );
 }
 if (process.argv[1] === fileURLToPath(import.meta.url)) await generate();

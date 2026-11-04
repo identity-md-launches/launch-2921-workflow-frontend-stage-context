@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { GATE_THRESHOLDS, gateState } from "./gate-data";
 import { formatUnits, parseAbiItem } from "viem";
 import { useApp } from "./context";
 import { display, Alert } from "./components";
@@ -12,25 +13,18 @@ import {
 } from "./vendor/lightweight-charts.mjs";
 
 export function GateChart() {
-  const { data: d } = useApp();
+  const { data: d, stale } = useApp();
   const [selected, setSelected] = useState(1);
-  const g = d?.gateTable[selected - 1];
-  const state = (n: number) =>
-    !d
-      ? "Unread"
-      : n <= d.gates
-        ? "Opened"
-        : n === d.gates + 1
-          ? "Current"
-          : "Future";
+  const rows = d?.gateTable ?? GATE_THRESHOLDS;
+  const g = rows[selected - 1];
+  const state = (n: number) => gateState(n, d?.gates, stale);
   // X positions are logarithmic FDV; Y is the permanent cumulative unlock percentage.
   const x = (fdv: bigint) =>
     75 +
     ((Math.log10(Number(formatUnits(fdv, 18))) - Math.log10(250000)) / 2) * 680;
   const y = (pct: number) => 285 - pct * 2.3;
   let path = "M 35 285 H 75";
-  if (d)
-    d.gateTable.forEach((row, i) => {
+  rows.forEach((row, i) => {
       path += ` H ${x(row[1])} V ${y(row[0])}${i === 9 ? " H 790" : ""}`;
     });
   return (
@@ -61,19 +55,12 @@ export function GateChart() {
           strokeDasharray="4 3"
         />
         <path d={path} stroke="#83dcb9" strokeWidth="3" fill="none" />
-        {d?.gateTable.map((row, i) => (
+        {rows.map((row, i) => (
           <g
             key={i}
-            role="button"
-            tabIndex={0}
+            className="gate-node"
             aria-label={`Gate ${i + 1}, ${state(i + 1)}, ${row[0]} percent unlocked. FDV ${display(row[1])} USD OR cumulative volume ${display(row[2])} USD OR burn ${display(row[3])} UNLK2.`}
             onClick={() => setSelected(i + 1)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                setSelected(i + 1);
-              }
-            }}
           >
             <title>{`Gate ${i + 1} · ${state(i + 1)} · ${row[0]}%\nFDV $${display(row[1])} OR volume $${display(row[2])} OR gate burn ${display(row[3])} UNLK2`}</title>
             <circle cx={x(row[1])} cy={y(row[0])} r="17" fill="transparent" />
@@ -83,7 +70,7 @@ export function GateChart() {
               r={selected === i + 1 ? 7 : 5}
               stroke="#eee"
               fill={
-                i < d.gates ? "#83dcb9" : i === d.gates ? "#efc47d" : "#333"
+                state(i + 1) === "Opened" ? "#83dcb9" : state(i + 1) === "Current" ? "#efc47d" : "#333"
               }
             />
             <text x={x(row[1])} y={y(row[0]) - 15} textAnchor="middle">
@@ -101,6 +88,11 @@ export function GateChart() {
           $25M
         </text>
       </svg>
+      <div className="gate-legend"><span className="mint">● Opened</span><span className="amber">◉ Current</span><span>○ Future</span></div>
+      <div className="gate-selector" aria-label="Select gate details">
+        {rows.map((_, i) => <button key={i} data-state={state(i + 1)} aria-label={`View gate ${i + 1}: ${state(i + 1)}`} aria-pressed={selected === i + 1} onClick={() => setSelected(i + 1)}>{i + 1}</button>)}
+      </div>
+      <p className="helper">{!d || stale ? "Contract thresholds shown. Live gate states unavailable." : `Stored openings: ${d.gates} / 10 · block ${d.block.toString()}.`} The FDV axis shows thresholds; volume or contributions can also open each gate.</p>
       <div className="gate-detail" aria-live="polite">
         <strong>
           Gate {selected} · {state(selected)} · {g?.[0] ?? "—"}% unlocked
@@ -125,7 +117,7 @@ export function GateChart() {
               </tr>
             </thead>
             <tbody>
-              {d?.gateTable.map((r, i) => (
+              {rows.map((r, i) => (
                 <tr key={i}>
                   <th>
                     <button
@@ -153,16 +145,17 @@ const swapEvent = parseAbiItem(
   "event Swap(bytes32 indexed id,address indexed sender,int128 amount0,int128 amount1,uint160 sqrtPriceX96,uint128 liquidity,int24 tick,uint24 fee)",
 );
 export function MarketChart() {
-  const { r, data: d } = useApp();
+  const { r, data: d, stale } = useApp();
   const [points, setPoints] = useState<TradePoint[]>([]),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(false),
     [updated, setUpdated] = useState(0),
     [retry, setRetry] = useState(0);
-  const [unit, setUnit] = useState<"IMD" | "USD">("IMD"),
+  const [unit, setUnit] = useState<"IMD" | "USD">("USD"),
     [frame, setFrame] = useState(900),
     [range, setRange] = useState("");
   const host = useRef<HTMLDivElement>(null);
+  const readout = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!d?.poolKey) return;
     let canceled = false;
@@ -205,7 +198,8 @@ export function MarketChart() {
           }
           blocks.set(block, { time: Number(b.timestamp), usd });
         }
-        const trades = logs.flatMap((l) => {
+        logs.sort((a,b) => Number(a.blockNumber - b.blockNumber) || a.transactionIndex - b.transactionIndex || a.logIndex - b.logIndex);
+        const trades = logs.filter(l => !l.removed).flatMap((l) => {
           const a = l.args;
           const token0 =
             d!.poolKey!.currency0.toLowerCase() ===
@@ -246,7 +240,7 @@ export function MarketChart() {
     return () => {
       canceled = true;
     };
-  }, [r, d?.poolId, retry]);
+  }, [r, d?.poolId, !!d?.poolKey, retry]);
   let bars: ReturnType<typeof candles> = [],
     unitError = "";
   try {
@@ -299,8 +293,7 @@ export function MarketChart() {
       })),
     );
     chart.timeScale().fitContent();
-    const tooltip =
-      host.current.querySelector<HTMLDivElement>(".chart-readout");
+    const tooltip = readout.current;
     chart.subscribeCrosshairMove((p) => {
       const v = p.seriesData.get(series) as
         | { open?: number; high?: number; low?: number; close?: number }
@@ -338,7 +331,9 @@ export function MarketChart() {
       <p>
         Price: {unit} per UNLK2 · Volume: {unit} · official-pool executed trades
       </p>
-      {loading ? (
+      {!d?.poolKey ? (
+        <div className="chart-empty" role="status"><strong>Official-pool state unavailable</strong><p>Use Refresh above to verify the pool, then retry market data.</p></div>
+      ) : loading ? (
         <p role="status">Reading official-pool Swap logs…</p>
       ) : error ? (
         <Alert error>{error}</Alert>
@@ -350,24 +345,25 @@ export function MarketChart() {
               : "Trading closed · no official trade history in this window"}
           </strong>
           <p>
-            No candles are invented. Gates remain viewable in the Gate Staircase
-            tab.
+            Candles appear only after official-pool swaps. View permanent thresholds in Gate Staircase.
           </p>
         </div>
       ) : unitError ? (
         <Alert>{unitError}</Alert>
       ) : (
-        <div ref={host} className="market-chart">
-          <div className="chart-readout">
+        <div className="market-chart">
+          <div ref={readout} className="chart-readout">
             Move crosshair · scroll to zoom · drag to pan
           </div>
+          <div ref={host} className="market-canvas" />
         </div>
       )}
-      <button disabled={loading} onClick={() => setRetry((n) => n + 1)}>
+      {stale && d && <Alert>Pool snapshot is stale. Trading status is unavailable; history is a separately dated snapshot.</Alert>}
+      <button disabled={loading || !d?.poolKey} onClick={() => setRetry((n) => n + 1)}>
         Retry / refresh market data
       </button>
       <p className="helper">
-        Source: Ethereum PoolManager Swap logs filtered to official pool{" "}
+        Source: <a href={r.d.network.rpcUrls[0]} target="_blank" rel="noreferrer">Ethereum public RPC</a> · PoolManager Swap logs filtered to official pool{" "}
         {d?.poolId.slice(0, 12)}… · block window {range || "unavailable"} (last
         7,200 blocks). Updated{" "}
         {updated ? new Date(updated).toISOString() : "not yet"}. USD uses the
@@ -387,9 +383,19 @@ export function Charts() {
   const [tab, setTab] = useState("gates");
   return (
     <section className="panel chart-panel">
-      <div className="segmented" role="tablist" aria-label="Dashboard charts">
+      <div className="segmented chart-tabs" role="tablist" aria-label="Dashboard charts" onKeyDown={e => {
+        if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
+          e.preventDefault();
+          const next = e.key === "Home" ? "gates" : e.key === "End" ? "market" : tab === "gates" ? "market" : "gates";
+          setTab(next);
+          document.getElementById(`chart-tab-${next}`)?.focus();
+        }
+      }}>
         <button
           role="tab"
+          id="chart-tab-gates"
+          aria-controls="chart-content"
+          tabIndex={tab === "gates" ? 0 : -1}
           aria-selected={tab === "gates"}
           onClick={() => setTab("gates")}
         >
@@ -397,13 +403,16 @@ export function Charts() {
         </button>
         <button
           role="tab"
+          id="chart-tab-market"
+          aria-controls="chart-content"
+          tabIndex={tab === "market" ? 0 : -1}
           aria-selected={tab === "market"}
           onClick={() => setTab("market")}
         >
           Market Chart
         </button>
       </div>
-      {tab === "gates" ? <GateChart /> : <MarketChart />}
+      <div id="chart-content" role="tabpanel" aria-labelledby={`chart-tab-${tab}`}>{tab === "gates" ? <GateChart /> : <MarketChart />}</div>
     </section>
   );
 }

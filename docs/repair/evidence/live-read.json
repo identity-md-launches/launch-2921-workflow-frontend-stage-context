@@ -1,8 +1,8 @@
 {
   "mode": "LIVE READS ONLY — no signer, broadcasts or state overrides",
-  "checkedAt": "2026-11-04T07:26:47.936Z",
+  "checkedAt": "2026-11-04T07:59:41.178Z",
   "chainId": 1,
-  "block": "26339946",
+  "block": "26340110",
   "state": {
     "activated": false,
     "owner": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
@@ -14,11 +14,11 @@
     "lastFdvBlock": "0",
     "lastValidObservation": "0",
     "gateImdUsdPrice": [
-      "3151762063579883847",
+      "3149189322519941394",
       true
     ],
     "fdvUsd": [
-      "7879405158946000000000",
+      "7872973306296000000000",
       true
     ],
     "cumulativeVolumeUsd": "0",

@@ -1,0 +1,63 @@
+{
+  "mode": "Live reads only",
+  "checkedAt": "2026-11-04T08:16:22.941Z",
+  "chainId": 1,
+  "block": "26340193",
+  "source": "https://ethereum-rpc.publicnode.com",
+  "verified": [
+    {
+      "name": "UnlockV2Token",
+      "address": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+      "runtimeCodeHash": "0x399abcd5bd485a0a5e88b287ab5d372bb6d120bf73d1f748f9b5dfacb0bbdeb3",
+      "sourceMatch": "Compiled runtime matches outside immutable slots; frontend verifies immutable bindings separately"
+    },
+    {
+      "name": "UnlockV2Hook",
+      "address": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "runtimeCodeHash": "0xbb91bad1216738c6e8f87b7c8df4f1e9a38d0f8a2587ed103602a14f9dcd63da",
+      "sourceMatch": "Compiled runtime matches outside immutable slots; frontend verifies immutable bindings separately"
+    },
+    {
+      "name": "MigrationVault",
+      "address": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+      "runtimeCodeHash": "0x32678cb7087706f5ef06d2cf3670271aea471ceb6910b4ff23ae182ffb297c0d",
+      "sourceMatch": "Compiled runtime matches outside immutable slots; frontend verifies immutable bindings separately"
+    },
+    {
+      "name": "RewardPot",
+      "address": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+      "runtimeCodeHash": "0x5c9a2dfcb9e3b3d1aae4986aced87496a3442b19e281a6bcd77c112ea8ee4f8b",
+      "sourceMatch": "Compiled runtime matches outside immutable slots; frontend verifies immutable bindings separately"
+    },
+    {
+      "name": "IMD",
+      "address": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+      "runtimeCodeHash": "0x79a1ae149d27d4aae006d4dd75cb834222c9623799bbf34359428aaf66fec3bf",
+      "sourceMatch": "Dependency code pinned by hash"
+    },
+    {
+      "name": "poolManager",
+      "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+      "runtimeCodeHash": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293",
+      "sourceMatch": "Dependency code pinned by hash"
+    },
+    {
+      "name": "universalRouter",
+      "address": "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+      "runtimeCodeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f",
+      "sourceMatch": "Dependency code pinned by hash"
+    },
+    {
+      "name": "quoter",
+      "address": "0x52f0e24d1c21c8a0cb1e5a5dd6198556bd9e1203",
+      "runtimeCodeHash": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441",
+      "sourceMatch": "Dependency code pinned by hash"
+    },
+    {
+      "name": "permit2",
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "runtimeCodeHash": "0xc67d1657868aa5146eaf24fb879fb1fdec3d2d493b3683a61c9c2f4fb2851131",
+      "sourceMatch": "Dependency code pinned by hash"
+    }
+  ]
+}

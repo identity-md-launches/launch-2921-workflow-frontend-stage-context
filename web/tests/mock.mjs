@@ -8,7 +8,7 @@ import {
 } from "viem";
 import { root } from "../scripts/export.mjs";
 const read = async (p) => JSON.parse(await readFile(resolve(root, p), "utf8"));
-const deployment = await read("web/site/imd-deployment.json");
+const deployment = await read("dist/imd-deployment.json");
 const abi = {};
 for (const n of [
   "UnlockV2Token",
@@ -16,7 +16,7 @@ for (const n of [
   "MigrationVault",
   "RewardPot",
 ])
-  abi[n] = await read("web/site/abi/" + n + ".json");
+  abi[n] = await read("dist/abi/" + n + ".json");
 const erc20 = parseAbi([
   "function balanceOf(address) view returns(uint256)",
   "function allowance(address,address) view returns(uint256)",
@@ -209,7 +209,7 @@ export function rpcMock(s) {
       lastValidObservation: BigInt(Math.floor(Date.now() / 1000)),
       trackedAt: BigInt(Math.floor(Date.now() / 1000)),
       fdvUsd: [100000n * E, true],
-      imdUsdPrice: [2n * E, true],
+      imdUsdPrice: s.invalidUsd ? [0n, false] : [2n * E, true],
       tokenPriceInImd: [(1n * E) / 1000n, true],
       cumulativeVolumeUsd: 50000n * E,
       burnProgress: s.burnProgress,
@@ -313,7 +313,7 @@ export function rpcMock(s) {
         n > 10n * E ? n - 10n * E : 0n,
         0n,
         0n,
-        200n * E,
+        s.previewAllowance ?? 200n * E,
       ];
     }
     if (f === "quoteExactInput")
@@ -342,6 +342,7 @@ export function rpcMock(s) {
     let result;
     switch (method) {
       case "eth_getLogs":
+        if (s.failMarket) return {jsonrpc:"2.0",id,error:{code:-32000,message:"Historical logs unavailable"}};
         result = (s.marketLogs ?? []).filter(
           (l) =>
             BigInt(l.blockNumber) >= BigInt(params[0].fromBlock) &&

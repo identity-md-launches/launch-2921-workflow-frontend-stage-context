@@ -39,8 +39,8 @@ const server = createServer(async (req, res) => {
       res.writeHead(404).end();
       return;
     }
-    const file = resolve(root, "web/site", path.slice(9) || "index.html");
-    if (!file.startsWith(resolve(root, "web/site") + "/")) {
+    const file = resolve(root, "dist", path.slice(9) || "index.html");
+    if (!file.startsWith(resolve(root, "dist") + "/")) {
       res.writeHead(403).end();
       return;
     }
@@ -121,10 +121,19 @@ async function setup(
   });
   await c.route(/^https?:\/\//, async (route) => {
     const req = route.request();
+    if (req.url().endsWith("contract-runtime.json")) {
+      const inventory = JSON.parse(await readFile(resolve(root,"web/public/contract-runtime.json"),"utf8"));
+      inventory.contracts.forEach(row => { row.runtimeCodeHash = keccak256("0x60016000"); });
+      // Companion addresses in this fixture are intentionally synthetic.
+      inventory.contracts.find(row => row.name === "MigrationVault").address = "0x1111111111111111111111111111111111111111";
+      inventory.contracts.find(row => row.name === "RewardPot").address = "0x2222222222222222222222222222222222222222";
+      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(inventory)});
+    }
     if (req.url().endsWith("repair-config.json") && installed) {
       const config = JSON.parse(
         await readFile(resolve(root, "web/public/repair-config.json"), "utf8"),
       );
+      config.installationReviewed = true;
       config.quoter = {
         address: walletQuoter,
         runtimeCodeHash: keccak256("0x60016000"),
@@ -261,17 +270,21 @@ try {
     async () => {
       await p.getByText("● Trading active", { exact: true }).waitFor();
       assert.equal(await p.locator("progress").count(), 3);
-      assert.equal(await p.locator("svg.staircase g[role=button]").count(), 10);
+      assert.equal(await p.locator("svg.staircase .gate-node").count(), 10);
       await p
         .getByRole("heading", {
           name: "Contribute UNLK2 to the active gate",
           exact: true,
         })
         .waitFor();
-      await p.locator("svg.staircase g[role=button]").nth(9).click();
+      await p.locator("svg.staircase .gate-node").nth(9).click();
       await p
         .getByText("Gate 10 · Future · 100% unlocked", { exact: true })
         .waitFor();
+      await p.getByRole("button",{name:"View gate 3: Future",exact:true}).focus();
+      await p.keyboard.press("Enter");
+      await p.getByText("Gate 3 · Future · 35% unlocked",{exact:true}).waitFor();
+      await p.getByRole("button",{name:"View gate 10: Future",exact:true}).click();
       assert.equal(
         await p.evaluate(() => getComputedStyle(document.body).backgroundColor),
         "rgb(0, 0, 0)",
@@ -279,7 +292,7 @@ try {
       s.pendingGates = 4;
       await p.getByRole("button", { name: "Refresh", exact: true }).click();
       await p
-        .getByRole("heading", { name: "ACTIVE GATE 1", exact: true })
+        .getByRole("heading", { name: "Active gate 1", exact: true })
         .waitFor();
       assert.match(await p.locator(".gate-detail").innerText(), /Future/);
       await screenshot(p, "desktop-home", true);
@@ -303,6 +316,10 @@ try {
         .getByText("No official trades in this window", { exact: true })
         .waitFor();
       await p.getByRole("tab", { name: "Gate Staircase", exact: true }).click();
+      await p.getByRole("tab", {name:"Gate Staircase",exact:true}).focus();
+      await p.keyboard.press("ArrowRight");
+      assert.equal(await p.getByRole("tab",{name:"Market Chart",exact:true}).getAttribute("aria-selected"),"true");
+      await p.keyboard.press("Home");
     },
   );
   await check(
@@ -443,6 +460,52 @@ try {
   assert.deepEqual(a.errors, []);
   await a.b.close();
 
+  const flows = await setup();
+  browser = flows.b;
+  await check("Migration approval and immutable vault call, rewards claim and successful sell review", async () => {
+    const {p,s} = flows;
+    await connect(p);
+    await screen(p,"Migrate");
+    await p.getByLabel("V1 amount",{exact:true}).fill("12.5");
+    await p.getByLabel("I understand my V1 will be locked forever.", {exact:true}).check();
+    await p.getByRole("button",{name:"Approve V1",exact:true}).click();
+    await simulateAndSend(p);
+    assert.equal(s.v1Allowance, 125n * E / 10n);
+    await p.getByRole("button",{name:"Review migration",exact:true}).click();
+    await simulateAndSend(p,{irreversible:true});
+    assert.equal(s.totalMigrated, 125n * E / 10n);
+    assert.equal(s.v1Balance, 5000n * E - 125n * E / 10n);
+    await screen(p,"Weekly IMD Rewards");
+    await p.getByRole("button",{name:"Claim matured IMD",exact:true}).click();
+    await simulateAndSend(p);
+    assert.equal(s.claimable,0n);
+    s.sellTokenAllowance = 1000n * E;
+    s.sellPermitAllowance = 1000n * E;
+    s.expiry = Math.floor(Date.now()/1000)+1800;
+    await screen(p,"Trade");
+    await p.getByRole("button",{name:"Sell UNLK2",exact:true}).click();
+    await p.locator("#swap-amount").fill("10");
+    await p.getByRole("button",{name:"Review swap",exact:true}).click();
+    await simulateAndSend(p);
+    assert.equal(s.sends.length,4);
+  });
+  await check("Changed burn rights block the previously reviewed preview", async () => {
+    const {p,s} = flows;
+    await p.getByLabel("Amount to burn (UNLK2)",{exact:true}).fill("1.000000000000000001");
+    await p.getByRole("button",{name:"Preview burn and rights",exact:true}).click();
+    await p.getByText(/Burned: 1.000000000000000001 UNLK2/).waitFor();
+    await p.getByRole("button",{name:"Contribute UNLK2 · gate 1",exact:true}).click();
+    s.previewAllowance=199n * E;
+    const dialog=p.locator("dialog[open]");
+    await dialog.getByRole("checkbox").check();
+    await dialog.getByRole("button",{name:"Simulate transaction",exact:true}).click();
+    await dialog.getByText(/Your burn debits or rights changed/).waitFor();
+    assert.equal(s.sends.length,4);
+    await dialog.getByRole("button",{name:"Close",exact:true}).click();
+  });
+  assert.deepEqual(flows.errors,[]);
+  await flows.b.close();
+
   const market = await setup();
   browser = market.b;
   await check(
@@ -481,6 +544,10 @@ try {
         .getByRole("tab", { name: "Market Chart", exact: true })
         .click();
       await market.p.locator(".market-chart canvas").first().waitFor();
+      const heightBefore = (await market.p.locator(".market-chart").boundingBox()).height;
+      await market.p.waitForTimeout(250);
+      const heightAfter = (await market.p.locator(".market-chart").boundingBox()).height;
+      assert.ok(Math.abs(heightAfter - heightBefore) < 2, "Chart ResizeObserver must not grow its own host");
       await market.p
         .locator(".market-chart canvas")
         .first()
@@ -493,6 +560,18 @@ try {
       assert.deepEqual(market.errors, []);
     },
   );
+  await check("Market RPC failure retries and invalid historical USD stays unavailable",async()=>{
+    const {p,s}=market;
+    s.failMarket=true;
+    await p.getByRole("button",{name:"Retry / refresh market data",exact:true}).click();
+    await p.getByText(/Official-pool history unavailable/).waitFor();
+    s.failMarket=false;
+    s.invalidUsd=true;
+    await p.getByRole("button",{name:"Retry / refresh market data",exact:true}).click();
+    await p.getByText("Historical USD reference unavailable; choose IMD.",{exact:true}).waitFor();
+    await p.getByLabel("Market price unit").selectOption("IMD");
+    await p.locator(".market-chart canvas").first().waitFor();
+  });
   await market.b.close();
   const b = await setup(chromium, {
     width: 390,
@@ -516,10 +595,20 @@ try {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       );
-      await b.p
-        .getByText(/Pending installation: deploy and review WalletQuoter/)
-        .waitFor();
+      await b.p.getByText(/Wallet quoter installation pending/).waitFor();
+      const swap = await b.p.locator(".swap-panel").boundingBox();
+      const chart = await b.p.locator(".chart-panel").boundingBox();
+      const action = await b.p.locator(".swap-panel .action").boundingBox();
+      assert.ok(swap.y < chart.y, "Swap must precede chart on mobile");
+      assert.ok(action.y + action.height <= 844, "Main action must fit first 390px screen");
+      assert.ok(swap.width >= 350, "No implicit mobile grid column");
       await screenshot(b.p, "mobile-closed", true);
+      await screenshot(b.p, "mobile-first-screen", false);
+      for (const width of [320,768,1440]) {
+        await b.p.setViewportSize({width,height:844});
+        assert.ok(await b.p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`Overflow at ${width}`);
+      }
+      await b.p.setViewportSize({width:390,height:844});
       await screen(b.p, "Founder setup");
       await b.p.getByRole("button", { name: /Activation disabled/ }).waitFor();
       assert.ok(
@@ -541,6 +630,39 @@ try {
   );
   assert.deepEqual(b.errors, []);
   await b.b.close();
+
+  const phone=await setup(chromium,{wallet:false,width:390,height:844,mobile:true,installed:false,state:{activated:false}});
+  browser=phone.b;
+  await check("Mobile wallet browser links, passkey option and keyboard dialog return",async()=>{
+    const {p}=phone;
+    await p.getByText("● Trading closed",{exact:true}).waitFor();
+    const trigger=p.getByRole("button",{name:"Connect wallet",exact:true}).first();
+    await trigger.click();
+    const dialog=p.locator("dialog[open]");
+    for(const name of ["MetaMask","Coinbase Wallet","Rabby","Phantom"]){
+      const link=dialog.getByRole("link",{name:`Open in ${name}`,exact:false});
+      assert.ok((await link.getAttribute("href")).startsWith("https://"));
+      assert.ok((await link.boundingBox()).height>=48);
+    }
+    await dialog.getByRole("button",{name:/Coinbase Smart Wallet/}).waitFor();
+    await p.keyboard.press("Escape");
+    assert.equal(await p.locator("dialog[open]").count(),0);
+    assert.equal(await trigger.evaluate(el=>el===document.activeElement),true);
+    await screenshot(p,"mobile-wallet-entry",false);
+  });
+  await check("Initial RPC outage keeps the product and main action on the first phone screen",async()=>{
+    const {p,s}=phone;
+    s.failRpc=true;
+    await p.reload();
+    await p.getByText(/Live state unavailable/).waitFor();
+    const action=await p.locator(".swap-panel .action").boundingBox();
+    assert.ok(action.y+action.height<=844, "No-data error must keep main action above fold");
+    await p.getByRole("button",{name:"View gate 10: Unread",exact:true}).click();
+    await p.getByText("Gate 10 · Unread · 100% unlocked",{exact:true}).waitFor();
+    await screenshot(p,"mobile-initial-rpc-error",false);
+  });
+  assert.deepEqual(phone.errors,[]);
+  await phone.b.close();
 } catch (e) {
   report.errors.push(e.stack);
   if (activePage) await screenshot(activePage, "failure", true).catch(() => {});

@@ -1,0 +1,23 @@
+
+> unlock-v2-terminal@1.0.0 test
+> node --import ./scripts/offline-register.mjs --experimental-strip-types --test tests/core.test.ts tests/repair.test.mjs
+
+✔ The offline staircase uses all ten deployed thresholds, never optimistic openings (3.048163ms)
+✔ Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass (0.364953ms)
+✔ USD history rejects invalid historical rates and never substitutes a current price (0.730555ms)
+✔ amount parsing rejects exponent, negative, commas, zero and excessive precision (0.824958ms)
+✔ slippage minimum floors safely and rejects unsafe tolerance (0.446149ms)
+✔ Universal Router payload, reversed currencies, extended=false (12.089681ms)
+✔ Universal Router payload, reversed currencies, extended=true (1.844719ms)
+✔ contract and wallet failures have actionable messages (0.615359ms)
+✔ Market OHLC uses real observed trades, preserves gaps and sorts chronology (0.789136ms)
+✔ Authentic mainnet native double-hash proof verifies exactly the paid amount (11.982297ms)
+✔ Whole-tree proof generation: uneven, sorted, unique and reproducible (9.14876ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 428.684403

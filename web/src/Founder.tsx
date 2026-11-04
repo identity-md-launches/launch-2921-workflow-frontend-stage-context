@@ -1,14 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useApp } from "./context";
 import { Action, AddressLink, Alert, display, Panel } from "./components";
 import { errorText, same } from "./core";
 import { verifyAuxiliary } from "./integration";
 
 export function Founder() {
-  const { r, data: d, wallet: w, request } = useApp();
+  const { r, data: d, wallet: w, request, stale, verified } = useApp();
   const [unsigned, setUnsigned] = useState(false),
     [error, setError] = useState("");
-  const reason = !d
+  const [installed, setInstalled] = useState<Record<string, string>>({});
+  useEffect(() => {
+    let canceled = false;
+    setInstalled({});
+    for (const kind of ["adapter", "quoter"] as const) {
+      if (!r.repair[kind] || !r.repair.installationReviewed || !d || stale) continue;
+      void verifyAuxiliary(r, kind).then(async address => {
+        const configured = kind === "adapter" ? same(address, d.swarm) : await r.client.readContract({
+          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook, functionName: "isRouter", args: [address],
+        });
+        if (!canceled) setInstalled(s => ({...s, [kind]: configured ? "Verified and configured" : "Verified; registration pending"}));
+      }).catch(e => { if (!canceled) setInstalled(s => ({...s, [kind]: errorText(e)})); });
+    }
+    return () => { canceled = true; };
+  }, [r, d?.block, stale]);
+  const reason = !d || stale || !verified
     ? "Waiting for verified chain state."
     : !same(w.address, d.owner)
       ? "Connect the contract owner’s wallet."
@@ -101,7 +116,7 @@ export function Founder() {
         </ol>
         <div className="checklist">
           {[
-            ["Ethereum / deployed bindings", !!d],
+            ["Ethereum / deployed bindings", !!d && verified && !stale],
             ["Official pool initialized", d?.poolInitialized],
             ["Hook bound to token", d?.isBound],
             ["Remaining 700m reserve backed", d?.funded],
@@ -109,21 +124,22 @@ export function Founder() {
             ["Universal Router registered", d?.routerSupported],
             [
               "Adapter installation reviewed",
-              !!r.repair.adapter && r.repair.installationReviewed,
+              installed.adapter === "Verified and configured",
             ],
             [
               "Wallet quoter installation reviewed",
-              !!r.repair.quoter && r.repair.installationReviewed,
+              installed.quoter === "Verified and configured",
             ],
             ["Trading activated / sealed", d?.activated],
           ].map(([label, ok]) => (
             <div key={String(label)}>
-              <span className={ok ? "mint" : "amber"}>{ok ? "✓" : "○"}</span>
+              <span className={ok && !stale ? "mint" : "amber"}>{ok && !stale ? "✓" : "○"}</span>
               <span>{label}</span>
-              <span>{ok ? "Yes" : "Pending"}</span>
+              <span>{stale ? "Unavailable" : ok ? "Yes" : "Pending"}</span>
             </div>
           ))}
         </div>
+        {(installed.adapter || installed.quoter) && <p className="helper">Adapter: {installed.adapter ?? "Pending"}. Quoter: {installed.quoter ?? "Pending"}.</p>}
         <AddressLink address={d?.owner} label="Immutable owner" />
         <label className="check">
           <input
@@ -205,8 +221,8 @@ export function Founder() {
       </div>
       <Panel title="5 · Activation · disabled">
         <p>
-          Pending canonical allocation inputs, auxiliary installation and
-          independent mainnet-fork equivalence evidence. activate() itself does
+          Pending canonical allocation inputs and auxiliary installation. Local
+          fork evidence must be repeated for the installed auxiliaries. activate() itself does
           not enforce router/distributor configuration; a successful activation
           simulation alone is insufficient.
         </p>

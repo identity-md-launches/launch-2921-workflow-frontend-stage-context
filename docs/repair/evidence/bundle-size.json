@@ -1,59 +1,59 @@
 {
-  "baseline": "5c7b53d40fcd1a323f033a5b1f7b3e496df63040",
+  "baseline": "614b25ac175bf9ed724a374a3f3c4656644b22d7",
   "method": "Full size of every changed/new ordinary file; deleted files count zero. Includes this report.",
-  "sourceBytes": 6823551,
+  "sourceBytes": 3487892,
   "limitBytes": 8388608,
-  "remainingBytes": 1565057,
+  "remainingBytes": 4900716,
   "passed": true,
-  "ordinaryFileCount": 99,
+  "ordinaryFileCount": 77,
   "largestFiles": [
     {
-      "path": "web/vendor/offline/esbuild-linux-x64.xz",
-      "bytes": 3415804
+      "path": "dist/assets/index-6YAYEHKW.js",
+      "bytes": 744653
     },
     {
-      "path": "web/site/assets/index-ZCILR43P.js",
-      "bytes": 737824
-    },
-    {
-      "path": "web/vendor/offline/viem.mjs",
-      "bytes": 341409
+      "path": "web/site/assets/index-6YAYEHKW.js",
+      "bytes": 744653
     },
     {
       "path": "docs/repair/evidence/mobile-rpc-error.png",
-      "bytes": 309613
+      "bytes": 314840
     },
     {
       "path": "docs/repair/evidence/desktop-home.png",
-      "bytes": 276958
+      "bytes": 215875
     },
     {
       "path": "docs/repair/evidence/mobile-closed.png",
-      "bytes": 251268
+      "bytes": 190233
     },
     {
-      "path": "web/vendor/offline/react-dom-client.mjs",
-      "bytes": 186016
-    },
-    {
-      "path": "web/src/vendor/lightweight-charts.mjs",
-      "bytes": 182216
-    },
-    {
-      "path": "web/src/vendor/lightweight-charts.d.mts",
-      "bytes": 146366
-    },
-    {
-      "path": "web/vendor/offline/coinbase.mjs",
-      "bytes": 129012
-    },
-    {
-      "path": "web/site/assets/chunk-MUSPBBTZ.js",
+      "path": "dist/assets/chunk-MUSPBBTZ.js",
       "bytes": 128514
     },
     {
+      "path": "artifacts/design-probe.json",
+      "bytes": 127583
+    },
+    {
+      "path": "artifacts/live-browser/live-market-1440.png",
+      "bytes": 121789
+    },
+    {
+      "path": "artifacts/live-browser/live-trade-1440.png",
+      "bytes": 110416
+    },
+    {
       "path": "docs/repair/evidence/synthetic-market-chart.png",
-      "bytes": 97576
+      "bytes": 96924
+    },
+    {
+      "path": "docs/repair/evidence/mobile-initial-rpc-error.png",
+      "bytes": 54095
+    },
+    {
+      "path": "docs/repair/evidence/mobile-wallet-entry.png",
+      "bytes": 50443
     }
   ]
 }
