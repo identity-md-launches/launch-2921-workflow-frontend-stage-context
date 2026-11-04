@@ -1,0 +1,10 @@
+{
+  "status": "PENDING INSTALLATION — auxiliary source only; no mainnet deployment or setup was performed",
+  "nativeDistributor": "0x00aecdb1da9fafac4b5717d54c8b9adc860e189a",
+  "nativeRound": "0",
+  "nativeRoot": "0x0442e07558c3a49da44ffafc43fde948057ee5f5d02c63bbde025369ab4c96fb",
+  "nativeFunded": "100000000000000000000000000",
+  "adapter": null,
+  "quoter": null,
+  "installationReviewed": false
+}

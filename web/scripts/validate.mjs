@@ -5,7 +5,7 @@ import { root, abiHash, inventory } from "./export.mjs";
 const read = async (p) => JSON.parse(await readFile(resolve(root, p), "utf8"));
 const [m, d, n] = await Promise.all(
   [
-    "dist/imd-deployment.json",
+    "web/site/imd-deployment.json",
     "docs/frontend/deployment-handoff.json",
     "docs/frontend/network-handoff.json",
   ].map(read),
@@ -44,13 +44,13 @@ for (const c of d.contracts) {
       !actual.abiPath.startsWith("/") &&
       !actual.abiPath.includes(":"),
   );
-  assert.equal(abiHash(await read("dist/" + actual.abiPath)), c.abiHash);
+  assert.equal(abiHash(await read("web/site/" + actual.abiPath)), c.abiHash);
   assert.equal(
-    await readFile(resolve(root, "dist", actual.abiPath), "utf8"),
+    await readFile(resolve(root, "web/site", actual.abiPath), "utf8"),
     await readFile(resolve(root, "web/public", actual.abiPath), "utf8"),
   );
 }
-assert.deepEqual(m.assets, await inventory(resolve(root, "dist")));
+assert.deepEqual(m.assets, await inventory(resolve(root, "web/site")));
 assert.ok(m.assets.length <= 128);
 assert.ok(m.assets.some((a) => a.path === "index.html"));
 let bytes = 0;
@@ -59,7 +59,7 @@ for (const a of m.assets) {
   assert.ok(
     !a.path.includes("..") && !a.path.startsWith("/") && !a.path.includes(":"),
   );
-  const s = await stat(resolve(root, "dist", a.path));
+  const s = await stat(resolve(root, "web/site", a.path));
   assert.ok(s.size <= 8388608);
   bytes += s.size;
 }

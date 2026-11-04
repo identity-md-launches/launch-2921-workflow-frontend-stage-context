@@ -18,6 +18,11 @@ export type Data = {
   gates: number;
   pendingGates: number;
   percents: readonly bigint[];
+  gatePrice: readonly [bigint, boolean];
+  lastGateFdv: bigint;
+  lastFdvBlock: bigint;
+  lastObservation: bigint;
+  trackedAt: bigint;
   fdv: readonly [bigint, boolean];
   imdUsd: readonly [bigint, boolean];
   tokenPrice: readonly [bigint, boolean];
@@ -79,6 +84,7 @@ export function useData(r?: Runtime, address?: Address) {
     const who = address ?? "";
     try {
       const derived = await verifyChain(r);
+      const snapshotBlock = await r.client.getBlockNumber();
       const hook = r.addresses.UnlockV2Hook,
         token = r.addresses.UnlockV2Token;
       const h = (name: string, args: readonly unknown[] = []) =>
@@ -86,6 +92,7 @@ export function useData(r?: Runtime, address?: Address) {
           address: hook,
           abi: r.abis.UnlockV2Hook,
           functionName: name,
+          blockNumber: snapshotBlock,
           args,
         }) as Promise<any>;
       const v = (name: string) =>
@@ -93,12 +100,14 @@ export function useData(r?: Runtime, address?: Address) {
           address: derived.vault,
           abi: r.abis.MigrationVault,
           functionName: name,
+          blockNumber: snapshotBlock,
         }) as Promise<any>;
       const p = (name: string, args: readonly unknown[] = []) =>
         r.client.readContract({
           address: derived.pot,
           abi: r.abis.RewardPot,
           functionName: name,
+          blockNumber: snapshotBlock,
           args,
         }) as Promise<any>;
       const t = (
@@ -111,6 +120,7 @@ export function useData(r?: Runtime, address?: Address) {
           address: target,
           abi,
           functionName: name,
+          blockNumber: snapshotBlock,
           args,
         }) as Promise<any>;
       const names = [
@@ -124,6 +134,11 @@ export function useData(r?: Runtime, address?: Address) {
         "pendingGatesOpen",
         "unlockedPercents",
         "fdvUsd",
+        "gateImdUsdPrice",
+        "lastFdvUsd",
+        "lastFdvBlock",
+        "lastValidObservation",
+        "trackedAt",
         "imdUsdPrice",
         "tokenPriceInImd",
         "cumulativeVolumeUsd",
@@ -179,7 +194,7 @@ export function useData(r?: Runtime, address?: Address) {
         t(derived.v1, "decimals"),
         h("poolKey"),
         Promise.all(Array.from({ length: 10 }, (_, i) => h("gate", [i + 1]))),
-        r.client.getBlockNumber(),
+        Promise.resolve(snapshotBlock),
       ]);
       let poolKey: PoolKey | undefined;
       if (x.poolInitialized) {
@@ -223,6 +238,11 @@ export function useData(r?: Runtime, address?: Address) {
         pendingGates: x.pendingGatesOpen,
         percents: x.unlockedPercents,
         fdv: x.fdvUsd,
+        gatePrice: x.gateImdUsdPrice,
+        lastGateFdv: x.lastFdvUsd,
+        lastFdvBlock: x.lastFdvBlock,
+        lastObservation: x.lastValidObservation,
+        trackedAt: x.trackedAt,
         imdUsd: x.imdUsdPrice,
         tokenPrice: x.tokenPriceInImd,
         volume: x.cumulativeVolumeUsd,

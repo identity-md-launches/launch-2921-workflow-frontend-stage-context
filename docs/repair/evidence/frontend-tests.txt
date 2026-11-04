@@ -1,0 +1,20 @@
+
+> unlock-v2-terminal@1.0.0 test
+> node --experimental-strip-types --test tests/core.test.ts tests/repair.test.mjs
+
+✔ amount parsing rejects exponent, negative, commas, zero and excessive precision (2.332992ms)
+✔ slippage minimum floors safely and rejects unsafe tolerance (0.4488ms)
+✔ Universal Router payload, reversed currencies, extended=false (5.98547ms)
+✔ Universal Router payload, reversed currencies, extended=true (1.32943ms)
+✔ contract and wallet failures have actionable messages (0.50184ms)
+✔ Market OHLC uses real observed trades, preserves gaps and sorts chronology (0.7038ms)
+✔ Authentic mainnet native double-hash proof verifies exactly the paid amount (6.023761ms)
+✔ Whole-tree proof generation: uneven, sorted, unique and reproducible (3.126751ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 287.23943

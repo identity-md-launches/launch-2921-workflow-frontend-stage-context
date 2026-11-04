@@ -14,6 +14,8 @@ export type Transaction = {
   irreversible?: boolean;
   prepareOnly?: boolean;
   account?: Address;
+  validUntil?: number;
+  validate?: () => Promise<void>;
 };
 export type AppContext = {
   r: Runtime;

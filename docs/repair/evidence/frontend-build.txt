@@ -1,0 +1,16 @@
+
+> unlock-v2-terminal@1.0.0 build
+> tsc --noEmit && vite build && node scripts/export.mjs
+
+vite v7.1.12 building for production...
+transforming...
+✓ 501 modules transformed.
+rendering chunks...
+computing gzip size...
+site/index.html                   1.34 kB │ gzip:   0.65 kB
+site/assets/index-9KTgFSo2.css   15.30 kB │ gzip:   4.02 kB
+site/assets/ccip-D1mZiOm1.js      2.61 kB │ gzip:   1.23 kB
+site/assets/index-CUovOscz.js   102.09 kB │ gzip:  33.01 kB
+site/assets/index-wkMD9R0Q.js   694.31 kB │ gzip: 219.39 kB
+✓ built in 2.49s
+Verified ABIs; wrote deployment manifest with 17 SHA-256 assets.

@@ -76,3 +76,37 @@ test("contract and wallet failures have actionable messages", () => {
   assert.match(errorText(new Error("StaleGate")), /gate changed/);
   assert.match(errorText(new Error("SellExceedsAllowance")), /sell exceeds/);
 });
+
+import { candles } from "../src/market.ts";
+test("Market OHLC uses real observed trades, preserves gaps and sorts chronology", () => {
+  assert.deepEqual(
+    candles(
+      [
+        { time: 125, imdPerToken: 3, imdVolume: 7, usdPerImd: 2 },
+        { time: 61, imdPerToken: 2, imdVolume: 5, usdPerImd: 4 },
+        { time: 65, imdPerToken: 1, imdVolume: 2, usdPerImd: 4 },
+        { time: 310, imdPerToken: 4, imdVolume: 9, usdPerImd: 2 },
+      ],
+      60,
+      "IMD",
+    ),
+    [
+      { time: 60, open: 2, high: 2, low: 1, close: 1, volume: 7 },
+      { time: 120, open: 3, high: 3, low: 3, close: 3, volume: 7 },
+      { time: 300, open: 4, high: 4, low: 4, close: 4, volume: 9 },
+    ],
+  );
+  assert.deepEqual(
+    candles(
+      [{ time: 61, imdPerToken: 2, imdVolume: 5, usdPerImd: 4 }],
+      60,
+      "USD",
+    ),
+    [{ time: 60, open: 8, high: 8, low: 8, close: 8, volume: 20 }],
+  );
+  assert.throws(
+    () => candles([{ time: 1, imdPerToken: 2, imdVolume: 5 }], 60, "USD"),
+    /Historical USD reference unavailable/,
+  );
+  assert.deepEqual(candles([], 60, "USD"), []);
+});

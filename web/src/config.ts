@@ -12,6 +12,7 @@ import {
   type EIP1193Provider,
   type Transport,
 } from "viem";
+import type { RepairConfig } from "./integration";
 import { erc20Abi, same, type PoolKey } from "./core";
 export type Deployment = {
   version: 1;
@@ -119,7 +120,8 @@ export async function loadConfig() {
     transport: readTransport(d),
     batch: { multicall: false },
   });
-  return { d, abis, addresses, chain, client };
+  const repair = (await json("repair-config.json")) as RepairConfig;
+  return { d, abis, addresses, chain, client, repair };
 }
 export type Runtime = Awaited<ReturnType<typeof loadConfig>>;
 export function withWalletReadFallback(

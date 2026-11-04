@@ -49,7 +49,7 @@ export async function generate() {
   for (const c of d.contracts) {
     const abiPath = `abi/${c.name}.json`;
     const a = JSON.parse(
-      await readFile(resolve(root, "dist", abiPath), "utf8"),
+      await readFile(resolve(root, "web/site", abiPath), "utf8"),
     );
     const actual = abiHash(a);
     if (actual !== c.abiHash) throw Error(`${c.name} ABI mismatch: ${actual}`);
@@ -60,7 +60,7 @@ export async function generate() {
       abiPath,
     });
   }
-  const assets = await inventory(resolve(root, "dist"));
+  const assets = await inventory(resolve(root, "web/site"));
   if (assets.length > 128) throw Error("Too many assets");
   const m = {
     version: 1,
@@ -75,7 +75,7 @@ export async function generate() {
     assets,
   };
   await writeFile(
-    resolve(root, "dist/imd-deployment.json"),
+    resolve(root, "web/site/imd-deployment.json"),
     JSON.stringify(m, null, 2) + "\n",
   );
   console.log(

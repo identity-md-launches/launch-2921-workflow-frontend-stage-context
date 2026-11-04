@@ -1,0 +1,95 @@
+{
+  "mode": "LIVE READS ONLY — no signer, broadcasts or state overrides",
+  "checkedAt": "2026-11-04T07:26:47.936Z",
+  "chainId": 1,
+  "block": "26339946",
+  "state": {
+    "activated": false,
+    "owner": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+    "gatesOpen": 0,
+    "swarmDistributor": "0x0000000000000000000000000000000000000000",
+    "migrationVault": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+    "rewardPot": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+    "lastFdvUsd": "0",
+    "lastFdvBlock": "0",
+    "lastValidObservation": "0",
+    "gateImdUsdPrice": [
+      "3151762063579883847",
+      true
+    ],
+    "fdvUsd": [
+      "7879405158946000000000",
+      true
+    ],
+    "cumulativeVolumeUsd": "0",
+    "poolInitialized": true,
+    "isBound": true,
+    "universalRouterRegistered": false,
+    "stockQuoterRegistered": false
+  },
+  "migration": {
+    "remainingBacking": "0",
+    "remainingCapacity": "700000000000000000000000000",
+    "isFullyFunded": false
+  },
+  "nativeState": {
+    "address": "0x00aecdb1da9fafac4b5717d54c8b9adc860e189a",
+    "token": "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+    "roundCount": "1",
+    "round0": [
+      "0x0442e07558c3a49da44ffafc43fde948057ee5f5d02c63bbde025369ab4c96fb",
+      "100000000000000000000000000",
+      "77145612343297974927676",
+      "1793716439"
+    ],
+    "authenticFixtureClaimed": true,
+    "fixtureProofValid": true
+  },
+  "compatibility": {
+    "nativeLegacyRoot": {
+      "reverted": true
+    },
+    "nativeLegacyClaimed": {
+      "reverted": true
+    },
+    "stockQuoterMsgSender": {
+      "reverted": true
+    },
+    "routerMsgSender": {
+      "returned": "0x0000000000000000000000000000000000000000"
+    }
+  },
+  "contracts": [
+    {
+      "name": "UnlockV2Token",
+      "address": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+      "codeBytes": 2546,
+      "runtimeCodeHash": "0x399abcd5bd485a0a5e88b287ab5d372bb6d120bf73d1f748f9b5dfacb0bbdeb3"
+    },
+    {
+      "name": "UnlockV2Hook",
+      "address": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "codeBytes": 20085,
+      "runtimeCodeHash": "0xbb91bad1216738c6e8f87b7c8df4f1e9a38d0f8a2587ed103602a14f9dcd63da"
+    },
+    {
+      "name": "nativeDistributor",
+      "address": "0x00aecdb1da9fafac4b5717d54c8b9adc860e189a",
+      "codeBytes": 4145,
+      "runtimeCodeHash": "0xe337ec44a9ab7dc20fd0b62021eec6849591b822564fa05ce4414e4e3c43f6ab"
+    },
+    {
+      "name": "UniversalRouter",
+      "address": "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+      "codeBytes": 19499,
+      "runtimeCodeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f"
+    },
+    {
+      "name": "stockV4Quoter",
+      "address": "0x52f0e24d1c21c8a0cb1e5a5dd6198556bd9e1203",
+      "codeBytes": 5820,
+      "runtimeCodeHash": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441"
+    }
+  ],
+  "auxiliaries": "Pending installation; no auxiliary address supplied"
+}

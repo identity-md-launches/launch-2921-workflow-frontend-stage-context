@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { adapterAbi, verifyAuxiliary } from "./integration";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   formatUnits,
   isAddress,
@@ -38,8 +39,9 @@ export function Gates() {
           <p>
             FDV uses current supply, including reserves and excluding burned
             tokens. The first official swap in a later block observes the
-            settled price. The IMD reference tracker limits upward movement to
-            5% per hour, capped at 20% per update; drops count immediately.
+            settled price. The IMD-per-ETH tracker moves at most 5% per hour with a four-hour
+            elapsed-time cap. Gate IMD/USD uses the lower of spot and the
+            tracker-derived USD rate; IMD price declines count immediately.
           </p>
           <p>
             Volume is cumulative gross official USD volume, not organic demand.
@@ -294,37 +296,35 @@ export function Migrate() {
 }
 export function Rights() {
   const { r, data: d, wallet: w, request, view } = useApp();
-  const [index, setIndex] = useState(""),
-    [claimAmount, setClaimAmount] = useState(""),
+  const [claimAmount, setClaimAmount] = useState(""),
     [proof, setProof] = useState(""),
     [error, setError] = useState("");
   const credit = async () => {
     if (!d || !w.address) return;
     setError("");
     try {
-      if (!/^\d+$/.test(index))
-        throw Error("Enter a whole-number claim index.");
       const n = amount(claimAmount);
       const p = proof.trim() ? proof.trim().split(/[\s,]+/) : [];
       if (p.some((x) => !/^0x[\da-f]{64}$/i.test(x)))
         throw Error(
           "Each proof element must be a 32-byte hex value. An empty proof is allowed for a single-leaf tree.",
         );
+      const target = await verifyAuxiliary(r, "adapter", d.swarm);
       const credited = await r.client.readContract({
-        address: r.addresses.UnlockV2Hook,
-        abi: r.abis.UnlockV2Hook,
-        functionName: "swarmIndexCredited",
-        args: [BigInt(index)],
+        address: target,
+        abi: adapterAbi,
+        functionName: "synced",
+        args: [w.address],
       });
       if (credited)
-        throw Error("This swarm claim index has already been credited.");
+        throw Error("This native round/account has already been credited.");
       request({
         title: "Verify swarm claim credit",
-        description: `Verify existing native swarm claim #${index} for ${formatUnits(n, 18)} UNLK2 to ${w.address}. This records rights once; it does not claim tokens from a distributor. Earlier uncredited burns are netted first.`,
-        address: r.addresses.UnlockV2Hook,
-        abi: r.abis.UnlockV2Hook,
-        functionName: "creditSwarmClaim",
-        args: [BigInt(index), w.address, n, p as Hex[]],
+        description: `Verify existing native round-0 swarm claim for ${formatUnits(n, 18)} UNLK2 to ${w.address}. This records rights once; it does not claim tokens from a distributor. Earlier uncredited burns are netted first.`,
+        address: target,
+        abi: adapterAbi,
+        functionName: "syncClaim",
+        args: [w.address, n, p as Hex[]],
       });
     } catch (e) {
       setError(errorText(e));
@@ -421,23 +421,19 @@ export function Rights() {
       </div>
       <Panel title="Verify native swarm evidence">
         <p>
-          Paste the index, original allocation and Merkle proof from your actual
-          launch claim. The distributor must already mark the claim as
-          completed. A claim index is credited only once.
+          Paste the original allocation and native double-hashed Merkle proof
+          from your actual launch claim. The distributor must already mark the
+          claim as completed. The adapter derives a domain-separated index; each
+          account/round is credited only once. Native tokens must be claimed
+          through the original distributor before syncing rights.
         </p>
         {d && same(d.swarm, ZERO) && (
           <Alert>
-            The owner has not configured a native swarm distributor. Evidence
-            credit is unavailable.
+            NativeSwarmAdapter installation is pending. Native claim evidence
+            cannot be credited through the hook directly.
           </Alert>
         )}
         <div className="form-grid">
-          <Field
-            label="Claim index"
-            value={index}
-            onChange={setIndex}
-            inputMode="numeric"
-          />
           <Field
             label="Original claim amount (UNLK2)"
             value={claimAmount}
@@ -461,8 +457,8 @@ export function Rights() {
           reason={
             !d
               ? "Waiting for distributor state."
-              : same(d.swarm, ZERO)
-                ? "A native swarm distributor must be configured."
+              : !r.repair.adapter || same(d.swarm, ZERO)
+                ? "NativeSwarmAdapter installation is pending."
                 : undefined
           }
         >
@@ -470,7 +466,7 @@ export function Rights() {
         </Action>
         <AddressLink
           address={d && !same(d.swarm, ZERO) ? d.swarm : undefined}
-          label="Native swarm distributor"
+          label="Configured native compatibility adapter"
         />
       </Panel>
       <Transfer />
@@ -540,10 +536,10 @@ function Transfer() {
     </details>
   );
 }
-export function Burn() {
+export function Burn({ home = false }: { home?: boolean } = {}) {
   const { r, data: d, wallet: w, request } = useApp();
   const [input, setInput] = useState(""),
-    [contribute, setContribute] = useState(true),
+    [contribute, setContribute] = useState(!(home && d?.gates === 10)),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
     [preview, setPreview] = useState<{
@@ -557,7 +553,13 @@ export function Burn() {
     setPreview(undefined);
     setError("");
   }, [input, contribute, w.address, w.chainId]);
+  const previewVersion = useRef(0);
+  useEffect(() => {
+    ++previewVersion.current;
+  }, [input, contribute, w.address, w.chainId]);
   const readPreview = async () => {
+    const version = ++previewVersion.current;
+    const selectedGate = d?.contribution[0];
     if (!w.address || !d) return;
     setError("");
     setPending(true);
@@ -578,7 +580,12 @@ export function Burn() {
           functionName: "contributionQuote",
         }),
       ]);
+      if (version !== previewVersion.current) return;
       const [gate, max] = q as readonly [number, bigint];
+      if (contribute && gate !== selectedGate)
+        throw Error(
+          "The collecting gate changed. Refresh state and explicitly preview the new gate.",
+        );
       if (contribute && (!gate || n > max))
         throw Error(
           gate
@@ -613,24 +620,51 @@ export function Burn() {
       functionName: contribute ? "contribute" : "burn",
       args: contribute ? [preview.gate, preview.n] : [preview.n],
       irreversible: true,
+      validUntil: preview.at + 60000,
+      validate: async () => {
+        if (contribute) {
+          const q = (await r.client.readContract({
+            address: r.addresses.UnlockV2Hook,
+            abi: r.abis.UnlockV2Hook,
+            functionName: "contributionQuote",
+          })) as readonly [number, bigint];
+          if (q[0] !== preview.gate || q[1] < preview.n)
+            throw Error(
+              "Gate changed or capacity reduced. Review a new contribution preview.",
+            );
+        }
+      },
     });
   };
   const total = d?.points ?? 0n;
   const mine = d?.myPoints ?? 0n;
   return (
     <div className="two-col">
-      <Panel title="Burn & Points">
-        <div className="segmented">
-          <button aria-pressed={contribute} onClick={() => setContribute(true)}>
-            Gate contribution
-          </button>
-          <button
-            aria-pressed={!contribute}
-            onClick={() => setContribute(false)}
-          >
-            Voluntary burn
-          </button>
-        </div>
+      <Panel
+        title={
+          home
+            ? d?.gates === 10
+              ? "Golden Vault · voluntary burning & continuing fee rewards"
+              : "Contribute UNLK2 to the active gate"
+            : "Burn & Points"
+        }
+      >
+        {!home && (
+          <div className="segmented">
+            <button
+              aria-pressed={contribute}
+              onClick={() => setContribute(true)}
+            >
+              Gate contribution
+            </button>
+            <button
+              aria-pressed={!contribute}
+              onClick={() => setContribute(false)}
+            >
+              Voluntary burn
+            </button>
+          </div>
+        )}
         <Alert>
           Burns are irreversible. UNLK2 is destroyed, not deposited. Points
           cannot be transferred or redeemed for the burned tokens.
@@ -653,6 +687,20 @@ export function Burn() {
           inputMode="decimal"
           placeholder="0.00"
         />
+        <button
+          className="small"
+          onClick={() => {
+            const max =
+              contribute && d
+                ? (d.balance ?? 0n) < d.contribution[1]
+                  ? (d.balance ?? 0n)
+                  : d.contribution[1]
+                : (d?.balance ?? 0n);
+            setInput(formatUnits(max, 18));
+          }}
+        >
+          Max · balance{contribute ? " / gate capacity" : ""}
+        </button>
         {contribute && (
           <p>
             Collecting gate: {d?.contribution[0] || "None"}. Maximum
@@ -688,7 +736,11 @@ export function Burn() {
                 : "0"}
               %, before later burns by others.
             </p>
-            <Action onClick={burn}>Review irreversible burn</Action>
+            <Action onClick={burn}>
+              {contribute
+                ? `Contribute UNLK2 · gate ${preview.gate}`
+                : "Burn UNLK2 for points"}
+            </Action>
             <button
               className="full"
               onClick={() => void readPreview()}
@@ -1053,9 +1105,11 @@ export function Rules() {
           ["IMD", r.d.network.pairToken.address],
           ["Owner", d?.owner],
           [
-            "Native swarm distributor",
+            "Configured swarm compatibility adapter",
             d && !same(d.swarm, ZERO) ? d.swarm : undefined,
           ],
+          ["Authentic native distributor", r.repair.nativeDistributor],
+          ["Wallet quoter · pending installation", r.repair.quoter?.address],
           ...Object.entries(r.d.network.uniswapV4).filter(
             ([, v]) => typeof v === "string",
           ),

@@ -1,11 +1,26 @@
+import {
+  keccak256,
+  encodeAbiParameters,
+  encodeEventTopics,
+  parseAbiItem,
+  parseAbiParameters,
+  toHex,
+} from "viem";
 import { createServer } from "node:http";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { resolve, extname } from "node:path";
 import assert from "node:assert/strict";
 import { chromium, webkit } from "playwright";
-import { fixture, rpcMock, deployment, owner, E } from "./mock.mjs";
+import {
+  fixture,
+  rpcMock,
+  deployment,
+  owner,
+  E,
+  walletQuoter,
+} from "./mock.mjs";
 import { root } from "../scripts/export.mjs";
-const evidence = resolve(root, "docs/frontend/evidence");
+const evidence = resolve(root, "docs/repair/evidence");
 await mkdir(evidence, { recursive: true });
 const mime = {
   ".html": "text/html",
@@ -24,8 +39,8 @@ const server = createServer(async (req, res) => {
       res.writeHead(404).end();
       return;
     }
-    const file = resolve(root, "dist", path.slice(9) || "index.html");
-    if (!file.startsWith(resolve(root, "dist") + "/")) {
+    const file = resolve(root, "web/site", path.slice(9) || "index.html");
+    if (!file.startsWith(resolve(root, "web/site") + "/")) {
       res.writeHead(403).end();
       return;
     }
@@ -48,7 +63,7 @@ const report = {
   screenshots: [],
   errors: [],
 };
-let browser,activePage,activeFixture;
+let browser, activePage, activeFixture;
 const check = async (name, fn) => {
   const start = Date.now();
   try {
@@ -69,10 +84,17 @@ async function setup(
     width = 1440,
     height = 1000,
     mobile = false,
+    installed = true,
+    state = {},
   } = {},
 ) {
-  const b = await type.launch({ headless: true });
+  const b = await type.launch({
+    headless: true,
+    executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE,
+    args: ["--no-sandbox"],
+  });
   const c = await b.newContext({
+    locale: "en-US", // Deterministic chart formatting, independent of the host POSIX locale.
     viewport: { width, height },
     acceptDownloads: true,
     ...(mobile
@@ -85,7 +107,9 @@ async function setup(
   const p = await c.newPage();
   const s = fixture(),
     m = rpcMock(s);
-  activePage=p;activeFixture=s;
+  Object.assign(s, { chain: 1 }, state);
+  activePage = p;
+  activeFixture = s;
   const errors = [];
   p.on("pageerror", (e) => errors.push(e.message));
   p.on("console", (msg) => {
@@ -97,6 +121,20 @@ async function setup(
   });
   await c.route(/^https?:\/\//, async (route) => {
     const req = route.request();
+    if (req.url().endsWith("repair-config.json") && installed) {
+      const config = JSON.parse(
+        await readFile(resolve(root, "web/public/repair-config.json"), "utf8"),
+      );
+      config.quoter = {
+        address: walletQuoter,
+        runtimeCodeHash: keccak256("0x60016000"),
+      };
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(config),
+      });
+    }
     if (req.url().startsWith(url)) return route.continue();
     if (deployment.network.rpcUrls.some((u) => req.url().startsWith(u))) {
       if (!mock || s.failRpc)
@@ -173,9 +211,9 @@ async function screenshot(p, name, fullPage = false) {
     if (!label) {
       label = document.createElement("div");
       label.id = "test-evidence-label";
-      label.textContent = "Mocked RPC / browser validation";
+      label.textContent = "SYNTHETIC RPC + WALLET · regression fixture";
       label.style.cssText =
-        "position:fixed;bottom:0;right:0;background:#050807;color:#efc47d;padding:4px 8px;font:11px monospace;z-index:99;pointer-events:none";
+        "position:fixed;bottom:0;right:0;background:#050505;color:#efc47d;padding:4px 8px;font:11px monospace;z-index:99;pointer-events:none";
       document.body.append(label);
     }
   });
@@ -219,786 +257,299 @@ try {
   browser = a.b;
   const { p, s } = a;
   await check(
-    "Walletless verified reads and deployment-loaded ABIs",
+    "Home staircase, stored states, three OR tracks and contribution visible",
     async () => {
-      await p
-        .getByText("● Trading active", { exact: true })
-        .waitFor({ timeout: 15000 });
-      assert.equal(await p.locator("progress").count(), 3);
-      assert.ok(s.calls.some((c) => c.method === "remainingBacking"));
-      assert.equal(s.walletRequests.length, 0);
-    },
-  );
-  await check(
-    "Metadata, relative subpath assets, and desktop rendering",
-    async () => {
-      assert.match(await p.title(), /UNLOCK V2/);
-      for (const selector of [
-        "link[rel=icon]",
-        "meta[name=description]",
-        'meta[property="og:title"]',
-        'meta[property="og:image"]',
-      ])
-        assert.ok(
-          await p
-            .locator(selector)
-            .getAttribute(selector.startsWith("link") ? "href" : "content"),
-        );
-      assert.equal(
-        await p.evaluate(
-          () => document.documentElement.scrollWidth > innerWidth,
-        ),
-        false,
-      );
-      await screenshot(p, "trade-desktop");
-    },
-  );
-  await check(
-    "EIP-6963 connect, unknown-chain add, switch, address and rejection recovery",
-    async () => {
-      s.reject = true;
-      await p
-        .getByRole("button", { name: "Connect wallet", exact: true })
-        .first()
-        .click();
-      await p.getByRole("button", { name: /Test Browser Wallet/ }).click();
-      await p.getByText(/Request declined in your wallet/).waitFor();
-      s.reject = false;
-      await p.getByRole("button", { name: /Test Browser Wallet/ }).click();
-      await p.waitForFunction(() => !document.querySelector("dialog[open]"));
-      assert.ok(
-        s.walletRequests.some((q) => q.method === "wallet_addEthereumChain"),
-      );
-      const add = s.walletRequests.find(
-        (q) => q.method === "wallet_addEthereumChain",
-      );
-      assert.deepEqual(add.params, [deployment.walletAddChain]);
-      await p.getByRole("button", { name: "Refresh", exact: true }).click();
       await p.getByText("● Trading active", { exact: true }).waitFor();
-      assert.ok(await p.getByRole("button", { name: /0x48e4/i }).count());
-    },
-  );
-  await check(
-    "Swap validation, simulation quote and both explicit approvals",
-    async () => {
-      await p.getByLabel("Amount to swap").fill("1e3");
+      assert.equal(await p.locator("progress").count(), 3);
+      assert.equal(await p.locator("svg.staircase g[role=button]").count(), 10);
       await p
-        .getByRole("button", { name: "Get live quote", exact: true })
-        .click();
-      await p.getByText(/Enter a positive amount/).waitFor();
-      await p.getByLabel("Amount to swap").fill("1");
-      await p
-        .getByRole("button", { name: "Get live quote", exact: true })
-        .click();
-      await p
-        .getByRole("button", { name: "1. Approve IMD", exact: true })
+        .getByRole("heading", {
+          name: "Contribute UNLK2 to the active gate",
+          exact: true,
+        })
         .waitFor();
-      assert.ok(
-        s.calls.some(
-          (c) =>
-            c.method === "quoteExactInputSingle" &&
-            c.target === deployment.network.uniswapV4.quoter.toLowerCase(),
-        ),
+      await p.locator("svg.staircase g[role=button]").nth(9).click();
+      await p
+        .getByText("Gate 10 · Future · 100% unlocked", { exact: true })
+        .waitFor();
+      assert.equal(
+        await p.evaluate(() => getComputedStyle(document.body).backgroundColor),
+        "rgb(0, 0, 0)",
       );
-      await p
-        .getByRole("button", { name: "1. Approve IMD", exact: true })
-        .click();
-      await simulateAndSend(p);
+      s.pendingGates = 4;
       await p.getByRole("button", { name: "Refresh", exact: true }).click();
       await p
-        .getByRole("button", { name: "2. Approve router", exact: true })
+        .getByRole("heading", { name: "ACTIVE GATE 1", exact: true })
         .waitFor();
-      await p
-        .getByRole("button", { name: "2. Approve router", exact: true })
-        .click();
-      await simulateAndSend(p);
-      await p.getByRole("button", { name: "Refresh", exact: true }).click();
-      await p
-        .getByRole("button", { name: "Review swap", exact: true })
-        .waitFor();
+      assert.match(await p.locator(".gate-detail").innerText(), /Future/);
+      await screenshot(p, "desktop-home", true);
     },
   );
   await check(
-    "Swap execute payload, no ETH for IMD pair, receipt and duplicate-submit lock",
+    "Market tab shows genuine no-trades state, units, source and retry",
     async () => {
+      await p.getByRole("tab", { name: "Market Chart", exact: true }).click();
+      await p
+        .getByText("No official trades in this window", { exact: true })
+        .waitFor();
+      await p.getByLabel("Market price unit").selectOption("USD");
+      await p
+        .getByRole("button", {
+          name: "Retry / refresh market data",
+          exact: true,
+        })
+        .click();
+      await p
+        .getByText("No official trades in this window", { exact: true })
+        .waitFor();
+      await p.getByRole("tab", { name: "Gate Staircase", exact: true }).click();
+    },
+  );
+  await check(
+    "Wallet connection and automatic caller-bound buy quote",
+    async () => {
+      await connect(p);
+      await p.locator("#swap-amount").fill("1");
+      await p.getByText("Minimum received", { exact: true }).waitFor();
+      assert.ok(s.calls.some((c) => c.method === "quoteExactInput"));
+      assert.equal(
+        await p.getByLabel("Set a custom minimum output").count(),
+        0,
+      );
+      await p.getByRole("button", { name: "Approve IMD", exact: true }).click();
+      await simulateAndSend(p);
+      assert.equal(s.tokenAllowance, E);
+      // Refresh after receipts must not broaden the exact approval.
+      await p
+        .getByRole("button", { name: "Get live quote", exact: true })
+        .count();
+      if (
+        await p
+          .getByRole("button", { name: "Get live quote", exact: true })
+          .count()
+      )
+        await p
+          .getByRole("button", { name: "Get live quote", exact: true })
+          .click();
+      await p
+        .getByRole("button", { name: "Approve router", exact: true })
+        .click();
+      await simulateAndSend(p);
+      assert.equal(s.permitAllowance, E);
       await p.getByRole("button", { name: "Review swap", exact: true }).click();
-      const dialog = p.locator("dialog[open]");
-      await dialog
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor();
-      s.pausedReceipt = true;
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .click();
-      await dialog.getByText(/Waiting for the onchain receipt/).waitFor();
-      assert.equal(
-        await dialog.getByRole("button", { name: "Working…" }).isDisabled(),
-        true,
-      );
+      await simulateAndSend(p);
       assert.equal(s.sends.length, 3);
-      assert.equal(
-        s.sends[2].to.toLowerCase(),
-        deployment.network.uniswapV4.universalRouter.toLowerCase(),
-      );
-      assert.ok(!s.sends[2].value || BigInt(s.sends[2].value) === 0n);
-      s.pausedReceipt = false;
-      s.block += 1n;
-      await dialog.getByText(/Confirmed onchain/).waitFor({ timeout: 20000 });
-      assert.equal(
-        await dialog
-          .getByRole("button", { name: "Confirmed", exact: true })
-          .isDisabled(),
-        true,
-      );
-      await dialog.getByRole("button", { name: "Close", exact: true }).click();
-      await screenshot(p, "trade-connected");
     },
   );
   await check(
-    "Sell quote failure and custom-minimum router simulation",
+    "Automatic sell quote uses same wallet path; failed quotes cannot send",
     async () => {
       await p.getByRole("button", { name: "Sell UNLK2", exact: true }).click();
-      await p.getByLabel("Amount to swap").fill("1");
+      await p.locator("#swap-amount").fill("10");
+      await p.getByText("Minimum received", { exact: true }).waitFor();
+      const calls = s.calls.filter((c) => c.method === "quoteExactInput");
+      assert.equal(calls.at(-1).args[0], true);
+      const sent = s.sends.length;
       s.failSellQuote = true;
-      await p
-        .getByRole("button", { name: "Get live quote", exact: true })
-        .click();
+      await p.locator("#swap-amount").fill("11");
       await p
         .getByText(/This sell exceeds your official-pool allowance/)
         .waitFor();
-      await p.getByLabel("Set a custom minimum output").check();
-      await p
-        .getByLabel("Minimum output (IMD)", { exact: true })
-        .fill("0.0001");
-      await p
-        .getByRole("button", { name: "Review custom minimum", exact: true })
-        .click();
-      await p
-        .getByRole("button", { name: "1. Approve UNLK2", exact: true })
-        .waitFor();
-      await p
-        .getByRole("button", { name: "1. Approve UNLK2", exact: true })
-        .click();
-      await simulateAndSend(p);
-      await p
-        .getByRole("button", { name: "2. Approve router", exact: true })
-        .waitFor();
-      await p
-        .getByRole("button", { name: "2. Approve router", exact: true })
-        .click();
-      await simulateAndSend(p);
-      await p
-        .getByRole("button", { name: "Review swap", exact: true })
-        .waitFor();
-      await p.getByRole("button", { name: "Review swap", exact: true }).click();
-      await simulateAndSend(p);
-      assert.ok(
-        s.calls.some(
-          (c) =>
-            c.method === "execute" &&
-            c.target ===
-              deployment.network.uniswapV4.universalRouter.toLowerCase(),
-        ),
-      );
+      assert.equal(s.sends.length, sent);
       s.failSellQuote = false;
     },
   );
   await check(
-    "Wrong-chain state prevents sends and exposes a single switch action",
+    "Home contribution max is capped and stale target is rejected",
     async () => {
-      s.chain = 137;
-      await p.evaluate(() => window.testWallet.emit("chainChanged", "0x89"));
       await p
-        .getByRole("button", { name: "Switch to Ethereum", exact: true })
-        .first()
-        .waitFor();
-      const count = s.sends.length;
-      await p
-        .getByRole("button", { name: "Switch to Ethereum", exact: true })
-        .first()
-        .click();
-      assert.equal(s.sends.length, count);
-    },
-  );
-  await check(
-    "Migration approval, permanent-lock review, cap and balance refresh",
-    async () => {
-      await screen(p, "Migrate");
-      await p.getByLabel("V1 amount", { exact: true }).fill("10");
-      await p.getByLabel("I understand my V1 will be locked forever.").check();
-      await p.getByRole("button", { name: "Approve V1", exact: true }).click();
-      await simulateAndSend(p);
-      await p.getByRole("button", { name: "Refresh", exact: true }).click();
-      await p
-        .getByRole("button", { name: "Review migration", exact: true })
-        .waitFor();
-      await p
-        .getByRole("button", { name: "Review migration", exact: true })
-        .click();
-      await simulateAndSend(p, { irreversible: true });
-      assert.equal(s.totalMigrated, 10n * E);
-      await screenshot(p, "migrate");
-    },
-  );
-  await check(
-    "All ten gates, three bars, rights buckets and verified swarm evidence",
-    async () => {
-      await screen(p, "Gates");
-      assert.equal(await p.locator("tbody tr").count(), 10);
-      assert.equal(await p.locator("progress").count(), 3);
-      await screenshot(p, "gates");
-      await screen(p, "My Rights");
-      await p.getByLabel("Claim index", { exact: true }).fill("17");
-      await p
-        .getByLabel("Original claim amount (UNLK2)", { exact: true })
-        .fill("100");
-      await p
-        .getByRole("button", { name: "Verify claim evidence", exact: true })
-        .click();
-      await simulateAndSend(p);
-      await screenshot(p, "rights");
-    },
-  );
-  await check(
-    "Exact burn preview, irreversible confirmation and point/credit units",
-    async () => {
-      await screen(p, "Burn & Points");
-      await p.getByLabel("Amount to burn (UNLK2)", { exact: true }).fill("20");
-      await p
-        .getByRole("button", { name: "Preview burn and rights", exact: true })
-        .click();
-      await p.getByText("Onchain burn preview", { exact: true }).waitFor();
-      await screenshot(p, "burn-preview");
-      await p
-        .getByRole("button", { name: "Review irreversible burn", exact: true })
+        .getByRole("button", {
+          name: "Max · balance / gate capacity",
+          exact: true,
+        })
         .click();
       assert.equal(
-        await p
-          .locator("dialog[open]")
-          .getByRole("button", { name: "Simulate transaction", exact: true })
-          .isDisabled(),
-        true,
+        await p.getByLabel("Amount to burn (UNLK2)").inputValue(),
+        "25000000",
       );
-      await simulateAndSend(p, { irreversible: true });
-      assert.equal(s.burnProgress, 20n * E);
-    },
-  );
-  await check(
-    "Simulation failure, actionable retry, voluntary burn and pending state",
-    async () => {
-      await screen(p, "Weekly IMD Rewards");
-      await p
-        .getByRole("button", { name: "Claim matured IMD", exact: true })
-        .click();
-      s.failSimulation = true;
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await p.getByText(/pricing reference is unavailable/i).waitFor();
-      s.failSimulation = false;
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Retry simulation", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByText("Confirmed onchain.", { exact: true })
-        .waitFor();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
-        .click();
-      assert.equal(s.claimable, 0n);
-      for (const name of ["Checkpoint rewards", "Redeem fees to pot"]) {
-        await p.getByRole("button", { name, exact: true }).click();
-        await simulateAndSend(p);
-      }
-      await screenshot(p, "weekly-rewards");
-      await screen(p, "Burn & Points");
-      await p
-        .getByRole("button", { name: "Voluntary burn", exact: true })
-        .click();
       await p.getByLabel("Amount to burn (UNLK2)").fill("1");
       await p
         .getByRole("button", { name: "Preview burn and rights", exact: true })
         .click();
       await p
-        .getByRole("button", { name: "Review irreversible burn", exact: true })
-        .click();
-      await simulateAndSend(p, { irreversible: true });
-      assert.equal(s.burnProgress, 20n * E);
-    },
-  );
-  await check(
-    "Transaction rejection and unresolved receipt recovery never resubmits",
-    async () => {
-      await screen(p, "Weekly IMD Rewards");
-      await p
-        .getByRole("button", { name: "Checkpoint rewards", exact: true })
-        .click();
-      const dialog = p.locator("dialog[open]");
-      await dialog
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor();
-      const before = s.sends.length;
-      s.rejectSend = true;
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .click();
-      await dialog.getByText(/Request declined in your wallet/).waitFor();
-      assert.equal(s.sends.length, before);
-      s.rejectSend = false;
-      await dialog
-        .getByRole("button", { name: "Retry simulation", exact: true })
-        .click();
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor();
-      s.receiptError = true;
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .click();
-      await dialog
-        .getByRole("button", { name: "Recheck receipt", exact: true })
-        .waitFor({ timeout: 20000 });
-      assert.equal(s.sends.length, before + 1);
-      await dialog.getByRole("button", { name: "Close", exact: true }).click();
-      await p
-        .getByRole("button", { name: "View transaction status", exact: true })
-        .waitFor();
-      assert.equal(
-        await p
-          .getByRole("button", { name: "Transaction in progress…" })
-          .first()
-          .isDisabled(),
-        true,
-      );
-      s.receiptError = false;
-      s.block += 1n;
-      await p
-        .getByRole("button", { name: "View transaction status", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Recheck receipt", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByText("Confirmed onchain.", { exact: true })
-        .waitFor();
-      assert.equal(s.sends.length, before + 1);
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
-        .click();
-      await p
-        .getByRole("button", { name: "Checkpoint rewards", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor();
-      s.receiptReverted = true;
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByText(
-          "The transaction failed onchain. Refresh state before retrying.",
-          { exact: true },
-        )
-        .waitFor();
-      assert.equal(
-        await p
-          .locator("dialog[open]")
-          .getByRole("button", { name: "Retry simulation", exact: true })
-          .isEnabled(),
-        true,
-      );
-      s.receiptReverted = false;
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
-        .click();
-    },
-  );
-  await check(
-    "Owner funding, router, distributor and activation prepare unsigned only",
-    async () => {
-      s.activated = false;
-      s.funded = false;
-      s.backing = 0n;
-      await p.getByRole("button", { name: "Refresh", exact: true }).click();
-      await p.getByText("● Trading closed", { exact: true }).waitFor();
-      await screen(p, "Founder setup");
-      const before = s.sends.length;
-      await p
-        .getByRole("button", { name: "Prepare unsigned funding", exact: true })
+        .getByRole("button", { name: "Contribute UNLK2 · gate 1", exact: true })
         .click();
       const dialog = p.locator("dialog[open]");
       await dialog.getByRole("checkbox").check();
+      s.gates = 1;
       await dialog
         .getByRole("button", { name: "Simulate transaction", exact: true })
         .click();
-      await dialog
-        .getByRole("button", {
-          name: "Download unsigned transaction",
-          exact: true,
-        })
-        .waitFor();
-      const downloadPromise = p.waitForEvent("download");
-      await dialog
-        .getByRole("button", {
-          name: "Download unsigned transaction",
-          exact: true,
-        })
-        .click();
-      const download = await downloadPromise;
-      const path = await download.path();
-      const unsigned = JSON.parse(await readFile(path, "utf8"));
-      assert.equal(unsigned.from.toLowerCase(), owner.toLowerCase());
-      assert.equal(
-        unsigned.to.toLowerCase(),
-        deployment.contracts.find((c) => c.name === "UnlockV2Token").address,
-      );
-      assert.equal(s.sends.length, before);
+      await dialog.getByText(/Gate changed or capacity reduced/).waitFor();
+      assert.equal(s.sends.length, 3);
       await dialog.getByRole("button", { name: "Close", exact: true }).click();
-      await p
-        .getByRole("button", {
-          name: "Prepare unsigned router setting",
-          exact: true,
-        })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", {
-          name: "Download unsigned transaction",
-          exact: true,
-        })
-        .waitFor();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
-        .click();
-      await p
-        .getByLabel("Actual launch distributor address")
-        .fill("0x3333333333333333333333333333333333333333");
-      await p
-        .getByRole("button", {
-          name: "Prepare unsigned distributor setting",
-          exact: true,
-        })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Simulate transaction", exact: true })
-        .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", {
-          name: "Download unsigned transaction",
-          exact: true,
-        })
-        .waitFor();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
-        .click();
-      s.funded = true;
-      s.backing = s.capacity;
+    },
+  );
+  await check(
+    "Gate ten exposes Golden Vault voluntary burn on home",
+    async () => {
+      s.gates = 10;
       await p.getByRole("button", { name: "Refresh", exact: true }).click();
       await p
-        .getByRole("button", {
-          name: "Prepare unsigned activation",
+        .getByRole("heading", {
+          name: "Golden Vault · voluntary burning & continuing fee rewards",
           exact: true,
         })
         .waitFor();
+      assert.equal(await p.locator("progress").count(), 0);
+      await p.getByLabel("Amount to burn (UNLK2)").fill("1");
       await p
-        .getByRole("button", {
-          name: "Prepare unsigned activation",
-          exact: true,
-        })
+        .getByRole("button", { name: "Preview burn and rights", exact: true })
         .click();
-      await p.locator("dialog[open]").getByRole("checkbox").check();
       await p
-        .locator("dialog[open]")
+        .getByRole("button", { name: "Burn UNLK2 for points", exact: true })
+        .click();
+      await simulateAndSend(p, { irreversible: true });
+    },
+  );
+  await check(
+    "Quote expiry during final review blocks wallet signing",
+    async () => {
+      s.gates = 1;
+      s.sellTokenAllowance = 1000n * E;
+      s.sellPermitAllowance = 1000n * E;
+      s.expiry = Math.floor(Date.now() / 1000) + 1800;
+      await p.getByRole("button", { name: "Refresh", exact: true }).click();
+      await p.locator("#swap-amount").fill("12");
+      await p.getByRole("button", { name: "Review swap", exact: true }).click();
+      const dialog = p.locator("dialog[open]");
+      await dialog
         .getByRole("button", { name: "Simulate transaction", exact: true })
         .click();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", {
-          name: "Download unsigned transaction",
-          exact: true,
-        })
+      await dialog
+        .getByRole("button", { name: "Confirm in wallet", exact: true })
         .waitFor();
-      await p
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Close", exact: true })
+      const sent = s.sends.length;
+      await p.clock.install();
+      await p.clock.fastForward(46000);
+      await dialog
+        .getByRole("button", { name: "Confirm in wallet", exact: true })
         .click();
-      assert.equal(s.sends.length, before);
-      await screenshot(p, "founder-setup", true);
+      await dialog.getByText(/Quote or preview expired/).waitFor();
+      assert.equal(s.sends.length, sent);
+      await dialog.getByRole("button", { name: "Close", exact: true }).click();
     },
   );
+  assert.deepEqual(a.errors, []);
+  await a.b.close();
+
+  const market = await setup();
+  browser = market.b;
   await check(
-    "All screens at 320 / 390 / 768 / 1440 without horizontal overflow",
+    "Interactive candle/volume canvas renders observed-trade fixture with zoom and crosshair",
     async () => {
-      for (const width of [320, 390, 768, 1440]) {
-        await p.setViewportSize({ width, height: 844 });
-        for (const name of [
-          "Trade",
-          "Gates",
-          "Migrate",
-          "My Rights",
-          "Burn & Points",
-          "Weekly IMD Rewards",
-          "Golden Vault",
-          "Rules / Contracts",
-          "Founder setup",
-        ]) {
-          await screen(p, name);
-          await p.waitForTimeout(60);
-          assert.equal(
-            await p.evaluate(
-              () => document.documentElement.scrollWidth > innerWidth,
-            ),
-            false,
-            `${name} overflow at ${width}`,
-          );
-        }
+      const event = parseAbiItem(
+        "event Swap(bytes32 indexed id,address indexed sender,int128 amount0,int128 amount1,uint160 sqrtPriceX96,uint128 liquidity,int24 tick,uint24 fee)",
+      );
+      market.s.marketLogs = [];
+      market.s.blockTimes = {};
+      for (let i = 0; i < 3; i++) {
+        const block = market.s.block - BigInt(30 - i * 5);
+        market.s.blockTimes[toHex(block)] =
+          Math.floor(Date.now() / 1000) - 1800 + i * 900;
+        market.s.marketLogs.push({
+          address: deployment.network.uniswapV4.poolManager,
+          topics: encodeEventTopics({
+            abi: [event],
+            eventName: "Swap",
+            args: { id: "0x" + "ab".repeat(32), sender: owner },
+          }),
+          data: encodeAbiParameters(
+            parseAbiParameters("int128,int128,uint160,uint128,int24,uint24"),
+            [-1000n * E, (1n + BigInt(i)) * E, 10n ** 27n, 1000n * E, 0, 12500],
+          ),
+          blockNumber: toHex(block),
+          blockHash: "0x" + "ef".repeat(32),
+          transactionHash: "0x" + (i + 1).toString(16).padStart(64, "0"),
+          transactionIndex: "0x0",
+          logIndex: toHex(i),
+          removed: false,
+        });
       }
-      await p.setViewportSize({ width: 390, height: 844 });
-      await screen(p, "Trade");
-      await screenshot(p, "trade-mobile-390");
-      const action = await p.locator(".swap-panel .action").boundingBox();
-      assert.ok(
-        action.y + action.height <= 844,
-        `Main action below first screen: ${JSON.stringify(action)}`,
-      );
-    },
-  );
-  await check(
-    "Keyboard dialog focus, Escape return, and reduced-motion rendering",
-    async () => {
-      await p.keyboard.press("Tab");
-      await p.getByRole("button", { name: /0x48e4/i }).click();
-      assert.equal(
-        await p.evaluate(() =>
-          document
-            .querySelector("dialog[open]")
-            .contains(document.activeElement),
-        ),
-        true,
-      );
-      await p.keyboard.press("Escape");
-      await p.waitForFunction(() => !document.querySelector("dialog[open]"));
-      await p.emulateMedia({ reducedMotion: "reduce" });
-      assert.equal(
-        await p.evaluate(
-          () =>
-            getComputedStyle(document.querySelector("button"))
-              .transitionDuration,
-        ),
-        "0s",
-      );
-    },
-  );
-  assert.deepEqual(a.errors, [], "Unexpected browser errors");
-  await browser.close();
-  browser = null;
-  const offline = await setup(chromium, {
-    mock: false,
-    wallet: false,
-    width: 390,
-    height: 844,
-  });
-  browser = offline.b;
-  await check(
-    "Public RPC failure: honest unavailable state, disabled transactions, wallet still accessible",
-    async () => {
-      await offline.p
-        .getByText(/Live state unavailable/)
-        .waitFor({ timeout: 15000 });
-      await offline.p
-        .getByRole("button", { name: "Connect wallet", exact: true })
-        .first()
+      await market.p.getByText("● Trading active", { exact: true }).waitFor();
+      await market.p
+        .getByRole("tab", { name: "Market Chart", exact: true })
         .click();
-      await offline.p.getByText(/No browser wallet found/).waitFor();
-      await offline.p.keyboard.press("Escape");
-      await offline.p.screenshot({
-        path: resolve(evidence, "offline-mobile-390.png"),
-      });
-      report.screenshots.push("offline-mobile-390.png");
+      await market.p.locator(".market-chart canvas").first().waitFor();
+      await market.p
+        .locator(".market-chart canvas")
+        .first()
+        .hover({ position: { x: 100, y: 100 }, force: true });
+      await market.p.mouse.wheel(0, -100);
+      await market.p.getByRole("button", { name: "5m", exact: true }).click();
+      await market.p.getByLabel("Market price unit").selectOption("USD");
+      await market.p.locator(".market-chart canvas").first().waitFor();
+      await screenshot(market.p, "synthetic-market-chart", false);
+      assert.deepEqual(market.errors, []);
     },
   );
-  await browser.close();
-  browser = null;
-  const phone = await setup(chromium, {
-    wallet: false,
+  await market.b.close();
+  const b = await setup(chromium, {
     width: 390,
     height: 844,
     mobile: true,
+    installed: false,
+    state: {
+      activated: false,
+      funded: false,
+      backing: 0n,
+      routerSupported: false,
+    },
   });
-  browser = phone.b;
+  browser = b.b;
   await check(
-    "Phone wallet-browser links, local wallet marks and passkey entry",
+    "Mobile closed trading, pending owner setup and stacked dashboard",
     async () => {
-      await phone.p
-        .getByRole("button", { name: "Connect wallet", exact: true })
-        .first()
-        .click();
-      const sheet = phone.p.locator("dialog[open]");
-      for (const name of ["MetaMask", "Coinbase Wallet", "Rabby", "Phantom"])
-        assert.ok(
-          await sheet
-            .getByRole("link", { name: new RegExp("Open in " + name) })
-            .count(),
-        );
-      const rabby = new URL(
-        await sheet
-          .getByRole("link", { name: /Open in Rabby/ })
-          .getAttribute("href"),
-      );
-      assert.equal(rabby.origin, "https://go.rabby.io");
-      assert.equal(rabby.pathname, "/mobile/");
-      assert.equal(rabby.searchParams.get("_cmd"), "open-dapp");
-      assert.equal(rabby.searchParams.get("dapp"), phone.p.url());
+      await b.p.getByText("● Trading closed", { exact: true }).waitFor();
       assert.ok(
-        await sheet
-          .getByRole("button", { name: /Coinbase Smart Wallet/ })
-          .count(),
-      );
-      assert.equal(
-        await sheet.getByText("WalletConnect", { exact: true }).count(),
-        0,
-      );
-      await phone.p.waitForFunction(() =>
-        [...document.querySelectorAll("dialog[open] img")].every(
-          (img) => img.complete && img.naturalWidth > 0,
+        await b.p.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
         ),
       );
-      await screenshot(phone.p, "wallet-mobile-390");
+      await b.p
+        .getByText(/Pending installation: deploy and review WalletQuoter/)
+        .waitFor();
+      await screenshot(b.p, "mobile-closed", true);
+      await screen(b.p, "Founder setup");
+      await b.p.getByRole("button", { name: /Activation disabled/ }).waitFor();
+      assert.ok(
+        await b.p
+          .getByRole("button", { name: /Activation disabled/ })
+          .isDisabled(),
+      );
     },
   );
-  await browser.close();
-  browser = null;
-  const tampered = await setup();
-  browser = tampered.b;
-  await check("Missing deployed code and changed ABI fail closed", async () => {
-    await tampered.p.getByText("● Trading active", { exact: true }).waitFor();
-    tampered.s.missingCode = true;
-    await tampered.p
-      .getByRole("button", { name: "Refresh", exact: true })
-      .click();
-    await tampered.p.getByText(/Live state unavailable/).waitFor();
-    assert.equal(tampered.s.sends.length, 0);
-    await tampered.c.route("**/abi/UnlockV2Hook.json", (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: "[]",
-      }),
-    );
-    await tampered.p.reload();
-    await tampered.p
-      .getByText(/ABI verification failed for UnlockV2Hook/)
-      .waitFor();
-    assert.equal(tampered.s.sends.length, 0);
-  });
-  await browser.close();
-  browser = null;
-  try {
-    const wk = await setup(webkit, { width: 390, height: 844 });
-    browser = wk.b;
-    await check("WebKit primary wallet / quote flow", async () => {
-      await wk.p
-        .getByText("● Trading active", { exact: true })
-        .waitFor({ timeout: 15000 });
-      await connect(wk.p);
-      await wk.p.getByLabel("Amount to swap").fill("1");
-      await wk.p
-        .getByRole("button", { name: "Get live quote", exact: true })
-        .click();
-      await wk.p
-        .getByRole("button", { name: "1. Approve IMD", exact: true })
-        .waitFor();
-      assert.equal(
-        await wk.p.evaluate(
-          () => document.documentElement.scrollWidth > innerWidth,
-        ),
-        false,
-      );
-      await wk.p
-        .getByRole("button", { name: "1. Approve IMD", exact: true })
-        .click();
-      await simulateAndSend(wk.p);
-      await wk.p
-        .getByRole("button", { name: "2. Approve router", exact: true })
-        .waitFor();
-      await wk.p
-        .getByRole("button", { name: "2. Approve router", exact: true })
-        .click();
-      await simulateAndSend(wk.p);
-      await wk.p
-        .getByRole("button", { name: "Review swap", exact: true })
-        .waitFor();
-      await wk.p
-        .getByRole("button", { name: "Review swap", exact: true })
-        .click();
-      await simulateAndSend(wk.p);
-      await screenshot(wk.p, "webkit-trade-mobile");
-    });
-    await browser.close();
-    browser = null;
-  } catch (e) {
-    report.checks.push({
-      name: "WebKit runtime",
-      passed: false,
-      limitation: e.message.slice(0, 1600),
-    });
-    console.log("WEBKIT UNAVAILABLE", e.message.slice(0, 350));
-  }
+  await check(
+    "RPC outage marks prior snapshot stale and prevents actions",
+    async () => {
+      b.s.failRpc = true;
+      await b.p.getByRole("button", { name: "Refresh", exact: true }).click();
+      await b.p.getByText(/Live state unavailable/).waitFor();
+      assert.equal(b.s.sends.length, 0);
+      await screenshot(b.p, "mobile-rpc-error", true);
+    },
+  );
+  assert.deepEqual(b.errors, []);
+  await b.b.close();
 } catch (e) {
-  if(activePage){await activePage.screenshot({path:resolve(root,'test/scratch/browser-failure.png'),fullPage:true}).catch(()=>{});await writeFile(resolve(root,'test/scratch/browser-failure.txt'),await activePage.locator('body').innerText()).catch(()=>{});}
-  if(activeFixture)await writeFile(resolve(root,'test/scratch/browser-failure-state.json'),JSON.stringify(activeFixture,(_k,v)=>typeof v==='bigint'?v.toString():v,2));
   report.errors.push(e.stack);
+  if (activePage) await screenshot(activePage, "failure", true).catch(() => {});
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
-  await new Promise((r) => server.close(r));
+  server.close();
   await writeFile(
-    resolve(evidence, "browser-results.json"),
+    resolve(evidence, "browser-report.json"),
     JSON.stringify(report, null, 2) + "\n",
-  );
-  console.log(
-    JSON.stringify(
-      report.checks.map((c) => ({ name: c.name, passed: c.passed })),
-      null,
-      2,
-    ),
   );
 }

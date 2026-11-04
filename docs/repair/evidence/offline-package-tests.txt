@@ -1,0 +1,49 @@
+Verified web/node_modules is absent. Default npm scripts use only committed files, Node, and xz.
+Verified 7 offline assets against the pinned lockfile.
+Offline build: npm --prefix web run build:offline
+Offline component tests: npm --prefix web run test:offline
+Full typecheck/dev/browser tooling still uses the pinned npm lockfile.
+
+> unlock-v2-terminal@1.0.0 test
+> node --import ./scripts/offline-register.mjs --experimental-strip-types --test tests/core.test.ts tests/repair.test.mjs
+
+✔ amount parsing rejects exponent, negative, commas, zero and excessive precision (1.179041ms)
+✔ slippage minimum floors safely and rejects unsafe tolerance (0.24781ms)
+✔ Universal Router payload, reversed currencies, extended=false (5.08662ms)
+✔ Universal Router payload, reversed currencies, extended=true (1.526751ms)
+✔ contract and wallet failures have actionable messages (0.36689ms)
+✔ Market OHLC uses real observed trades, preserves gaps and sorts chronology (0.51548ms)
+✔ Authentic mainnet native double-hash proof verifies exactly the paid amount (10.511661ms)
+✔ Whole-tree proof generation: uneven, sorted, unique and reproducible (4.022761ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.783727
+
+> unlock-v2-terminal@1.0.0 build
+> node scripts/offline-build.mjs
+
+
+  ...../tmp/unlock-offline-build-FBE2L3/site/assets/index-ZCILR43P.js  720.5kb
+  ...../tmp/unlock-offline-build-FBE2L3/site/assets/chunk-MUSPBBTZ.js  125.5kb
+  ..../tmp/unlock-offline-build-FBE2L3/site/assets/index-ZK2OISXV.css   14.9kb
+
+⚡ Done in 63ms
+Verified ABIs; wrote deployment manifest with 16 SHA-256 assets.
+Offline source build complete. This transpilation does not replace npm run typecheck.
+
+> unlock-v2-terminal@1.0.0 validate
+> node --import ./scripts/offline-register.mjs scripts/validate.mjs
+
+{
+  "result": "PASS",
+  "assets": 16,
+  "exportBytes": 1007093,
+  "abiHashes": "match handoff",
+  "network": "exact",
+  "assetInventory": "complete"
+}

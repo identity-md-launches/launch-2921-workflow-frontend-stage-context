@@ -138,6 +138,9 @@ export function useTransactions(
             "Your wallet account changed. Close this review and retry.",
           );
       }
+      if (tx.validUntil && Date.now() > tx.validUntil)
+        throw Error("Quote or preview expired. Close and refresh it.");
+      await tx.validate?.();
       setStage("Simulating against current contract state…");
       const sim = await r.client.simulateContract({
         address: tx.address,
@@ -206,6 +209,9 @@ export function useTransactions(
         active.current.chain !== r.d.chainId
       )
         throw Error("Wallet changed during simulation. Review again.");
+      if (tx.validUntil && Date.now() > tx.validUntil)
+        throw Error("Quote expired during simulation. Request a fresh quote.");
+      await tx.validate?.();
       submitted.current = true;
       setStage("Waiting for confirmation in your wallet…");
       const wc = walletClient(r, w.provider!, account);

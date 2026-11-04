@@ -1,0 +1,59 @@
+{
+  "baseline": "5c7b53d40fcd1a323f033a5b1f7b3e496df63040",
+  "method": "Full size of every changed/new ordinary file; deleted files count zero. Includes this report.",
+  "sourceBytes": 6823551,
+  "limitBytes": 8388608,
+  "remainingBytes": 1565057,
+  "passed": true,
+  "ordinaryFileCount": 99,
+  "largestFiles": [
+    {
+      "path": "web/vendor/offline/esbuild-linux-x64.xz",
+      "bytes": 3415804
+    },
+    {
+      "path": "web/site/assets/index-ZCILR43P.js",
+      "bytes": 737824
+    },
+    {
+      "path": "web/vendor/offline/viem.mjs",
+      "bytes": 341409
+    },
+    {
+      "path": "docs/repair/evidence/mobile-rpc-error.png",
+      "bytes": 309613
+    },
+    {
+      "path": "docs/repair/evidence/desktop-home.png",
+      "bytes": 276958
+    },
+    {
+      "path": "docs/repair/evidence/mobile-closed.png",
+      "bytes": 251268
+    },
+    {
+      "path": "web/vendor/offline/react-dom-client.mjs",
+      "bytes": 186016
+    },
+    {
+      "path": "web/src/vendor/lightweight-charts.mjs",
+      "bytes": 182216
+    },
+    {
+      "path": "web/src/vendor/lightweight-charts.d.mts",
+      "bytes": 146366
+    },
+    {
+      "path": "web/vendor/offline/coinbase.mjs",
+      "bytes": 129012
+    },
+    {
+      "path": "web/site/assets/chunk-MUSPBBTZ.js",
+      "bytes": 128514
+    },
+    {
+      "path": "docs/repair/evidence/synthetic-market-chart.png",
+      "bytes": 97576
+    }
+  ]
+}

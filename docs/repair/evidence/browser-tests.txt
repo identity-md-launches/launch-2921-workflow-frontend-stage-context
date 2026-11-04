@@ -1,0 +1,14 @@
+
+> unlock-v2-terminal@1.0.0 test:browser
+> node tests/browser.mjs
+
+PASS Home staircase, stored states, three OR tracks and contribution visible
+PASS Market tab shows genuine no-trades state, units, source and retry
+PASS Wallet connection and automatic caller-bound buy quote
+PASS Automatic sell quote uses same wallet path; failed quotes cannot send
+PASS Home contribution max is capped and stale target is rejected
+PASS Gate ten exposes Golden Vault voluntary burn on home
+PASS Quote expiry during final review blocks wallet signing
+PASS Interactive candle/volume canvas renders observed-trade fixture with zoom and crosshair
+PASS Mobile closed trading, pending owner setup and stacked dashboard
+PASS RPC outage marks prior snapshot stale and prevents actions

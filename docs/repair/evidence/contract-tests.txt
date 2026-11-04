@@ -1,0 +1,281 @@
+Compiling 2 files with Solc 0.8.26
+Solc 0.8.26 finished in 24.08s
+Compiler run successful!
+
+Ran 1 test for test/RepairFork.t.sol:RepairForkTest
+[SKIP: skipped] setUp() (gas: 0)
+Suite result: ok. 0 passed; 0 failed; 1 skipped; finished in 999.58µs (0.00ns CPU time)
+
+Ran 1 test for test/RepairCorpus.t.sol:RepairCorpusTest
+[PASS] testUnevenFullCorpusAndAllNativeProofs() (gas: 1441288)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 5.45ms (1.22ms CPU time)
+
+Ran 12 tests for test/Launch.t.sol:LaunchTest
+[PASS] test_activate_requirements() (gas: 1607352)
+[PASS] test_activate_wrongChain() (gas: 886759)
+[PASS] test_callbacksOnlyFromPoolManager() (gas: 66097)
+[PASS] test_factoryInitializesIntendedPoolOnce() (gas: 251827)
+[PASS] test_liquidityWorksWhileTradingClosed_swapsBlocked() (gas: 834960)
+[PASS] test_nonFactoryCannotInitialize() (gas: 61752)
+[PASS] test_permissionsMatchAddressFlags() (gas: 26502)
+[PASS] test_pricing_initialFdvBelowGate1() (gas: 1221935)
+[PASS] test_pricing_invalidFeedStates() (gas: 1506608)
+[PASS] test_referencePoolIdMatchesMainnet() (gas: 3754)
+[PASS] test_setup_onlyOwner() (gas: 87611)
+[PASS] test_wrongKeyRejected() (gas: 123215)
+Suite result: ok. 12 passed; 0 failed; 0 skipped; finished in 9.78ms (7.19ms CPU time)
+
+Ran 9 tests for test/Companions.t.sol:CompanionsTest
+[PASS] testFuzz_gatesNeverDecrease(uint256,uint256,uint256) (runs: 64, μ: 6458339, ~: 6502207)
+Logs:
+  Bound result 41519478038776196043751686
+  Bound result 2217749131433125541708
+  Bound result 6442717234873072443940911
+
+[PASS] test_creditMigration_onlyVault() (gas: 32979)
+[PASS] test_gateTable() (gas: 113103)
+[PASS] test_gatesByBurn_perGateTargets() (gas: 6492076)
+[PASS] test_gatesByVolume_sequentialAndMonotonic() (gas: 6535916)
+[PASS] test_migrate_beforeActivation_andCapAccounting() (gas: 424035)
+[PASS] test_migrate_capCannotCoverEntireV1Supply() (gas: 482788)
+[PASS] test_migrate_failures() (gas: 327541)
+[PASS] test_swarmClaimCreditedOnceWithEvidence() (gas: 491548)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 45.25ms (37.36ms CPU time)
+
+Ran 6 tests for test/ForkRehearsal.t.sol:ForkRehearsalTest
+[SKIP] test_fork_liveReferencesAndActivation() (gas: 0)
+[SKIP] test_fork_migrationWithLiveV1() (gas: 0)
+[SKIP] test_fork_sellBeyondAllowanceRevertsThroughRouter() (gas: 0)
+[SKIP] test_fork_spikeThroughLiveRouterOpensNothingInItsBlock() (gas: 0)
+[SKIP] test_fork_staleLiveFeedSkipsProgressButTradingContinues() (gas: 0)
+[SKIP] test_fork_universalRouterExactInAndExactOut_creditsRealTrader_feesConserved() (gas: 0)
+Suite result: ok. 0 passed; 0 failed; 6 skipped; finished in 575.24µs (87.67µs CPU time)
+
+Ran 21 tests for test/Rewards.t.sol:RewardsTest
+[PASS] testFuzz_rewardsConservedAndSolvent(uint256[12]) (runs: 64, μ: 3762271, ~: 3797551)
+[PASS] test_claimBeforeActivationReverts() (gas: 9889326)
+[PASS] test_claimRedeemsPendingClaimsPermissionlessly() (gas: 1037979)
+[PASS] test_contribute_burnsAndAwardsPoints_anyOrigin() (gas: 301474)
+[PASS] test_contribute_racingContributorIsRejectedNotCarried() (gas: 507317)
+[PASS] test_contribute_rejectsStaleGateExcessAndZero_withoutBurning() (gas: 223238)
+[PASS] test_contribute_requiresBoundHook() (gas: 28672)
+[PASS] test_contribute_staleAfterGateOpensByFdv_pointsSurvive() (gas: 990615)
+[PASS] test_delayedRedemptionCannotGiveOldFeesToNewPoints() (gas: 1071462)
+[PASS] test_feeBases_twinPoolComparison() (gas: 1498065)
+[PASS] test_feesAfterFirstPointAccrueImmediately_noRetroactiveRewards() (gas: 1189380)
+[PASS] test_feesBeforeFirstPointGoToSeparatePrePointPot() (gas: 476768)
+[PASS] test_firstBurnStartsLinearSevenDayRelease_notWholePotToFirstBurner() (gas: 1331785)
+[PASS] test_hookCannotOverReportRedemption() (gas: 57533)
+[PASS] test_onContribute_onlyToken() (gas: 33912)
+[PASS] test_onlyBeneficiaryClaims_ownerHasNoAccess() (gas: 1239173)
+[PASS] test_pointsShareFeesIndefinitely_afterAllGates() (gas: 1674351)
+[PASS] test_prePointReleaseSplitAtEpochBoundary() (gas: 1177670)
+[PASS] test_rewardsMatureInClosedEpochsOnly() (gas: 1816050)
+[PASS] test_unclaimedRewardsNeverExpire() (gas: 1002737)
+[PASS] test_voluntaryBurnEarnsPointsButNoGateProgress() (gas: 214829)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 125.16ms (118.54ms CPU time)
+
+Ran 17 tests for test/Revision.t.sol:RevisionTest
+[PASS] testFuzz_partialExactOutputSellFeeNeverExceedsOnePercentOfExecuted(uint96,uint16) (runs: 64, μ: 2426033, ~: 2422248)
+Logs:
+  Bound result 99000000321498548347
+  Bound result 110
+
+[PASS] testFuzz_partialFillFeeNeverExceedsOnePercentOfExecuted(uint96,uint16) (runs: 64, μ: 2133652, ~: 2135281)
+Logs:
+  Bound result 4999000000321498548347
+  Bound result 110
+
+[PASS] test_activateRefusesAnUnboundHook() (gas: 1696601)
+[PASS] test_activateRefusesWhenBindingFailed() (gas: 1682267)
+[PASS] test_burnBeforeSwarmCreditLeavesNoCredit() (gas: 1834171)
+[PASS] test_claimDonationCannotBrickRedemptionOrClaims() (gas: 3926271)
+[PASS] test_creditThenBurnAndBurnThenCreditAgree() (gas: 1859058)
+[PASS] test_donationBeforeAnyFeeIsRedeemable() (gas: 2300495)
+[PASS] test_founderCreditNettedAgainstPreActivationBurn() (gas: 1297681)
+[PASS] test_fullFillShapesUnchanged() (gas: 2080196)
+[PASS] test_migratedHolderCannotExitThroughRangeOrder() (gas: 2063975)
+[PASS] test_migrationCreditIsNotNetted() (gas: 2151513)
+[PASS] test_onlyFactoryAddsLiquidityAfterActivation() (gas: 2940381)
+[PASS] test_partialExactInputBuy_feeIsOnePercentOfExecutedLeg_restRefunded() (gas: 2215485)
+[PASS] test_partialExactOutputSell_feeIsOnePercentOfExecutedLeg_restRefunded() (gas: 2432958)
+[PASS] test_partialExactOutputSell_smallerThanTheFeeStillNetsOutPositive() (gas: 2387399)
+[PASS] test_pendingGatesOpenPreviewsTheBlocksReading() (gas: 2235048)
+Suite result: ok. 17 passed; 0 failed; 0 skipped; finished in 166.14ms (159.17ms CPU time)
+
+Ran 9 tests for test/Token.t.sol:TokenTest
+[PASS] test_allocationSumsToSupply() (gas: 19592)
+[PASS] test_burnReducesSupplyAndReportsToHook() (gas: 297737)
+[PASS] test_burn_failsWithoutBalance() (gas: 34678)
+[PASS] test_hookBoundDuringLaunch() (gas: 25598)
+[PASS] test_metadataAndSupply() (gas: 51332)
+[PASS] test_noMintOrAdminSurface() (gas: 13126)
+[PASS] test_onBurn_onlyToken() (gas: 32982)
+[PASS] test_registerHook_rejectsSecondAndLate() (gas: 141829)
+[PASS] test_transfersMoveExactAmounts() (gas: 262521)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 1.51ms (334.93µs CPU time)
+
+Ran 15 tests for test/Manipulation.t.sol:ManipulationTest
+[PASS] testFuzz_gatePriceNeverExceedsSpot(int24,uint32) (runs: 64, μ: 284968, ~: 295990)
+Logs:
+  Bound result 15474
+  Bound result 40
+
+[PASS] testFuzz_oneBlockNeverOpensAnFdvGate(uint96,uint96) (runs: 64, μ: 1011884, ~: 1133060)
+Logs:
+  Bound result 3999000000321498548347
+  Bound result 3999000005431902963311
+
+[PASS] test_buyerCannotSellBackInTheSameBlock() (gas: 750287)
+[PASS] test_creditedAccountCanSellTokensReceivedFromOthers() (gas: 938623)
+[PASS] test_feedOutageDelaysTheReadingToTheNextValidBlock() (gas: 1165451)
+[PASS] test_firstSwapOfBlockSeesGateBeforeItsOwnQuotaCheck() (gas: 854695)
+[PASS] test_imdFallCountsImmediately() (gas: 285187)
+[PASS] test_invalidFeedLeavesVolumeUntouchedAndTradingOpen() (gas: 398767)
+[PASS] test_priceHeldAcrossABlockOpensGatesFromOneObservation() (gas: 1469085)
+[PASS] test_quietPoolCapsOneReadingAtTwentyPercent() (gas: 298574)
+[PASS] test_realImdRiseIsFollowedAtTheTrackerRate() (gas: 7729537)
+[PASS] test_referenceSpikeDoesNotInflateVolumeOrFdv() (gas: 974115)
+[PASS] test_spikeInsideOneBlockOpensNoGate() (gas: 859449)
+[PASS] test_spikeUndoneBeforeBlockEndsLeavesGatesClosed() (gas: 2120822)
+[PASS] test_trackerFollowsAtTheSameRateWithASwapEveryBlock() (gas: 82932117)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 160.74ms (155.70ms CPU time)
+
+Ran 11 tests for test/Repair.t.sol:RepairTest
+[PASS] testBooleanAloneAndAlternateAmountCannotCredit() (gas: 254767)
+[PASS] testBurnBeforeSyncIsNetted() (gas: 1609503)
+[PASS] testBuyQuoteMatchesSettlementAndCallbackCannotBeForged() (gas: 2225309)
+[PASS] testCanonicalTreeMustBeCompleteAndUnique() (gas: 407184)
+[PASS] testDirectLegacyForgeryAndRootMutation() (gas: 183123)
+[PASS] testNativeClaimSyncAndReplay() (gas: 295206)
+[PASS] testQuoteCannotOpenClosedTrading() (gas: 85451)
+[PASS] testQuoteUsesWalletRightsAndRollsBackAllState() (gas: 2648375)
+[PASS] testQuoterCannotSpendSameBlockPendingBuyRights() (gas: 2006551)
+[PASS] testReplacementAdapterCannotReplaySameNativeRound() (gas: 1093887)
+[PASS] testUnregisteredQuoterNeverFallsBackToSharedIdentity() (gas: 1461628)
+Suite result: ok. 11 passed; 0 failed; 0 skipped; finished in 6.91ms (5.34ms CPU time)
+
+Ran 19 tests for test/Trading.t.sol:TradingTest
+[PASS] testFuzz_sellNeverExceedsAllowance(uint96,uint96) (runs: 64, μ: 725270, ~: 731649)
+Logs:
+  Bound result 199000000321498548347
+  Bound result 5431902963310
+
+[PASS] test_authenticatedRouterCreditsRealTrader() (gas: 768761)
+[PASS] test_burnDebitsCreditsConservatively() (gas: 998839)
+[PASS] test_burnMixedOriginsOrderPendingBuyOther() (gas: 893269)
+[PASS] test_buyCreditMaturesAfterOneBlock() (gas: 692510)
+[PASS] test_buyExactInput_takes1PercentOfImdInput() (gas: 471965)
+[PASS] test_buyExactOutput_takes1PercentOfImdInput() (gas: 460958)
+[PASS] test_gateOpensByBurnAndGate10BypassesQuotas() (gas: 2130539)
+[PASS] test_gatesOpenByFdvAcrossMultipleThresholds() (gas: 1437189)
+[PASS] test_invalidPriceSkipsProgressButTradingContinues() (gas: 448729)
+[PASS] test_migratedTokensHaveZeroAllowanceBeforeGate1() (gas: 637922)
+[PASS] test_preGate1_20PercentCumulativeAllowance() (gas: 1289656)
+[PASS] test_redeemFees_movesImdToPotAndStreams() (gas: 623800)
+[PASS] test_sellExactInput_takes1PercentOfImdOutput() (gas: 755239)
+[PASS] test_sellExactOutput_takes1PercentOfImdOutput() (gas: 750312)
+[PASS] test_transferDoesNotGrantRights() (gas: 764671)
+[PASS] test_unlockCallback_rejectsOutsideRedeem() (gas: 38390)
+[PASS] test_unregisteredRouterIsOneSharedAccount() (gas: 1416721)
+[PASS] test_volumeCountsExecutedImdLegOnce() (gas: 774769)
+Suite result: ok. 19 passed; 0 failed; 0 skipped; finished in 32.56ms (38.34ms CPU time)
+
+Ran 21 tests for test/Scenarios.t.sol:ScenariosTest
+[PASS] testFuzz_burnNeverIncreasesAllowance(uint96,uint96,uint96,uint96,bool) (runs: 256, μ: 1556257, ~: 1463687)
+Logs:
+  Bound result 1499000000000000000007
+  Bound result 3215951516
+  Bound result 63
+  Bound result 5825291088607
+
+[PASS] test_activateTwiceRevertsAndFounderCreditIsExactly50m() (gas: 341041)
+[PASS] test_burnAfterPartialSaleCannotRecycleEligibility() (gas: 1176804)
+[PASS] test_concurrentClaims_sameBlock_neverOverpay() (gas: 1506709)
+[PASS] test_feeConservation_everySwapShape() (gas: 1349380)
+[PASS] test_gateRace_secondContributorWithStaleQuoteIsRejected() (gas: 701896)
+[PASS] test_gatesNeverRelockWhenPriceFalls() (gas: 1888567)
+[PASS] test_inBlockSpikeOpensNothingAndCannotBeSoldBack() (gas: 1548559)
+[PASS] test_lateBurnerGetsNothingFromFinishedPrePointStream() (gas: 1130100)
+[PASS] test_lateMigrationAfterGatesGetsCurrentGlobalPercent() (gas: 1104121)
+[PASS] test_longIdle_rewardsSurviveAndPrePointStreamCompletes() (gas: 1115574)
+[PASS] test_migrationExhaustion_firstComeAndNoDoubleCredit() (gas: 775423)
+[PASS] test_mixedOriginsAndCumulativeSalesAcrossGates() (gas: 1777579)
+[PASS] test_pendingGatesOpen_previewsHeldSpikeBeforeFirstSwap() (gas: 1733737)
+[PASS] test_pendingGatesOpen_staleFeedPreviewsNothing() (gas: 928183)
+[PASS] test_pendingGatesOpen_withSmallBurnProgressMatchesReading() (gas: 788737)
+[PASS] test_sameBlockBuyCannotBeSold_evenWithOtherCredits() (gas: 885392)
+[PASS] test_sharedRouterUsersShareOneBucket() (gas: 1021743)
+[PASS] test_staleFeedVariants_noVolumeButTradesAndContributionsWork() (gas: 2074058)
+[PASS] test_transferRoundTripDoesNotCreateNewRights() (gas: 1154391)
+[PASS] test_weeklyBoundary_feeOneSecondBeforeVsAtBoundary() (gas: 1617681)
+Suite result: ok. 21 passed; 0 failed; 0 skipped; finished in 136.37ms (150.59ms CPU time)
+
+Ran 1 test for test/Invariants.t.sol:InvariantsTest
+[PASS]
+InvariantsTest invariants:
+[PASS] invariant_migrationVaultBackedAndLocked
+[PASS] invariant_rewardPotSolventAndConserved
+[PASS] invariant_rightsAndGatesMonotonic
+[PASS] invariant_supplyConservedAndBurnsAccounted
+ InvariantsTest invariants (runs: 64, calls: 2560, reverts: 0)
+
+╭---------------+------------------+-------+---------+----------╮
+| Contract      | Selector         | Calls | Reverts | Discards |
++===============================================================+
+| LaunchHandler | burn             | 204   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | buy              | 208   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | checkpoint       | 215   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | claim            | 206   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | contribute       | 210   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | migrate          | 216   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | redeem           | 208   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | sell             | 248   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | sellTooMuch      | 218   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | spikeAndSellBack | 226   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | transfer         | 192   | 0       | 0        |
+|---------------+------------------+-------+---------+----------|
+| LaunchHandler | warp             | 209   | 0       | 0        |
+╰---------------+------------------+-------+---------+----------╯
+
+Logs:
+  Bound result 299999000000000008142
+  Bound result 727
+  Bound result 5088
+  Bound result 4000000000000000000000000
+  Bound result 15222
+  Bound result 299999000000000092101
+  Bound result 35
+  Bound result 115803351300442024176520
+  Bound result 669865084
+  Bound result 2260072967872377638036402
+  Bound result 5000000000000720114473
+  Bound result 299999000000000014934
+  Bound result 50000000000000000000000000
+  Bound result 2707
+  Bound result 8
+  Bound result 921481
+  Bound result 3239
+  Bound result 1592189890856683965953
+  Bound result 299999000000000004661
+  Bound result 10750
+  Bound result 7640
+  Bound result 1000000000000000000000000
+  Bound result 11880273315145778093827317
+  Bound result 1
+  Bound result 299999000000000000061
+  Bound result 2931569892
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 1.60s (1.60s CPU time)
+
+Ran 13 test suites in 1.65s (2.29s CPU time): 136 tests passed, 0 failed, 7 skipped (143 total tests)

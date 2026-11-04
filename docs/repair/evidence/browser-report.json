@@ -1,0 +1,63 @@
+{
+  "generatedAt": "2026-11-04T07:52:23.027Z",
+  "scope": "Production export under /preview/. All wallet and RPC responses in interaction cases are synthetic; no real signing or broadcasting.",
+  "checks": [
+    {
+      "name": "Home staircase, stored states, three OR tracks and contribution visible",
+      "passed": true,
+      "durationMs": 1112
+    },
+    {
+      "name": "Market tab shows genuine no-trades state, units, source and retry",
+      "passed": true,
+      "durationMs": 223
+    },
+    {
+      "name": "Wallet connection and automatic caller-bound buy quote",
+      "passed": true,
+      "durationMs": 5235
+    },
+    {
+      "name": "Automatic sell quote uses same wallet path; failed quotes cannot send",
+      "passed": true,
+      "durationMs": 1681
+    },
+    {
+      "name": "Home contribution max is capped and stale target is rejected",
+      "passed": true,
+      "durationMs": 333
+    },
+    {
+      "name": "Gate ten exposes Golden Vault voluntary burn on home",
+      "passed": true,
+      "durationMs": 1983
+    },
+    {
+      "name": "Quote expiry during final review blocks wallet signing",
+      "passed": true,
+      "durationMs": 1345
+    },
+    {
+      "name": "Interactive candle/volume canvas renders observed-trade fixture with zoom and crosshair",
+      "passed": true,
+      "durationMs": 1548
+    },
+    {
+      "name": "Mobile closed trading, pending owner setup and stacked dashboard",
+      "passed": true,
+      "durationMs": 1006
+    },
+    {
+      "name": "RPC outage marks prior snapshot stale and prevents actions",
+      "passed": true,
+      "durationMs": 254
+    }
+  ],
+  "screenshots": [
+    "desktop-home.png",
+    "synthetic-market-chart.png",
+    "mobile-closed.png",
+    "mobile-rpc-error.png"
+  ],
+  "errors": []
+}

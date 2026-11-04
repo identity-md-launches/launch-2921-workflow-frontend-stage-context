@@ -1,0 +1,9 @@
+No files changed, compilation skipped
+
+Ran 3 tests for test/RepairFork.t.sol:RepairForkTest
+[PASS] testForkActualUniversalRouterBuySellQuoteIdentity() (gas: 1967258)
+[PASS] testForkAuthenticNativeClaimProofAndLegacyIncompatibility() (gas: 51024)
+[PASS] testForkMigrationContributionStaleGateAndWeeklyRewards() (gas: 1880785)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 12.56s (9.66s CPU time)
+
+Ran 1 test suite in 12.57s (12.56s CPU time): 3 tests passed, 0 failed, 0 skipped (3 total tests)

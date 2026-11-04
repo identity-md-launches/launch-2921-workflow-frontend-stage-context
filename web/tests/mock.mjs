@@ -8,7 +8,7 @@ import {
 } from "viem";
 import { root } from "../scripts/export.mjs";
 const read = async (p) => JSON.parse(await readFile(resolve(root, p), "utf8"));
-const deployment = await read("dist/imd-deployment.json");
+const deployment = await read("web/site/imd-deployment.json");
 const abi = {};
 for (const n of [
   "UnlockV2Token",
@@ -16,7 +16,7 @@ for (const n of [
   "MigrationVault",
   "RewardPot",
 ])
-  abi[n] = await read("dist/abi/" + n + ".json");
+  abi[n] = await read("web/site/abi/" + n + ".json");
 const erc20 = parseAbi([
   "function balanceOf(address) view returns(uint256)",
   "function allowance(address,address) view returns(uint256)",
@@ -78,6 +78,12 @@ const net = deployment.network;
 export const vault = "0x1111111111111111111111111111111111111111",
   pot = "0x2222222222222222222222222222222222222222",
   distributor = "0x3333333333333333333333333333333333333333";
+export const walletQuoter = "0x4444444444444444444444444444444444444444";
+const walletQuoterAbi = parseAbi([
+  "function hook() view returns(address)",
+  "function poolManager() view returns(address)",
+  "function quoteExactInput(bool zeroForOne,uint128 amountIn) returns(uint256 amountOut,uint256 rewardFee,uint256 lpFeeInput)",
+]);
 export const owner = "0x48e4e74fe1d0c14404ceb57b9fec5b21329c6ec9";
 export const E = 10n ** 18n;
 const rows = [
@@ -147,6 +153,7 @@ export function rpcMock(s) {
     [net.uniswapV4.quoter.toLowerCase()]: quote,
     [net.uniswapV4.universalRouter.toLowerCase()]: router,
     [distributor]: distributorAbi,
+    [walletQuoter]: walletQuoterAbi,
   };
   function decode(tx) {
     const target = tx.to.toLowerCase();
@@ -170,7 +177,10 @@ export function rpcMock(s) {
       return {
         error: { code: 3, message: "execution reverted: ReferenceUnavailable" },
       };
-    if (s.failSellQuote && f === "quoteExactInputSingle")
+    if (
+      s.failSellQuote &&
+      (f === "quoteExactInputSingle" || f === "quoteExactInput")
+    )
       return {
         error: { code: 3, message: "execution reverted: SellExceedsAllowance" },
       };
@@ -189,10 +199,15 @@ export function rpcMock(s) {
       isReferenceAvailable: true,
       swarmDistributor: s.swarm,
       gatesOpen: s.gates,
-      pendingGatesOpen: s.gates,
+      pendingGatesOpen: s.pendingGates ?? s.gates,
       unlockedPercents: s.gates
         ? [BigInt(rows[s.gates - 1][0]), BigInt(rows[s.gates - 1][0])]
         : [20n, 0n],
+      gateImdUsdPrice: [1n * E, true],
+      lastFdvUsd: 80000n * E,
+      lastFdvBlock: s.block - 1n,
+      lastValidObservation: BigInt(Math.floor(Date.now() / 1000)),
+      trackedAt: BigInt(Math.floor(Date.now() / 1000)),
       fdvUsd: [100000n * E, true],
       imdUsdPrice: [2n * E, true],
       tokenPriceInImd: [(1n * E) / 1000n, true],
@@ -289,6 +304,8 @@ export function rpcMock(s) {
             : target === token.toLowerCase()
               ? s.sellTokenAllowance
               : s.tokenAllowance;
+    if (f === "contribute" && Number(args[0]) !== s.gates + 1)
+      return { error: { code: 3, message: "execution reverted: StaleGate" } };
     if (f === "previewBurn") {
       const n = args[1];
       result = [
@@ -299,6 +316,12 @@ export function rpcMock(s) {
         200n * E,
       ];
     }
+    if (f === "quoteExactInput")
+      result = [
+        args[0] ? args[1] / 1000n : args[1] * 1000n,
+        args[1] / 100n,
+        args[1] / 80n,
+      ];
     if (f === "quoteExactInputSingle")
       result = [args[0].exactAmount * 1000n, 120000n];
     if (["approve", "transfer", "transferFrom"].includes(f))
@@ -318,6 +341,13 @@ export function rpcMock(s) {
     const { id, method, params = [] } = q;
     let result;
     switch (method) {
+      case "eth_getLogs":
+        result = (s.marketLogs ?? []).filter(
+          (l) =>
+            BigInt(l.blockNumber) >= BigInt(params[0].fromBlock) &&
+            BigInt(l.blockNumber) <= BigInt(params[0].toBlock),
+        );
+        break;
       case "eth_chainId":
         result = "0x1";
         break;
@@ -404,7 +434,9 @@ export function rpcMock(s) {
           size: "0x1",
           gasLimit: "0x100000",
           gasUsed: "0x10000",
-          timestamp: "0x65555555",
+          timestamp: toHex(
+            BigInt(s.blockTimes?.[params[0]] ?? Math.floor(Date.now() / 1000)),
+          ),
           transactions: [],
           uncles: [],
           baseFeePerGas: "0x1",

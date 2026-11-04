@@ -1,3 +1,5 @@
+> **Repair update:** use [repair-integration.md](repair-integration.md) and [repair/VALIDATION.md](repair/VALIDATION.md) for current integration, setup and measured results. Auxiliary installation is pending; activation is disabled in the repaired terminal. The deployed contract descriptions below remain unchanged.
+
 > This copy supersedes the root README.md for the burn, contribution, fee, reward and pricing sections
 > (the root file is outside this contribution's write scope and still describes the earlier reward pot
 > and spot-only gate pricing).
@@ -80,14 +82,15 @@ forever: afterwards no setter works and nothing is owner-controlled.
    `msgSender()` (Uniswap Universal Router on Ethereum, the v4 periphery `V4Router`). Get the addresses
    from Uniswap's published deployments for chain 1. Swaps through unregistered contracts are attributed
    to that contract (see "Shared-account limitation").
-3. **Set the swarm distributor.** `hook.setSwarmDistributor(distributor)` with the launch's
-   MerkleDistributor address, read from the launch record. It must expose `merkleRoot()` and
-   `isClaimed(index)` with Uniswap's leaf format `keccak256(abi.encodePacked(index, account, amount))`.
-   If the launch's distributor differs, swarm claims cannot be credited; set it correctly before sealing.
+3. **Install the compatibility adapter, not the native distributor directly.** The actual native distributor
+   exposes roundOf/claimed and a double-hashed native leaf; it is incompatible with this legacy hook.
+   Deploy/review NativeSwarmAdapter only after its full canonical corpus proves root binding and unique
+   accounts. Then setSwarmDistributor(adapter). Install/register WalletQuoter as well; never register the
+   incompatible stock quoter. See repair-integration.md for exact proof inputs and pending prerequisites.
 4. **Check references.** `hook.isReferenceAvailable()` must be true: the ETH/IMD v4 reference pool
    (PoolId `0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3`, verified in
    `test_referencePoolIdMatchesMainnet`) initialized with positive liquidity and the Chainlink feed fresh.
-5. **Activate.** `hook.activate()`. Requirements: `token.hook()` is this hook (`isBound()`), official
+5. **Activation is disabled in this repair pending mandatory installation/review.** For reference, `hook.activate()` requires: `token.hook()` is this hook (`isBound()`), official
    pool initialized by the factory, chain id 1, vault fully funded, feed decimals 8, valid IMD/USD and
    UNLK2/IMD prices. It credits the founder's exactly 50m sell-rights allocation to the owner (less any
    UNLK2 the owner burned uncredited before activation, see "Burns") and opens trading. It does not check
@@ -361,8 +364,9 @@ withdrawals are never blocked.
 
 - IMD is a plain 18-decimal ERC-20 that allows `PoolManager.take` to the RewardPot; the hook never
   pulls IMD out of the PoolManager during a swap.
-- The launch MerkleDistributor follows Uniswap's interface and leaf format; otherwise swarm claims
-  cannot be credited (set the right address before sealing).
+- The actual native MerkleDistributor does **not** follow the hook's legacy interface/leaf format.
+  NativeSwarmAdapter is required. Its constructor must rebuild the authentic full native allocation root
+  and prove unique accounts; installation remains pending. An arbitrary owner-supplied legacy root is unsafe.
 - Registered routers truthfully report `msgSender()`; a malicious registered router could misattribute
   rights, so register only Uniswap's audited routers.
 - The owner funds 700m to the vault, registers routers, sets the distributor and activates. After

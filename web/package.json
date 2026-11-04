@@ -6,11 +6,18 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
-    "build": "tsc --noEmit && vite build && node scripts/export.mjs",
+    "build": "node scripts/offline-build.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "validate": "node scripts/validate.mjs",
-    "test": "node --experimental-strip-types --test tests/core.test.ts",
-    "test:browser": "node tests/browser.mjs"
+    "validate": "node --import ./scripts/offline-register.mjs scripts/validate.mjs",
+    "test": "node --import ./scripts/offline-register.mjs --experimental-strip-types --test tests/core.test.ts tests/repair.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "check:live": "node --import ./scripts/offline-register.mjs scripts/repair-live.mjs",
+    "prepare:owner": "node --import ./scripts/offline-register.mjs scripts/prepare-repair.mjs",
+    "build:offline": "node scripts/offline-build.mjs",
+    "test:offline": "node --import ./scripts/offline-register.mjs --experimental-strip-types --test tests/core.test.ts tests/repair.test.mjs",
+    "validate:offline": "node --import ./scripts/offline-register.mjs scripts/validate.mjs",
+    "build:vite": "tsc --noEmit && vite build && node scripts/export.mjs",
+    "check:bundle": "node scripts/check-bundle-size.mjs"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "4.3.7",

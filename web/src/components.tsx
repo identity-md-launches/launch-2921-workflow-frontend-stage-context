@@ -18,9 +18,9 @@ export function UsdValue({
   value?: bigint;
   token?: "UNLK2" | "IMD";
 }) {
-  const { data: d } = useApp();
+  const { data: d, stale } = useApp();
   const rate =
-    d?.imdUsd[1] && (token === "IMD" || d?.tokenPrice[1])
+    !stale && d?.imdUsd[1] && (token === "IMD" || d?.tokenPrice[1])
       ? token === "IMD"
         ? d.imdUsd[0]
         : (d.imdUsd[0] * d.tokenPrice[0]) / 10n ** 18n
@@ -258,10 +258,24 @@ export function Progress({
       <progress value={pct} max={100} aria-label={label} />
       <div className="spread muted">
         <span>
-          {valid ? display(value) : "Invalid reference"} {unit}
+          {valid ? display(value) : "Unavailable / stale"} {unit}
         </span>
         <span>
           of {display(target, 18, 0)} {unit}
+        </span>
+      </div>
+      <div className="spread muted">
+        <span>
+          Remaining:{" "}
+          {valid && value !== undefined
+            ? display(target > value ? target - value : 0n)
+            : "Unavailable"}{" "}
+          {unit}
+        </span>
+        <span>
+          {valid && value !== undefined
+            ? `${(100 - pct).toFixed(1)}% remaining`
+            : "Unavailable"}
         </span>
       </div>
     </div>

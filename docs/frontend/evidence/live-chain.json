@@ -1,8 +1,8 @@
 {
-  "observedAt": "2026-11-03T14:22:26.810Z",
+  "observedAt": "2026-11-04T07:10:57.215Z",
   "mode": "Public RPC reads and eth_call simulation only. No transaction signing or broadcasting.",
   "chainId": 1,
-  "block": "26334843",
+  "block": "26339867",
   "contracts": [
     {
       "name": "UnlockV2Token",
@@ -53,7 +53,7 @@
     "gatesOpen": 0,
     "pendingGatesOpen": 0,
     "fdvUsd": [
-      "8538697203731000000000",
+      "7967466607490000000000",
       true
     ],
     "tokenPriceInImd": [

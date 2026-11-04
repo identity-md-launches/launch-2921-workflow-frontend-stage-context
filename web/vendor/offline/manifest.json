@@ -1,0 +1,117 @@
+{
+  "format": 1,
+  "compiler": {
+    "version": "0.25.12",
+    "platform": "linux",
+    "arch": "x64",
+    "sha256": "bab29b2ca7a9e89b67cf720b77b2d743f9f31f5cf0d5bd74ee8c8de30ced7014"
+  },
+  "lockSha256": "fd6b8d221aa4de014bfa4085eb56fdb06ea4980d436a951b71eca19ceb048674",
+  "packages": [
+    {
+      "name": "@coinbase/wallet-sdk",
+      "version": "4.3.7",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "@esbuild/linux-x64",
+      "version": "0.25.12",
+      "license": "MIT"
+    },
+    {
+      "name": "@noble/curves",
+      "version": "1.9.1",
+      "license": "MIT"
+    },
+    {
+      "name": "@noble/hashes",
+      "version": "1.8.0",
+      "license": "MIT"
+    },
+    {
+      "name": "abitype",
+      "version": "1.1.0",
+      "license": "MIT"
+    },
+    {
+      "name": "clsx",
+      "version": "1.2.1",
+      "license": "MIT"
+    },
+    {
+      "name": "eventemitter3",
+      "version": "5.0.4",
+      "license": "MIT"
+    },
+    {
+      "name": "isows",
+      "version": "1.0.7",
+      "license": "MIT"
+    },
+    {
+      "name": "ox",
+      "version": "0.9.6",
+      "license": "MIT"
+    },
+    {
+      "name": "preact",
+      "version": "10.29.8",
+      "license": "MIT"
+    },
+    {
+      "name": "preact-hooks",
+      "version": "0.1.0",
+      "license": "MIT"
+    },
+    {
+      "name": "react",
+      "version": "19.2.0",
+      "license": "MIT"
+    },
+    {
+      "name": "react-dom",
+      "version": "19.2.0",
+      "license": "MIT"
+    },
+    {
+      "name": "scheduler",
+      "version": "0.27.0",
+      "license": "MIT"
+    },
+    {
+      "name": "viem",
+      "version": "2.38.5",
+      "license": "MIT"
+    }
+  ],
+  "assets": {
+    "viem.mjs": {
+      "bytes": 341409,
+      "sha256": "305d08acf2e375bd6748f539cf6541bd211cf7a2c637cb05fd474abc2ffde69a"
+    },
+    "react.mjs": {
+      "bytes": 10002,
+      "sha256": "30dbc71483c37dc66508ff5f57d791e295dafa1bb7df399d084c8288be8220f1"
+    },
+    "react-jsx-runtime.mjs": {
+      "bytes": 1353,
+      "sha256": "f794bc84ed8fb2eca0e33e83cba198cbf7273d70ca49d53dbee6d594cbb206dc"
+    },
+    "react-dom-client.mjs": {
+      "bytes": 186016,
+      "sha256": "f1b6d37e843162c15f52c24e0c6e7697642938c5dd64ab821b34ae95a150d71f"
+    },
+    "coinbase.mjs": {
+      "bytes": 129012,
+      "sha256": "7c7740276c78b1c2bb8416ac6eb7256e05258eaa01c982f8d24809c9d90f1553"
+    },
+    "esbuild-linux-x64.xz": {
+      "bytes": 3415804,
+      "sha256": "69d0640b2765e1e5a8c995cc6766ea4240072f1aa81120a40a208364d054d4c6"
+    },
+    "LICENSES.txt": {
+      "bytes": 15460,
+      "sha256": "278cd7f31177dca777d8d9a4ed6ec7d04c8ec90603a0934eb63053f28a7badc9"
+    }
+  }
+}

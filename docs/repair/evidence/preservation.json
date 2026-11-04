@@ -1,0 +1,51 @@
+{
+  "preserved": [
+    {
+      "file": "src/UnlockV2Token.sol",
+      "unchanged": true,
+      "sha256": "243a290f164aab417cf6d2cdc19fa5352e663d1f0f4cfd8adcd69878f6a4f61e"
+    },
+    {
+      "file": "src/UnlockV2Hook.sol",
+      "unchanged": true,
+      "sha256": "a94e17459183d70fae9a9fec45e07ebf95a21698b5968f5d9286696ab40428a8"
+    },
+    {
+      "file": "src/MigrationVault.sol",
+      "unchanged": true,
+      "sha256": "c57f8c8a94c2e128f74acf5489b1b2e8a1f8714feda331a636a22618188f73ac"
+    },
+    {
+      "file": "src/RewardPot.sol",
+      "unchanged": true,
+      "sha256": "44a586c8c12e3a3f16e887039209bb2881792aa302c3cc232a706aee59c9d790"
+    },
+    {
+      "file": "foundry.toml",
+      "unchanged": true,
+      "sha256": "2427bc844d5441ec030279f350e40f9177bc0969bb1b6776a8dab024040c5fff"
+    },
+    {
+      "file": "remappings.txt",
+      "unchanged": true,
+      "sha256": "9b51fc7d7394c2afd83759ba06c186a87d68dc03253c4756c035bd7d288ba112"
+    },
+    {
+      "file": "launch.json",
+      "unchanged": true,
+      "sha256": "09080d5d859f7223aefe0b90b9c70e8c64b6f27f12b0b93bd19b6fd70f2246e7"
+    }
+  ],
+  "verifiedABIs": [
+    {
+      "contract": "UnlockV2Token",
+      "compiledSourceABIHash": "fd080158be9b762f48aff57828548dbfad24e87b7f5cdf882adea07b4e2acf12",
+      "matchesPinned": true
+    },
+    {
+      "contract": "UnlockV2Hook",
+      "compiledSourceABIHash": "14aa7579295752ea04ee3bf33e5f68b88806497a37a569396887dd6c4746ce19",
+      "matchesPinned": true
+    }
+  ]
+}

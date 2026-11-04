@@ -1,3 +1,5 @@
+> Historical frontend-stage evidence. For the repaired integration and current measured results, see [../repair/VALIDATION.md](../repair/VALIDATION.md). Old custom-minimum/direct-distributor behavior is superseded.
+
 # Frontend validation and interface review
 
 Worker self-report for the delivered UNLOCK V2 source and static export. These checks are reproducible development evidence, not independent certification or an audit of deployed economics.

@@ -1,3 +1,4 @@
+import { Dashboard } from "./Dashboard";
 import { useEffect, useMemo, useState } from "react";
 import { loadConfig, withWalletReadFallback, type Runtime } from "./config";
 import { Context } from "./context";
@@ -5,7 +6,6 @@ import { useData } from "./state";
 import { WalletDialog, useWallet } from "./wallet";
 import { useTransactions } from "./transactions";
 import { display, Stat } from "./components";
-import { Trade } from "./Trade";
 import {
   Burn,
   Gates,
@@ -234,7 +234,9 @@ export default function App() {
                 <Stat
                   label="UNLK2 price"
                   value={
-                    d?.tokenPrice[1] ? display(d.tokenPrice[0], 18, 8) : "—"
+                    d?.tokenPrice[1] && !state.stale
+                      ? display(d.tokenPrice[0], 18, 8)
+                      : "Unavailable"
                   }
                   unit="IMD"
                 />
@@ -252,7 +254,7 @@ export default function App() {
               </div>
             )}
             {screen === "Trade" ? (
-              <Trade />
+              <Dashboard />
             ) : screen === "Gates" ? (
               <Gates />
             ) : screen === "Migrate" ? (

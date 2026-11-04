@@ -12,7 +12,7 @@ export default defineConfig({
           if (req.url?.split("?")[0] !== "/imd-deployment.json") return next();
           try {
             const content = await readFile(
-              new URL("../dist/imd-deployment.json", import.meta.url),
+              new URL("./site/imd-deployment.json", import.meta.url),
             );
             res.setHeader("Content-Type", "application/json");
             res.end(content);
@@ -24,5 +24,5 @@ export default defineConfig({
       },
     },
   ],
-  build: { outDir: "../dist", emptyOutDir: true, chunkSizeWarningLimit: 1500 },
+  build: { outDir: "./site", emptyOutDir: true, chunkSizeWarningLimit: 1500 },
 });
