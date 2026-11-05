@@ -1664,8 +1664,9 @@ label, dt, .stat > span, .chain-label, .read-status, .door-state, .field-heading
   .chart-panel .segmented { margin: 0; }
   .chart-panel .segmented button { min-height: 28px; padding: 4px 10px; }
   .chart-panel select { min-height: 32px; padding: 4px 8px; font-size: var(--sm); }
-  .market-canvas { height: 190px; }
-  .market-chart { min-height: 0; }
+  .chart-panel { display: flex; flex-direction: column; }
+  .market-chart { flex: 1 1 auto; display: flex; flex-direction: column; min-height: 0; }
+  .market-canvas { flex: 1 1 190px; height: auto; min-height: 190px; contain: size; }
   .chart-empty { min-height: 180px; margin: 6px 0; }
   .chart-empty > strong { max-width: 48ch; }
   .chart-empty p { max-width: 65ch; margin-bottom: 0; }
@@ -1681,4 +1682,18 @@ label, dt, .stat > span, .chain-label, .read-status, .door-state, .field-heading
   .art-panel h2 { padding-bottom: 8px; margin-bottom: 8px; }
   .art-panel .compact-dl { gap: 6px; margin-block: 8px; }
   .art-panel button { margin-top: 8px; }
+  .active-gate > .two-col { grid-template-columns: minmax(0, 1fr); }
+  .active-gate > .two-col > .panel {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    column-gap: 24px;
+    align-content: start;
+  }
+  .active-gate > .two-col > .panel > * { grid-column: 2; min-width: 0; }
+  .active-gate > .two-col > .panel > h2 { grid-column: 1 / -1; }
+  .active-gate > .two-col > .panel > .energy-scene {
+    grid-column: 1;
+    grid-row: 2 / span 12;
+    align-self: start;
+  }
 }

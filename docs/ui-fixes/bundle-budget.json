@@ -1,0 +1,53 @@
+{
+  "baseCommit": "6a2c438c6962d3e798cafbfc0f9248e1d8b34788",
+  "method": "Conservative full size of every changed/new ordinary file, including this report. Deleted files count zero; ignored scratch/cache excluded.",
+  "bytes": 1827906,
+  "limitBytes": 8388608,
+  "remainingBytes": 6560702,
+  "passed": true,
+  "changedOrNewFiles": 33,
+  "protectedPathsChanged": [],
+  "ignoreFilesChanged": [],
+  "largestFiles": [
+    {
+      "path": "dist/assets/index-A3NBDJZK.js",
+      "bytes": 758077
+    },
+    {
+      "path": "web/site/assets/index-A3NBDJZK.js",
+      "bytes": 758077
+    },
+    {
+      "path": "web/src/style.css",
+      "bytes": 50374
+    },
+    {
+      "path": "dist/assets/index-XFQXG62P.css",
+      "bytes": 41317
+    },
+    {
+      "path": "web/site/assets/index-XFQXG62P.css",
+      "bytes": 41317
+    },
+    {
+      "path": "web/src/Trade.tsx",
+      "bytes": 24955
+    },
+    {
+      "path": "web/tests/ui-fixes-browser.mjs",
+      "bytes": 22451
+    },
+    {
+      "path": "web/tests/mock.mjs",
+      "bytes": 18540
+    },
+    {
+      "path": "web/tests/ui-fixes-dom.mjs",
+      "bytes": 15203
+    },
+    {
+      "path": "docs/ui-fixes/VALIDATION.md",
+      "bytes": 13195
+    }
+  ]
+}

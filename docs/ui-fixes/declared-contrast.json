@@ -1,0 +1,29 @@
+{
+  "mode": "Computed sRGB contrast for declared solid token pairs only; actual rendered/gradient/image backgrounds unverified.",
+  "pairs": [
+    {
+      "foreground": "#f2f1e6",
+      "background": "#09100e",
+      "ratio": 16.94,
+      "normalTextThreshold": 4.5
+    },
+    {
+      "foreground": "#a9b9b1",
+      "background": "#09100e",
+      "ratio": 9.4,
+      "normalTextThreshold": 4.5
+    },
+    {
+      "foreground": "#ffb0a8",
+      "background": "#09100e",
+      "ratio": 11.01,
+      "normalTextThreshold": 4.5
+    },
+    {
+      "foreground": "#ecd08c",
+      "background": "#09100e",
+      "ratio": 12.79,
+      "normalTextThreshold": 4.5
+    }
+  ]
+}

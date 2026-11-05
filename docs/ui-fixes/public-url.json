@@ -1,0 +1,250 @@
+{
+  "checkedAt": "2026-11-05T17:12:34.281Z",
+  "mode": "Read-only public HTTPS, no mocks, wallets, signing, chain writes or publication.",
+  "url": "https://unlock-v2.imd.site/",
+  "expectedBuildId": "sha256:9bc4d312032147f78a087a7207f6c00bc65211e9e25900f56f4313e926d93de6",
+  "assets": [
+    {
+      "path": "abi/MigrationVault.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "abi/RewardPot.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Hook.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Token.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "art/brand-mark.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/burn-core.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/CC0-1.0.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "hashMatches": true
+    },
+    {
+      "path": "art/golden-vault.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/LICENSE.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "hashMatches": true
+    },
+    {
+      "path": "art/portal-current.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/portal-locked.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/portal-open.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "art/provenance.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "assets/chunk-MUSPBBTZ.js",
+      "status": 200,
+      "contentType": "text/javascript",
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index-A3NBDJZK.js",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "hashMatches": false
+    },
+    {
+      "path": "assets/index-XFQXG62P.css",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "hashMatches": false
+    },
+    {
+      "path": "contract-runtime.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "design-assets.css",
+      "status": 200,
+      "contentType": "text/css",
+      "hashMatches": true
+    },
+    {
+      "path": "favicon.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    },
+    {
+      "path": "fonts/cinzel-400.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/cinzel-600.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/cinzel-OFL.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "hashMatches": true
+    },
+    {
+      "path": "fonts/ibm-plex-mono-400.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/ibm-plex-mono-600.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/ibm-plex-mono-OFL.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "hashMatches": true
+    },
+    {
+      "path": "fonts/manrope-400.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/manrope-600.ttf",
+      "status": 200,
+      "contentType": "font/ttf",
+      "hashMatches": true,
+      "validType": true
+    },
+    {
+      "path": "fonts/manrope-OFL.txt",
+      "status": 200,
+      "contentType": "text/plain",
+      "hashMatches": true
+    },
+    {
+      "path": "fonts/PROVENANCE.md",
+      "status": 200,
+      "contentType": "text/markdown",
+      "hashMatches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "contentType": "text/html",
+      "hashMatches": false
+    },
+    {
+      "path": "og-image.png",
+      "status": 200,
+      "contentType": "image/png",
+      "hashMatches": true
+    },
+    {
+      "path": "repair-config.json",
+      "status": 200,
+      "contentType": "application/json",
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-browser.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-coinbase.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-metamask.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-phantom.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-rabby.svg",
+      "status": 200,
+      "contentType": "image/svg+xml",
+      "hashMatches": true
+    }
+  ],
+  "errors": [],
+  "manifestStatus": 200,
+  "publicBuildId": "sha256:d615e68f5298c13f294bcc469dcb15bd5ebb9581bf3a7474ae6f44667f79435a",
+  "matchesDeliveredManifest": false,
+  "allExpectedAssetsMatch": false,
+  "allArtworkAndFontsLoad": true,
+  "matchesDeliveredExport": false,
+  "publicationStatus": "Public URL differs from delivered build; publication pending"
+}

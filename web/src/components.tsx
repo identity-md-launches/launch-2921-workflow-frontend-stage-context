@@ -237,12 +237,14 @@ export function Progress({
   target,
   unit = "",
   valid = true,
+  missing,
 }: {
   label: string;
   value?: bigint;
   target?: bigint;
   unit?: string;
   valid?: boolean;
+  missing?: string;
 }) {
   const pct =
     value !== undefined && valid && target !== undefined && target > 0n
@@ -255,7 +257,7 @@ export function Progress({
         <span>
           {valid && value !== undefined && target !== undefined
             ? `${pct.toFixed(1)}%`
-            : "Unavailable"}
+            : missing ?? "Unavailable"}
         </span>
       </div>
       <progress
@@ -265,12 +267,12 @@ export function Progress({
         aria-valuetext={
           valid && value !== undefined && target !== undefined
             ? `${pct.toFixed(1)}% completed`
-            : "Unavailable"
+            : missing ?? "Unavailable"
         }
       />
       <div className="spread muted">
         <span>
-          {valid ? display(value) : "Unavailable / stale"} {unit}
+          {valid ? display(value) : missing ?? "Unavailable / stale"} {valid || !missing ? unit : ""}
         </span>
         <span>
           of {display(target, 18, 0)} {unit}
@@ -281,13 +283,13 @@ export function Progress({
           Remaining:{" "}
           {valid && value !== undefined && target !== undefined
             ? display(target > value ? target - value : 0n)
-            : "Unavailable"}{" "}
-          {unit}
+            : missing ?? "Unavailable"}{" "}
+          {valid || !missing ? unit : ""}
         </span>
         <span>
           {valid && value !== undefined && target !== undefined
             ? `${(100 - pct).toFixed(1)}% remaining`
-            : "Unavailable"}
+            : missing ?? "Unavailable"}
         </span>
       </div>
     </div>

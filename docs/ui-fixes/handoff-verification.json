@@ -1,0 +1,40 @@
+{
+  "sourceUrl": "https://the-imd-daily.duckdns.org/unlock-v2-preview/ui-fixes/handoff.json",
+  "baseRepository": "https://github.com/identity-md-launches/launch-2921-workflow-frontend-stage-context",
+  "baseCommit": "6a2c438c6962d3e798cafbfc0f9248e1d8b34788",
+  "files": [
+    {
+      "path": "web/src/components.tsx",
+      "baseSha256": "29b4b9a78beb66d024e8ee412a6bf441f4babddc11819b14256169e3f1e4ba7c",
+      "replacementSha256": "0a01bf50eaa40b4528aeb5410ede5660eaaf628fbc529739ad358b4b60f12bd7",
+      "baseMatched": true,
+      "replacementMatched": true,
+      "finalSha256": "0a01bf50eaa40b4528aeb5410ede5660eaaf628fbc529739ad358b4b60f12bd7"
+    },
+    {
+      "path": "web/src/GateDoors.tsx",
+      "baseSha256": "969cd8ae1fad75043bf092bc9a83f551589b5f8d46713a2ac659c969ea566f2a",
+      "replacementSha256": "998e3e98de54f848ef25df3627477f76079483f0cca51b37225c94c616d02f0c",
+      "baseMatched": true,
+      "replacementMatched": true,
+      "finalSha256": "6de660d610bcf2ce752d1865c772a7444e23a2f4b4f642e79aab74bcfeea3171"
+    },
+    {
+      "path": "web/src/Trade.tsx",
+      "baseSha256": "d9090348e637aa2b560a4e7792066f1ade1a8dd59fbfeb8b55263228049badcf",
+      "replacementSha256": "e4be877fe196220bd0b73acb611672dec51adbd3bfa7b18137d3b80fb6ae004d",
+      "baseMatched": true,
+      "replacementMatched": true,
+      "finalSha256": "2667131acde59abc5dc5a693a88886f75c775572d1b2800e139d00dab5c2868d"
+    },
+    {
+      "path": "web/src/style.css",
+      "baseSha256": "8629b436ed828df04f094ac74bc295f01575220a7806f5792e54603cacc947c2",
+      "replacementSha256": "73356e8cbd765cbd92530df7f4e451f23fdc02b8883634529a66913ad630c229",
+      "baseMatched": true,
+      "replacementMatched": true,
+      "finalSha256": "73356e8cbd765cbd92530df7f4e451f23fdc02b8883634529a66913ad630c229"
+    }
+  ],
+  "reconciliation": "All four handoff base hashes matched the repository before applying. FDV guards and expanded accounting also distinguish unread/stale snapshots. Any additional responsive corrections are documented in VALIDATION.md."
+}

@@ -1,0 +1,10 @@
+(node:3) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "publicationStatus": "Public URL differs from delivered build; publication pending",
+  "expectedBuildId": "sha256:9bc4d312032147f78a087a7207f6c00bc65211e9e25900f56f4313e926d93de6",
+  "publicBuildId": "sha256:d615e68f5298c13f294bcc469dcb15bd5ebb9581bf3a7474ae6f44667f79435a",
+  "assets": 37,
+  "allArtworkAndFontsLoad": true,
+  "errors": []
+}

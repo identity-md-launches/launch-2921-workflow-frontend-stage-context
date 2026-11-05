@@ -1,0 +1,11 @@
+> unlock-v2-terminal@1.0.0 build
+> node scripts/offline-build.mjs
+
+
+  ...cratch/unlock-offline-build-iGfQeB/site/assets/index-A3NBDJZK.js  740.3kb
+  ...cratch/unlock-offline-build-iGfQeB/site/assets/chunk-MUSPBBTZ.js  125.5kb
+  ...ratch/unlock-offline-build-iGfQeB/site/assets/index-XFQXG62P.css   40.3kb
+
+⚡ Done in 107ms
+Verified ABIs; exported dist/ and web/site/ with 37 SHA-256 assets.
+Offline source build complete. This transpilation does not replace npm run typecheck.

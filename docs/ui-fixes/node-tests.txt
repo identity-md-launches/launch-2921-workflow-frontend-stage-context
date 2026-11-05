@@ -1,0 +1,156 @@
+TAP version 13
+# (node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:19) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: The offline staircase uses all ten deployed thresholds, never optimistic openings
+ok 1 - The offline staircase uses all ten deployed thresholds, never optimistic openings
+  ---
+  duration_ms: 2.018163
+  type: 'test'
+  ...
+# Subtest: Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass
+ok 2 - Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass
+  ---
+  duration_ms: 0.332669
+  type: 'test'
+  ...
+# Subtest: USD history rejects invalid historical rates and never substitutes a current price
+ok 3 - USD history rejects invalid historical rates and never substitutes a current price
+  ---
+  duration_ms: 0.48069
+  type: 'test'
+  ...
+# Subtest: amount parsing rejects exponent, negative, commas, zero and excessive precision
+ok 4 - amount parsing rejects exponent, negative, commas, zero and excessive precision
+  ---
+  duration_ms: 0.624555
+  type: 'test'
+  ...
+# Subtest: slippage minimum floors safely and rejects unsafe tolerance
+ok 5 - slippage minimum floors safely and rejects unsafe tolerance
+  ---
+  duration_ms: 0.29322
+  type: 'test'
+  ...
+# Subtest: Universal Router payload, reversed currencies, extended=false
+ok 6 - Universal Router payload, reversed currencies, extended=false
+  ---
+  duration_ms: 7.349793
+  type: 'test'
+  ...
+# Subtest: Universal Router payload, reversed currencies, extended=true
+ok 7 - Universal Router payload, reversed currencies, extended=true
+  ---
+  duration_ms: 2.428077
+  type: 'test'
+  ...
+# Subtest: contract and wallet failures have actionable messages
+ok 8 - contract and wallet failures have actionable messages
+  ---
+  duration_ms: 0.542553
+  type: 'test'
+  ...
+# Subtest: Market OHLC uses real observed trades, preserves gaps and sorts chronology
+ok 9 - Market OHLC uses real observed trades, preserves gaps and sorts chronology
+  ---
+  duration_ms: 0.651756
+  type: 'test'
+  ...
+# (node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:20) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: The offline staircase uses all ten deployed thresholds, never optimistic openings
+ok 10 - The offline staircase uses all ten deployed thresholds, never optimistic openings
+  ---
+  duration_ms: 1.740367
+  type: 'test'
+  ...
+# Subtest: Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass
+ok 11 - Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass
+  ---
+  duration_ms: 0.388523
+  type: 'test'
+  ...
+# Subtest: USD history rejects invalid historical rates and never substitutes a current price
+ok 12 - USD history rejects invalid historical rates and never substitutes a current price
+  ---
+  duration_ms: 0.337867
+  type: 'test'
+  ...
+# (node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:26) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Gate history uses the pinned deployment, selected gate, snapshot and nonoverlapping complete ranges
+ok 13 - Gate history uses the pinned deployment, selected gate, snapshot and nonoverlapping complete ranges
+  ---
+  duration_ms: 1.824794
+  type: 'test'
+  ...
+# Subtest: A failed history chunk rejects the whole read instead of reporting a partial total
+ok 14 - A failed history chunk rejects the whole read instead of reporting a partial total
+  ---
+  duration_ms: 0.491887
+  type: 'test'
+  ...
+# Subtest: A fully fetched empty history is zero; invalid gate and pre-deployment snapshots fail
+ok 15 - A fully fetched empty history is zero; invalid gate and pre-deployment snapshots fail
+  ---
+  duration_ms: 0.338297
+  type: 'test'
+  ...
+# (node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:27) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Authentic mainnet native double-hash proof verifies exactly the paid amount
+ok 16 - Authentic mainnet native double-hash proof verifies exactly the paid amount
+  ---
+  duration_ms: 83.629513
+  type: 'test'
+  ...
+# Subtest: Whole-tree proof generation: uneven, sorted, unique and reproducible
+ok 17 - Whole-tree proof generation: uneven, sorted, unique and reproducible
+  ---
+  duration_ms: 4.453994
+  type: 'test'
+  ...
+# (node:29) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# (node:29) [UNDICI-EHPA] Warning: EnvHttpProxyAgent is experimental, expect them to change at any time.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: Only the hook's official key and pinned native reference key can be used
+ok 18 - Only the hook's official key and pinned native reference key can be used
+  ---
+  duration_ms: 63.874066
+  type: 'test'
+  ...
+# Subtest: Native router plan is one atomic unlock with two strict swaps, exact settlement and buyer refund
+ok 19 - Native router plan is one atomic unlock with two strict swaps, exact settlement and buyer refund
+  ---
+  duration_ms: 5.898477
+  type: 'test'
+  ...
+# Subtest: Shortcuts floor base units and cap sells to CURRENT allowance, including gate-ten max
+ok 20 - Shortcuts floor base units and cap sells to CURRENT allowance, including gate-ten max
+  ---
+  duration_ms: 0.327071
+  type: 'test'
+  ...
+# Subtest: Full-route simulation rejects partial fills, wrong pools, missing buyer credit and unavailable RPC
+ok 21 - Full-route simulation rejects partial fills, wrong pools, missing buyer credit and unavailable RPC
+  ---
+  duration_ms: 24.590063
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 790.603786

@@ -1,0 +1,6 @@
+Strict TypeScript: PASS, exit 0, no diagnostics.
+Compiler: TypeScript 5.9.3, existing locked frontend dependencies.
+Method: exact web/src, web/tests, web/vite.config.ts and web/tsconfig.json mirror in disposable test/scratch/tooling/.
+Command: node test/scratch/tooling/node_modules/typescript/bin/tsc --project test/scratch/tooling/tsconfig.json --noEmit
+Source mirror: 29 files byte-identical to final web/src/.
+No project dependency, lockfile or build-configuration change.

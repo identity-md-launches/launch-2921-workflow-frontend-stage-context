@@ -1,0 +1,11 @@
+> unlock-v2-terminal@1.0.0 validate
+> node --import ./scripts/offline-register.mjs scripts/validate.mjs
+
+{
+  "result": "PASS",
+  "assets": 37,
+  "exportBytes": 2002846,
+  "abiHashes": "match handoff",
+  "network": "exact",
+  "assetInventory": "complete"
+}

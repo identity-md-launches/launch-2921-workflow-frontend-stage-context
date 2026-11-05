@@ -239,9 +239,9 @@ export function rpcMock(s) {
         ? [BigInt(rows[s.gates - 1][0]), BigInt(rows[s.gates - 1][0])]
         : [20n, 0n],
       gateImdUsdPrice: s.invalidUsd ? [0n, false] : [1n * E, true],
-      lastFdvUsd: 80000n * E,
+      lastFdvUsd: s.lastGateFdv ?? 80000n * E,
       lastFdvBlock: s.block - 1n,
-      lastValidObservation: BigInt(Math.floor(Date.now() / 1000)),
+      lastValidObservation: s.lastObservation ?? BigInt(Math.floor(Date.now() / 1000)),
       trackedAt: BigInt(Math.floor(Date.now() / 1000)),
       fdvUsd: [100000n * E, true],
       imdUsdPrice: s.invalidUsd ? [0n, false] : [2n * E, true],

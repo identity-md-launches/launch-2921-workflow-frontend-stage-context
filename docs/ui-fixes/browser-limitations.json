@@ -1,0 +1,32 @@
+{
+  "status": "Blocked before rendered checks",
+  "screenshotsCaptured": 0,
+  "measuredDesktopMobileRoutes": 0,
+  "browserSuite": {
+    "command": "node --import ./web/scripts/offline-register.mjs web/tests/ui-fixes-browser.mjs",
+    "result": "Could not start; Chromium launch exited with SIGTRAP.",
+    "exitCode": 1,
+    "assertionGroupsRun": 0
+  },
+  "designProbe": {
+    "command": "node .imd/reads/skills/design-critic/scripts/taste.mjs --out test/scratch/taste",
+    "result": "Could not measure; Chromium launch exited with SIGTRAP.",
+    "exitCode": 2,
+    "checksPassed": 0,
+    "checksMeasured": 0
+  },
+  "otherAttempts": [
+    "Assigned browser tool failed during initialization: Socket path too long.",
+    "Local Playwright Chromium 1.56.1 and 1.64.1 distributions exited during launch with SIGTRAP.",
+    "Local WebKit 26 launched with temporary extracted runtime libraries, but its page targets crashed before page creation completed.",
+    "A Firefox fallback could not find its application directory."
+  ],
+  "limits": [
+    "No new desktop/mobile screenshots or rendered comparison to the visual reference.",
+    "No measured chart heights or quote-resize regression result.",
+    "No rendered contribution/grid/overflow/first-screen check.",
+    "No browser image decoding or font-face rendering verification. Public HTTP status, MIME, bytes and signatures were checked separately.",
+    "No native wallet-dialog focus, Escape or background-inertness verification. DOM modal APIs were explicitly simulated.",
+    "No physical wallet, Coinbase passkey or signed transaction test."
+  ]
+}

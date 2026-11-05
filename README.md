@@ -1,16 +1,18 @@
 # UNLOCK V2
 
-A redesign of the existing **https://unlock-v2.imd.site/** website, continuing job **38c6908b-83e2-4a77-8d65-4fa6c24660d6**. React/TypeScript source is in `web/`; **`dist/` is the finished static export**, mirrored in `web/site/`. Relative assets and existing hash routes support static hosting and gateway subpaths.
+Targeted UI update of **https://unlock-v2.imd.site/** from source commit **`6a2c438c6962d3e798cafbfc0f9248e1d8b34788`**. React/TypeScript source is in `web/`; **root `dist/` is the production static export**, mirrored byte for byte in `web/site/`. Existing package manifests, lockfile, build configuration and dependencies are unchanged.
 
-The approved reference was retrieved successfully. The redesign adds six original optimized artwork assets, local licensed fonts, ten live portals on Home and Gates, independent gate progress, a visible fixed swap route, illustrated core/vault previews and a consistent system across all nine screens. Migration, rights, native claim credit, transfers, burns, rewards, owner/setup safeguards and transaction protections are retained. See [DESIGN.md](DESIGN.md) and [asset provenance](docs/redesign/ASSETS.md).
+All four supplied handoff base/replacement SHA-256 hashes were checked before applying. The update implements “Not yet observed” for a successful zero processed-FDV read, the flexible desktop chart height, and the full-width desktop contribution panel with artwork beside its form. An additional wording correction keeps failed/stale reads distinct in expanded accounting and handles a zero observation timestamp. [Handoff verification](docs/ui-fixes/handoff-verification.json).
 
-**Publication is pending the existing publishing service.** The public URL returned HTTPS 200 with its older 17-asset build; it did not match this export. This worker has no publishing connector and the assignment prohibits touching `.git/`, so no new commit, publication or post-publication pass is claimed. See [PUBLISH.md](docs/redesign/PUBLISH.md).
+All existing artwork and fonts remain byte-identical: the logo, the three portal-state illustrations used across all ten gates, Burn & Points core, Golden Vault, and six local font faces. No illustrated candles, example balances or substitute valuations were added.
 
-No contracts were deployed, trading was not activated, and no mainnet signing, funding, registration, transfer or economic change occurred. Live read-only verification found trading closed. The four Solidity route tests and six browser transaction flows execute only on an isolated fork.
+**Publication is pending the existing submission/publishing service.** The public URL was checked: all six WebP images and all six TTF files return HTTP 200 with correct MIME types, signatures and matching bytes, but its application build differs from this export. There is no publishing connector available, and this assignment prohibits `.git/` writes; no new commit or public deployment is claimed. [Publication handoff](docs/ui-fixes/PUBLISH.md), [public comparison](docs/ui-fixes/public-url.json).
+
+Build identifier: **`sha256:9bc4d312032147f78a087a7207f6c00bc65211e9e25900f56f4313e926d93de6`**, the SHA-256 of `dist/imd-deployment.json`, which inventories every export asset. [Build/source integrity](docs/ui-fixes/build-integrity.json) records the full source digest and preservation checks. The deployment manifest’s `sourceCommit` remains the original **contract** source commit; it is not a claim about this frontend update.
 
 ## Install, preview and rebuild
 
-Use Node 22.18+; the existing manifests, lockfile and build configuration are unchanged.
+Use Node 22.18+ and the existing locked dependencies:
 
 ```sh
 npm --prefix web ci
@@ -19,9 +21,9 @@ npm --prefix web run build:vite
 npm --prefix web run preview
 ```
 
-Open the preview URL printed by Vite. `npm --prefix web run dev` starts source development. The publisher serves `dist/` and does not need to rebuild it.
+Open the URL printed by Vite. `npm --prefix web run dev` starts source development. Both production builders write `web/site/` and root `dist/`, with relative assets and all nine existing hash routes for static hosting and gateway subpaths.
 
-The retained integrity-checked Linux x64 production builder works without installing frontend dependencies:
+The retained, integrity-checked Linux x64 builder needs no dependency installation:
 
 ```sh
 npm --prefix web run build
@@ -29,41 +31,64 @@ npm --prefix web run validate
 python3 -m http.server 4173 --directory dist
 ```
 
-Open `http://localhost:4173/`. This builder compiles the actual source, verifies ABI hashes and rebuilds both exports. Run the separate typecheck as well: the offline build is transpilation, not a typecheck. Required offline runtime/compiler assets and licenses stay in `web/vendor/offline/`; no npm registry mirror, dependency archive or generated dependency directory is delivered.
+Open `http://localhost:4173/`. This builder compiles the actual source and verifies ABI hashes; it is not a TypeScript checker. The separate typecheck is required. Necessary offline compiler/runtime assets and licenses remain in `web/vendor/offline/`; no npm registry mirror, dependency archive, cache or generated dependency directory is added to the submission.
 
-Artwork and fonts are local. Chain reads, wallet connections and transaction submission need the visitor’s network access. There is no private credential or backend in the export.
+## Current verification
 
-## Checks and evidence
+The current worker results are documented in [VALIDATION.md](docs/ui-fixes/VALIDATION.md). Earlier reports under `docs/frontend/`, `docs/repair/`, `docs/update/` and `docs/redesign/` are historical and do not establish results for this build.
 
-The focused revision fixes desktop composition and both burn-preview findings. Current results, before/after measurements, screenshots and remaining publication limits are in [REVISION.md](docs/redesign/REVISION.md); reviewer responses are in [.imd-responses.json](.imd-responses.json). The result counts below describe the original redesign; the revision report distinguishes checks rerun on this export.
+| Check | Current result |
+| --- | --- |
+| Production source build | PASS; root `dist/` and `web/site/` generated |
+| Strict TypeScript | PASS; exact source/config/test mirror with the locked compiler in disposable scratch |
+| Unit/regression tests | 21/21 PASS |
+| Actual production JS in simulated DOM | 11/11 groups PASS; explicitly synthetic RPC/wallet and simulated modal/scroll APIs |
+| Static export integrity | PASS; 37 asset hashes, ABI/network checks, relative entry URLs and identical export mirror |
+| Artwork/font preservation | PASS; all 12 binary runtime files match the base commit and both exports |
+| Public HTTPS artwork/fonts | PASS; all 12 return 200 with correct MIME types and bytes |
+| Public new-build identity | PENDING; currently differs from delivered export |
+| Desktop/mobile rendered checks and pinned design probe | BLOCKED by browser runtime failures; no new screenshot or geometry result claimed |
+
+Unit tests:
 
 ```sh
-node --import ./web/scripts/offline-register.mjs --experimental-strip-types --test web/tests/core.test.ts web/tests/repair.test.mjs web/tests/routes.test.ts web/tests/gate-history.test.ts
-node --import ./web/scripts/offline-register.mjs web/tests/browser.mjs
-node --import ./web/scripts/offline-register.mjs web/tests/redesign-browser.mjs
-UNLOCK_ETH_FORK=true forge test --match-contract EthRouteForkTest -vvv
-node --import ./web/scripts/offline-register.mjs web/tests/fork-browser.mjs
-node --import ./web/scripts/offline-register.mjs web/scripts/verify-update.mjs
-node web/tests/live-export-browser.mjs
-node web/scripts/check-public-update.mjs
+node --import ./web/scripts/offline-register.mjs --experimental-strip-types --test \
+  web/tests/core.test.ts web/tests/repair.test.mjs web/tests/routes.test.ts \
+  web/tests/gate-history.test.ts web/tests/dashboard.test.ts
 ```
 
-Browser scripts require Playwright and its browser runtimes. `IMD_BROWSER=webkit` selects WebKit for the redesigned route suite. `IMD_PLAYWRIGHT` can select an installed Playwright module. On this worker, test dependencies, browser binaries and extracted runtime libraries were confined to disposable `test/scratch/`; they are not submitted. Existing manifests and lockfiles were never changed.
+The production-JavaScript DOM suite uses the optional **test-only** `jsdom@26.1.0`, installed into disposable scratch without changing the project manifest/lockfile:
 
-Current results: production build and strict TypeScript pass; **18 pure subtests**, **14 existing frontend interaction groups**, **24 redesigned checks per browser in Chromium and WebKit**, **4 Solidity fixed-route fork tests**, and **6 production-interface fork flows** pass. The pinned design probe passes **16/16**. All nine screens have desktop and mobile screenshots. [Validation](docs/redesign/VALIDATION.md) identifies exact commands, mock/fork/live tiers, findings, screenshots and remaining limits. These are worker checks, not independent certification.
+```sh
+npm install --prefix test/scratch/ui-dom --no-save --package-lock=false jsdom@26.1.0
+IMD_JSDOM="$PWD/test/scratch/ui-dom/node_modules/jsdom/lib/api.js" \
+  node --import ./web/scripts/offline-register.mjs web/tests/ui-fixes-dom.mjs
+```
 
-Screenshots are genuine browser captures, labeled by evidence tier. Full-page screenshots are optimized to WebP without changing dimensions/content; rerun `python3 web/scripts/optimize-redesign-evidence.py` after browser captures (Pillow required). The share image can be regenerated with `node web/scripts/redesign-og.mjs`, then rebuilt. It has no displayed balances or candle data.
+This checks all nine routes, zero/positive/expired/stale/error FDV states and retry, ten portal selections, real contribution/vault navigation, wallet discovery/mobile links, IMD quotes/minimum output/slippage, stopped unsupported ETH simulation, percentage/quota protections, burn preview, weekly reward control, vault states and migration approval review. No signed transaction is sent, even to a mock. It does **not** establish native dialog behavior, accessibility compliance, image/font rendering, responsive layout or chart geometry.
 
-## Fixed ETH route and retained protections
+With functioning Playwright browsers, run the prepared export/browser suite and the pinned probe:
 
-`native ETH → pinned ETH/IMD v4 pool → official IMD/UNLK2 v4 pool → connected buyer`
+```sh
+node --import ./web/scripts/offline-register.mjs web/tests/ui-fixes-browser.mjs
+IMD_BROWSER=webkit node --import ./web/scripts/offline-register.mjs web/tests/ui-fixes-browser.mjs
+node .imd/reads/skills/design-critic/scripts/taste.mjs --out test/scratch/taste
+```
 
-There are no alternate pools, aggregators, split routes or fallback routes. The existing atomic Universal Router payload, actual-buyer credit, full-route simulation, approvals, slippage/minimum output, deadline, exact fees, refund and gas checks remain. Wallet identity and EIP-6963/mobile-wallet/Coinbase Smart Wallet flows remain. Trading is disabled from the verified hook state.
+`IMD_PLAYWRIGHT` can select an installed Playwright `index.mjs`. The browser suite includes all routes at 320/390/768/1024/1440, asset/font loading, horizontal overflow, first-screen actions, quote chart resizing, contribution geometry and wallet focus/Escape. It could not start here. [Exact limits](docs/ui-fixes/browser-limitations.json).
 
-20/50/75/MAX uses the IMD balance for buys, ETH after the existing fresh gas/buffer calculation, and `min(balance, remaining sell allowance)` for sells. A state change during shortcut simulation discards the stale amount and asks for a retry. No stale quote is signed.
+After the publication service publishes **root `dist/`** to the same site identity:
 
-## Data limits
+```sh
+node web/scripts/check-ui-fixes-public.mjs
+```
 
-Current gate burn progress is a verified storage read. Future-gate zero is derived from verified `gatesOpen` and the immutable contract’s refusal of out-of-order contributions. Opened gates require complete historical Contributed logs. Both pinned public RPCs rejected the old-block probe: PublicNode requires an archive token; dRPC reported its free-plan range limit. The site shows an explicit unavailable-history/retry state, never a guessed burn total. A wallet provider with historical-log support may help; that provider path was not verified with a physical wallet.
+This read-only command exits 1 while the expected export differs. Require `matchesDeliveredExport: true` and `allArtworkAndFontsLoad: true`, then repeat rendered public-route/mobile/wallet checks. It never publishes or signs anything.
 
-The reference’s balances, candles and percentages were not imported as live data. Live closed trading displays its real empty-history state. No missing value or test result was fabricated. Screen-reader sessions, physical wallet apps/passkeys, native 200% browser zoom and the newly published public build remain unverified. Historical reports under `docs/frontend/`, `docs/repair/` and `docs/update/` describe earlier work; the current report is `docs/redesign/VALIDATION.md`.
+## Preserved behavior
+
+All nine routes, wallet connector, migration, selling rights, contributions, rewards and Golden Vault code remain. The transaction body of `Trade`, route/calldata logic, contracts, ABI bindings, fees, allocations, thresholds, payment options, percentage shortcuts, gas reserve, quota, slippage and minimum-output protections are unchanged.
+
+ETH purchases retain **native ETH → pinned ETH/IMD pool → official IMD/UNLK2 pool → connected buyer**. Unsupported full-route simulation stops ETH buying; there is no alternate pool or fallback route. The chart retains real official-pool history and its honest empty/error states.
+
+No contract was deployed, trading was not activated, and no mainnet signing, funding, registration, transfer or economic change occurred. [DESIGN.md](DESIGN.md) describes the implemented design system and responsive rules; [current validation](docs/ui-fixes/VALIDATION.md) separates observed results, mocks and remaining blockers.

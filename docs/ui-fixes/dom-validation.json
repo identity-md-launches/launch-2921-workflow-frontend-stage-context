@@ -1,0 +1,51 @@
+{
+  "mode": "Actual dist JavaScript executed in jsdom. Synthetic RPC, EIP-6963 wallet, modal/scroll browser APIs. No layout, image decoding, font rendering, native dialogs or physical wallets are verified. No real signing/broadcasts.",
+  "checks": [
+    {
+      "name": "All nine hash routes retain exactly one heading and their primary controls",
+      "passed": true
+    },
+    {
+      "name": "Closed market has honest empty history; log failure/retry never adds demo candles",
+      "passed": true
+    },
+    {
+      "name": "Successful zero FDV/zero observation is Not yet observed on both gate components",
+      "passed": true
+    },
+    {
+      "name": "Failed read and retained stale zero snapshot never impersonate a missing observation; retry recovers",
+      "passed": true
+    },
+    {
+      "name": "Positive, expired and invalid-price observations are distinct from zero observations",
+      "passed": true
+    },
+    {
+      "name": "Every portal selects thresholds; contribution and vault previews reach the actual controls",
+      "passed": true
+    },
+    {
+      "name": "Wallet sheet discovers EIP-6963, offers four mobile wallet links and Coinbase, closes and connects",
+      "passed": true
+    },
+    {
+      "name": "IMD quote/slippage retains minimum output; unsupported ETH simulation stops on pinned route",
+      "passed": true
+    },
+    {
+      "name": "IMD percentage shortcuts and sell quota cap remain enforced without signing",
+      "passed": true
+    },
+    {
+      "name": "Burn preview, weekly reward control and Golden Vault locked/open states remain available",
+      "passed": true
+    },
+    {
+      "name": "Migration approval review requires acknowledgement and preserves exact amount without signing",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "mockTransactionsSent": 0
+}

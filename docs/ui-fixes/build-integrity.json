@@ -1,0 +1,90 @@
+{
+  "mode": "Local byte/hash/source validation; no rendered measurements or transaction broadcasts.",
+  "baseSourceCommit": "6a2c438c6962d3e798cafbfc0f9248e1d8b34788",
+  "buildId": "sha256:9bc4d312032147f78a087a7207f6c00bc65211e9e25900f56f4313e926d93de6",
+  "indexSha256": "278064c346d4deba2af1baead3290d27c7276bc840722318112ae3e626992b19",
+  "assets": 37,
+  "exportBytes": 2002846,
+  "artworkAndFonts": [
+    {
+      "path": "art/brand-mark.webp",
+      "sha256": "7e7d767dc10b732d1fa3d5cc2e3a0d45e29bb9f80377f2bce1dafdfc10790bae",
+      "preservedFromBase": true
+    },
+    {
+      "path": "art/burn-core.webp",
+      "sha256": "e722718f761c5346579c9ea0ab494cb65d9544045b17d16506b4dd32156a5772",
+      "preservedFromBase": true
+    },
+    {
+      "path": "art/golden-vault.webp",
+      "sha256": "767557cd56ae7df5ff621214bb913b49832879bf51f0f5d87f37ecf4ebe17113",
+      "preservedFromBase": true
+    },
+    {
+      "path": "art/portal-current.webp",
+      "sha256": "c37c36b0ee11d7c7fd89357647aff77cc54700d1d2e29837e77956efdd031efa",
+      "preservedFromBase": true
+    },
+    {
+      "path": "art/portal-locked.webp",
+      "sha256": "b0d6c80d2621e05be7e37c713616073dff47d4305dcd99ac4d2c52dc4616074f",
+      "preservedFromBase": true
+    },
+    {
+      "path": "art/portal-open.webp",
+      "sha256": "849ee8760fabc9ce15f6cb2444ec086fcb4d3d0e35b347c35d0e5fc39f750155",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/cinzel-400.ttf",
+      "sha256": "a0242f6698ae0d3220a29986a09274f9d1eddb4a24da4e50faf387fd1804eb7b",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/cinzel-600.ttf",
+      "sha256": "5150b3609eeaaa9c6d7e093cb9b16ab8ec2f7110ddf0cbe751887e6f158398af",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/ibm-plex-mono-400.ttf",
+      "sha256": "a7fdc993f9f0387caedba4e42521136fa97e4c0837ae6239bf0413ccf8af00c2",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/ibm-plex-mono-600.ttf",
+      "sha256": "754dfc9d50cf7aabfb6b108d2c2f7d20a3f1f2cc6f6c01640c6728091272cec0",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/manrope-400.ttf",
+      "sha256": "ed335894f8d954263675f7e457bf657374d8b7be629be4dc43aef97c309ad3ae",
+      "preservedFromBase": true
+    },
+    {
+      "path": "fonts/manrope-600.ttf",
+      "sha256": "68ed4be49ec7d32f07b42f9232dc01ca1df7a77be1d9b0731aac74db58235f34",
+      "preservedFromBase": true
+    }
+  ],
+  "unchangedFiles": [
+    "web/src/eth-route.ts",
+    "web/src/core.ts",
+    "web/src/config.ts",
+    "web/src/integration.ts",
+    "web/src/state.ts",
+    "web/src/context.tsx",
+    "web/src/wallet.tsx",
+    "web/src/transactions.tsx",
+    "web/src/Screens.tsx",
+    "web/src/Charts.tsx",
+    "web/package.json",
+    "web/package-lock.json",
+    "web/vite.config.ts",
+    "web/public/repair-config.json",
+    "web/public/contract-runtime.json"
+  ],
+  "transactionFunctionUnchanged": true,
+  "relativeEntryUrls": true,
+  "frontendSourceSha256": "3adad2903b9de7a6e4ee1619677cb9113594062ccb9094b41a018d7ee316204e"
+}

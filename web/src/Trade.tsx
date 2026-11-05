@@ -42,6 +42,7 @@ export function GateProgress() {
         <>
           <Progress
             label="OR · Contract FDV · last processed"
+            missing={!stale && d?.lastGateFdv === 0n ? "Not yet observed" : undefined}
             value={processed ? d.lastGateFdv : undefined}
             target={next?.[1]}
             unit="USD"
@@ -85,7 +86,11 @@ export function GateProgress() {
         </p>
         <p>
           Historical last processed gate FDV:{" "}
-          {processed ? `$${display(d.lastGateFdv, 18, 2)}` : "Not yet observed"}
+          {!d || stale
+            ? "Unavailable / stale"
+            : d.lastGateFdv > 0n
+              ? `$${display(d.lastGateFdv, 18, 2)}`
+              : "Not yet observed"}
           ; last FDV attempt block {d?.lastFdvBlock.toString() ?? "—"}. Last
           valid volume observation:{" "}
           {d?.lastObservation

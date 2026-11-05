@@ -100,6 +100,7 @@ export function GateDoors() {
         <div className="gate-three">
           <Progress
             label="FDV · processed"
+            missing={fresh && d?.lastGateFdv === 0n ? "Not yet observed" : undefined}
             value={d?.lastGateFdv}
             target={row?.[1]}
             unit="USD"
@@ -135,10 +136,10 @@ export function GateDoors() {
           <summary>FDV &amp; gate accounting</summary>
         <div className="gate-observation">
           <span>Indicative live FDV <strong>{fresh && d?.fdv[1] ? `$${display(d.fdv[0], 18, 2)}` : "Unavailable"}</strong></span>
-          <span>Last processed gate FDV <strong>{d && d.lastGateFdv > 0n ? `$${display(d.lastGateFdv, 18, 2)}` : "Not yet observed"}</strong></span>
+          <span>Last processed gate FDV <strong>{!fresh ? "Unavailable / stale" : d.lastGateFdv > 0n ? `$${display(d.lastGateFdv, 18, 2)}` : "Not yet observed"}</strong></span>
         </div>
         <p className="helper observation-note">
-          The processed observation and indicative price are separate. {d?.lastObservation ? `Last valid volume observation: ${new Date(Number(d.lastObservation) * 1000).toISOString()}.` : "No valid gate-volume observation recorded yet."} Historical observations are not fresh quotes.
+          The processed observation and indicative price are separate. {!fresh ? "Volume observation state unavailable; refresh to verify." : d.lastObservation ? `Last valid volume observation: ${new Date(Number(d.lastObservation) * 1000).toISOString()}.` : "No valid gate-volume observation recorded yet."} Historical observations are not fresh quotes.
           The collecting gate uses the hook’s live burn counter. Past gates require complete contribution event history. Future gates cannot receive contributions.
         </p>
         <p className="helper">
