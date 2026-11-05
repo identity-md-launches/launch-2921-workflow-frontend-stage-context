@@ -1,0 +1,8 @@
+{
+  "result": "PASS",
+  "assets": 37,
+  "exportBytes": 1997225,
+  "abiHashes": "match handoff",
+  "network": "exact",
+  "assetInventory": "complete"
+}

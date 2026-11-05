@@ -1,0 +1,64 @@
+{
+  "method": "Full bytes of every changed/new submitted ordinary file against the pre-work task baseline; includes this report. Generated dependencies/caches and disposable scratch excluded. No Git access.",
+  "baselineAvailable": true,
+  "limitBytes": 8388608,
+  "changedBytes": 7785329,
+  "remainingBytes": 603279,
+  "passes": true,
+  "fileCount": 158,
+  "exportBytes": 2004398,
+  "exportInventoryMatches": true,
+  "exportMirrorMatches": true,
+  "screenCaptures": 18,
+  "preservedFileCount": 33,
+  "largestChangedFiles": [
+    {
+      "path": "web/site/assets/index-YZC6LMEH.js",
+      "bytes": 757504
+    },
+    {
+      "path": "dist/assets/index-YZC6LMEH.js",
+      "bytes": 757504
+    },
+    {
+      "path": "docs/update/evidence/mock-home-390.png",
+      "bytes": 235646
+    },
+    {
+      "path": "docs/update/evidence/live-read-only-390.png",
+      "bytes": 231774
+    },
+    {
+      "path": "docs/redesign/evidence/mock-rules-contracts-1440.webp",
+      "bytes": 170486
+    },
+    {
+      "path": "docs/redesign/evidence/mock-webkit-trade-1440.webp",
+      "bytes": 169068
+    },
+    {
+      "path": "web/public/og-image.png",
+      "bytes": 166115
+    },
+    {
+      "path": "web/site/og-image.png",
+      "bytes": 166115
+    },
+    {
+      "path": "dist/og-image.png",
+      "bytes": 166115
+    },
+    {
+      "path": "docs/redesign/evidence/mock-rules-contracts-390.webp",
+      "bytes": 163902
+    },
+    {
+      "path": "docs/redesign/evidence/mock-trade-1440.webp",
+      "bytes": 161302
+    },
+    {
+      "path": "docs/redesign/evidence/mock-webkit-trade-390.webp",
+      "bytes": 137396
+    }
+  ]
+}

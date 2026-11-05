@@ -16,54 +16,12 @@
     },
     {
       "name": "Gate-ten cold load uses voluntary burn and distinct gold visual; failed burn never animates",
-      "passed": true
-    },
-    {
-      "name": "Confirmed burn animates only with matching receipt log; reward share is separate",
-      "passed": true
-    },
-    {
-      "name": "Later gate opening changes doors and announces FDV/volume/burn alternatives without burn success",
-      "passed": true
-    },
-    {
-      "name": "Closed trading is separate from completed setup and later activation is detected",
-      "passed": true
-    },
-    {
-      "name": "ETH selector stops honestly when full-route RPC is unsupported; no IMD approvals",
-      "passed": true
-    },
-    {
-      "name": "Responsive 320, 390, 768 and 1440 layouts, reduced motion and desktop sticky swap",
-      "passed": true
-    },
-    {
-      "name": "Outage keeps first-screen product/action, prices unavailable and wallet keyboard escape restores focus",
-      "passed": true
-    },
-    {
-      "name": "Migration allowance, permanent-lock confirmation and weekly reward claim remain usable",
-      "passed": true
-    },
-    {
-      "name": "Authentic native proof enters the installed adapter flow and duplicate credit is refused",
-      "passed": true
-    },
-    {
-      "name": "Wrong-network event invalidates trading and the header switches back to Ethereum",
-      "passed": true
-    },
-    {
-      "name": "Quotes expire after 45 seconds; invalid USD stays unavailable instead of zero",
-      "passed": true
+      "passed": false,
+      "error": "Expected values to be strictly equal:\n\n2 !== 1\n"
     }
   ],
   "errors": [],
   "screenshots": [
-    "docs/update/evidence/mock-home-390.png",
-    "docs/update/evidence/mock-golden-390.png",
-    "docs/update/evidence/mock-opened-door-390.png",
-    "docs/update/evidence/mock-home-1440.png"
+    "docs/update/evidence/mock-home-390.png"
   ]
 }

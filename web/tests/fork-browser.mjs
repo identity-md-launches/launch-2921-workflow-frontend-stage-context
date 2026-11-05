@@ -17,7 +17,7 @@ const pw = process.env.IMD_PLAYWRIGHT
   ? await import(pathToFileURL(process.env.IMD_PLAYWRIGHT))
   : await import("playwright");
 const root = resolve(new URL("../../", import.meta.url).pathname);
-const out = resolve(root, "docs/update/evidence");
+const out = resolve(root, "docs/redesign/evidence");
 await mkdir(out, { recursive: true });
 const deployment = JSON.parse(
   await readFile(resolve(root, "dist/imd-deployment.json"), "utf8"),
@@ -99,9 +99,18 @@ const report = {
 const read = (functionName, args = []) =>
   c.readContract({ address: hook, abi, functionName, args });
 async function check(name, fn) {
-  await fn();
-  report.checks.push({ name, passed: true });
-  console.log("PASS", name);
+  try {
+    await fn();
+    report.checks.push({ name, passed: true });
+    console.log("PASS", name);
+  } catch(error) {
+    // Preserve independent real-chart validation even if MAX fails a fee guard.
+    // The suite still fails and records the exact failed group.
+    if (!name.startsWith("ETH MAX executes")) throw error;
+    report.checks.push({name,passed:false,error:error.message});
+    process.exitCode=1;
+    console.error("FAIL",name,error.message);
+  }
 }
 try {
   let ready = false;
@@ -222,7 +231,11 @@ try {
   );
   await page.waitForTimeout(300);
   async function refresh() {
+    // Let the existing public client's short block cache expire after explicit
+    // fork mining, then await the completed UI snapshot before using allowance.
+    await page.waitForTimeout(4100);
     await page.locator(".read-status button").click();
+    await page.waitForTimeout(150);
     await page.waitForFunction(
       () => !document.querySelector(".read-status button")?.disabled,
     );
@@ -247,15 +260,19 @@ try {
       await dialog
         .getByRole("button", { name: "Simulate transaction", exact: true })
         .click();
-      await dialog
-        .getByRole("button", { name: "Confirm in wallet", exact: true })
-        .waitFor({ timeout: 45000 });
+      await page.waitForFunction(() => {
+        const d=document.querySelector('dialog[open]:not(.wallet-dialog)');
+        return d && ([...d.querySelectorAll('button')].some(b=>b.textContent.trim()==='Confirm in wallet') || d.querySelector('[role="alert"]'));
+      },{}, {timeout:45000});
+      if (await dialog.getByRole('alert').count()) throw Error(await dialog.getByRole('alert').innerText());
       await dialog
         .getByRole("button", { name: "Confirm in wallet", exact: true })
         .click();
-      await dialog
-        .getByRole("button", { name: "Confirmed", exact: true })
-        .waitFor({ timeout: 45000 });
+      await page.waitForFunction(() => {
+        const d=document.querySelector('dialog[open]:not(.wallet-dialog)');
+        return d && ([...d.querySelectorAll('button')].some(b=>b.textContent.trim()==='Confirmed') || d.querySelector('[role="alert"]'));
+      },{}, {timeout:45000});
+      if (await dialog.getByRole('alert').count()) throw Error(await dialog.getByRole('alert').innerText());
       await dialog.getByRole("button", { name: "Close", exact: true }).click();
       if (isSwap) return;
     }
@@ -373,16 +390,16 @@ try {
       await c.request({ method: "evm_mine", params: [] });
       await refresh();
       await page.getByRole("button", { name: "ETH", exact: true }).click();
-      await page
-        .locator(".shortcuts")
-        .getByRole("button", { name: "MAX", exact: true })
-        .click();
-      await page.waitForFunction(
-        () => !document.querySelector(".shortcuts button")?.disabled,
-        {},
-        { timeout: 45000 },
-      );
-      report.maxInput = await page.locator("#swap-amount").inputValue();
+      // A background balance/price refresh deliberately invalidates an in-flight shortcut.
+      // Repeat the user action after that refresh; never bypass quote invalidation.
+      for (let attempt = 0; attempt < 3; attempt++) {
+        await page.locator(".shortcuts").getByRole("button", { name: "MAX", exact: true }).click();
+        await page.waitForFunction(() => !document.querySelector(".shortcuts button")?.disabled, {}, { timeout: 45000 });
+        report.maxInput = await page.locator("#swap-amount").inputValue();
+        if (Number(report.maxInput) > 0) break;
+        await page.waitForTimeout(1000);
+      }
+      assert(Number(report.maxInput) > 0, "MAX must populate a freshly simulated positive amount");
       const sendsBefore = report.sends.length;
       const imdBefore = await c.readContract({
         address: deployment.network.pairToken.address,
@@ -390,7 +407,27 @@ try {
         functionName: "balanceOf",
         args: [buyer],
       });
-      await transactUntilSwap();
+      report.maxGuardRetries = [];
+      for (let attempt=0; attempt<5; attempt++) {
+        try { await transactUntilSwap(); break; }
+        catch(error) {
+          let message=error.message;
+          const quoteError=page.locator('#swap-error [role="alert"]');
+          if(await quoteError.count())message+=' '+await quoteError.innerText();
+          if (!/buffered gas|gas estimate and fee buffer|Quote or preview expired|Inputs changed|State changed/i.test(message) || attempt===4) throw error;
+          // A changed fee estimate must fail before sending. Repeat the explicit
+          // MAX action; do not relax gas checks, substitute an amount or send twice.
+          assert.equal(report.sends.length,sendsBefore);
+          report.maxGuardRetries.push({message});
+          const d=page.locator('dialog[open]:not(.wallet-dialog)');
+          if(await d.count())await d.getByRole('button',{name:'Close',exact:true}).click();
+          await refresh();
+          await page.locator('.shortcuts').getByRole('button',{name:'MAX',exact:true}).click();
+          await page.waitForFunction(()=>!document.querySelector('.shortcuts button')?.disabled,{}, {timeout:45000});
+          report.maxInput=await page.locator('#swap-amount').inputValue();
+          assert(Number(report.maxInput)>0,'Recalculated MAX must populate a fresh amount');
+        }
+      }
       assert.equal(report.sends.length, sendsBefore + 1);
       assert.equal(
         await c.readContract({
@@ -428,6 +465,19 @@ try {
         await page.locator(".candle-data").innerText(),
         /open:.*high:.*low:.*close:/s,
       );
+      for (const width of [1440,390]) {
+        await page.setViewportSize({width,height:844});
+        await page.waitForTimeout(150);
+        const layout=await page.locator('.market-canvas').evaluate(host=>{
+          const outer=host.getBoundingClientRect();
+          return {
+            unpadded:[...host.querySelectorAll('td')].every(td=>getComputedStyle(td).padding==='0px'),
+            canvasesFit:[...host.querySelectorAll('canvas')].every(canvas=>{const r=canvas.getBoundingClientRect();return r.right<=outer.right+1 && r.left>=outer.left-1}),
+          };
+        });
+        assert(layout.unpadded,`Chart cells inherit application padding at ${width}`);
+        assert(layout.canvasesFit,`Chart canvas or axis clipped at ${width}`);
+      }
       await page.setViewportSize({ width: 390, height: 844 });
       assert.equal(
         await page.evaluate(
@@ -448,6 +498,9 @@ try {
     );
   });
   await page.waitForTimeout(180);
+  // Capture a settled candle state rather than racing the automatic history refresh.
+  await page.locator('.market-canvas canvas').first().waitFor({timeout:45000});
+  await page.waitForFunction(()=>!document.querySelector('.chart-panel')?.textContent.includes('Reading official-pool Swap logs'));
   await page.screenshot({
     animations: "disabled",
     path: resolve(out, "fork-trade-1440.png"),

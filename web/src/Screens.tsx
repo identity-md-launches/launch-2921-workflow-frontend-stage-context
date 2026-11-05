@@ -1,3 +1,4 @@
+import { GateDoors } from "./GateDoors";
 import { EnergyCore } from "./EnergyCore";
 import { adapterAbi, verifyAuxiliary } from "./integration";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -30,6 +31,7 @@ export function Gates() {
   const { data: d, view } = useApp();
   return (
     <>
+      <GateDoors />
       <div className="two-col">
         <Panel title="Gate progress">
           <GateProgress />
@@ -354,6 +356,13 @@ export function Rights() {
                 Your balance is {display(d?.balance)} UNLK2. Allowance is
                 cumulative eligibility; a sale still requires enough balance.
               </p>
+              <div className="metrics rights-metrics">
+                <Stat label="Held balance" value={display(d?.balance)} unit="UNLK2" />
+                <Stat label="Pending buy credits" value={display(d?.rights?.pendingBuy)} unit="UNLK2" />
+                <Stat label="Matured buy credits" value={display(d?.rights?.buyCredited)} unit="UNLK2" />
+                <Stat label="Other eligible credits" value={display(d?.rights?.otherCredited)} unit="UNLK2" />
+                <Stat label="Cumulative sales" value={display(d?.rights ? d.rights.buySold + d.rights.otherSold : undefined)} unit="UNLK2" />
+              </div>
               <table>
                 <caption>Account origin counters (UNLK2)</caption>
                 <thead>
@@ -365,7 +374,7 @@ export function Rights() {
                 </thead>
                 <tbody>
                   <tr>
-                    <th>Official buys</th>
+                    <th>Official buys · matured</th>
                     <td>{display(d?.rights?.buyCredited)}</td>
                     <td>{display(d?.rights?.buySold)}</td>
                   </tr>
@@ -978,6 +987,7 @@ export function Rewards() {
             value={w.address ? display(d?.rewards?.[1]) : "Connect wallet"}
             unit="IMD"
           />
+          <Stat label="Your fee share" value={!w.address ? "Connect wallet" : d?.myPoints === undefined ? "Unavailable" : d.points > 0n ? `${Number(d.myPoints * 10000n / d.points) / 100}%` : "0%"} note="Share of future fees; no guaranteed yield" />
           <Stat
             label="Claimed to date"
             value={w.address ? display(d?.claimed) : "Connect wallet"}
@@ -1160,24 +1170,7 @@ export function Golden() {
   return (
     <div className="two-col">
       <Panel title="Golden Vault">
-        <div className="golden-graphic" aria-hidden="true">
-          <svg width="88" height="88" viewBox="0 0 88 88">
-            <path
-              d="M14 68V20h60v48H14ZM22 28h44v32H22ZM44 31v26M31 44h26"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <circle
-              cx="44"
-              cy="44"
-              r="9"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-          </svg>
-        </div>
+        <EnergyCore gold />
         <h3>
           {d
             ? d.gates === 10

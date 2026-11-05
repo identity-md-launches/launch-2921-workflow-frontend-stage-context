@@ -1,0 +1,6 @@
+PASS All nine routes: 390/1440, assets, fonts, overflow, heading and keyboard skip
+PASS Every portal selects live thresholds on Home and Gates
+PASS Contribute action focuses real form; home previews navigate; closed swaps remain disabled
+PASS Unavailable chain state on all nine routes at mobile and desktop; no signing enabled
+PASS Historical burn failure stays unavailable, retry fetches complete history
+PASS Initial loading state, wallet focus trap, navigation-menu Escape and connected rights

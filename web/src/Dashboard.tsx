@@ -2,6 +2,7 @@ import { useApp } from "./context";
 import { Trade } from "./Trade";
 import { MarketChart } from "./Charts";
 import { Burn, VaultSummary } from "./Screens";
+import { ArtPanels } from "./ArtPanels";
 import { GateDoors } from "./GateDoors";
 export function Dashboard() {
   const { data: d, stale } = useApp();
@@ -14,6 +15,7 @@ export function Dashboard() {
         </section>
         <Trade />
       </div>
+      <ArtPanels />
       <section
         className="active-gate"
         id="active-gate"

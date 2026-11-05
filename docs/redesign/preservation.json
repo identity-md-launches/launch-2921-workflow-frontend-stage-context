@@ -1,0 +1,139 @@
+{
+  "method": "SHA-256 comparison with task-workspace baseline; no Git metadata read. Wallet/Trade presentation-only edits removed in memory to verify original logic byte-for-byte.",
+  "walletIdentityAndConnectionLogicUnchanged": true,
+  "tradeLogicUnchangedAfterRemovingPresentationAdditions": true,
+  "unchanged": [
+    {
+      "path": "foundry.toml",
+      "sha256": "2427bc844d5441ec030279f350e40f9177bc0969bb1b6776a8dab024040c5fff"
+    },
+    {
+      "path": "web/public/contract-runtime.json",
+      "sha256": "d0a15681ed25953f7d44cf9987e894f3f6a0e74441db37ad1b7bbf1c0eb6f258"
+    },
+    {
+      "path": "web/public/repair-config.json",
+      "sha256": "7a93de4292a0cb9c1f5023e545c9d8f30f20f38e3cd4910fc8bed8e812b47cbd"
+    },
+    {
+      "path": "web/package-lock.json",
+      "sha256": "fd6b8d221aa4de014bfa4085eb56fdb06ea4980d436a951b71eca19ceb048674"
+    },
+    {
+      "path": "web/vite.config.ts",
+      "sha256": "10852369ad5aecceaaed64e409b2ba7de6148f9fca5be906fe50a59352018045"
+    },
+    {
+      "path": "web/package.json",
+      "sha256": "6798f1c884cafe3a9ad2640491baeb7a584d8d239d718972baf1a0dfd7a31c5d"
+    },
+    {
+      "path": "web/tsconfig.json",
+      "sha256": "3143a7095c26041673d0bfd5849ca135e0a98536b152efa1e5e7af617fbfd861"
+    },
+    {
+      "path": "web/src/integration.ts",
+      "sha256": "1d36d5de3d7150a19a48313b7cf85f6ef11b37520fad3bc41862b468bc22eedd"
+    },
+    {
+      "path": "web/src/shortcuts.ts",
+      "sha256": "0f68fbfe80bd6676e2adba9b7442142fda10e3a70bc89734015e2bedfcfff8e3"
+    },
+    {
+      "path": "web/src/burn-preview.ts",
+      "sha256": "435565e3b186b09a19d927985104fe9cc6d27382d6e000d9b62c69a1ea454349"
+    },
+    {
+      "path": "web/src/config.ts",
+      "sha256": "1d16d6a01f4f76433b5f73955488ad15d86ff344012c75b384bf3adb856fa0b2"
+    },
+    {
+      "path": "web/src/state.ts",
+      "sha256": "c1b631f5dfbddfc032229ab8c17d65a6dcbe021cd3377fa9cd630bca1370030f"
+    },
+    {
+      "path": "web/src/eth-route.ts",
+      "sha256": "33b48b7938ea735976db8b9bd64b2220a9e6bde051d7ff26de6f5450bb7b756c"
+    },
+    {
+      "path": "web/src/core.ts",
+      "sha256": "849e3aea6c2314746471b13e4ff771171987e3244b1085b590667aa7f5328589"
+    },
+    {
+      "path": "web/src/transactions.tsx",
+      "sha256": "22062fa3ee6d88e3049073164d763b407209c0fae6ebdd835e930396020fd19a"
+    },
+    {
+      "path": "remappings.txt",
+      "sha256": "9b51fc7d7394c2afd83759ba06c186a87d68dc03253c4756c035bd7d288ba112"
+    },
+    {
+      "path": "docs/abi/MigrationVault.json",
+      "sha256": "753aeeac630e573ecd331de03b1563ff36cf53e5b68662667c4abf80517ffb9b"
+    },
+    {
+      "path": "docs/abi/UnlockV2Token.json",
+      "sha256": "d327eec20cbed4d80c051398d4f206bf1e2c3850e943677cfd2404b738fba996"
+    },
+    {
+      "path": "docs/abi/UnlockV2Hook.json",
+      "sha256": "b8a6ad110b2a7b91b49da6fce41bf82a3da1bbb36a1e631c8cde355d15f892fd"
+    },
+    {
+      "path": "docs/abi/RewardPot.json",
+      "sha256": "06585fcb1ac08246939aebbdc05a7136812da5b2152a569d84ce7f248e6880df"
+    },
+    {
+      "path": "docs/frontend/network-handoff.json",
+      "sha256": "a58e371203abcb49a0eb81677413f833f5315a1451aca1e1521b5580746d5b81"
+    },
+    {
+      "path": "docs/frontend/deployment-handoff.json",
+      "sha256": "d60b3e2174414f413c968bcb16326b59b3d3964c49e5a9022d46f069bc2c96b7"
+    },
+    {
+      "path": "src/interfaces/AggregatorV3Interface.sol",
+      "sha256": "b98dc6d0746b7e2d1de01bab6011a6396d69abdda0941e4516a6726dd18ce09a"
+    },
+    {
+      "path": "src/interfaces/IUnlockV2Hook.sol",
+      "sha256": "047ee20b7f1359bcabd7d606f04c3ef73ae378db6537474d9fbc588f20d403ed"
+    },
+    {
+      "path": "src/interfaces/IMsgSender.sol",
+      "sha256": "074bb027e9cb1bcd75b5f1b66e533b0a8fb89149a3c8e1cb20efeeec66e16220"
+    },
+    {
+      "path": "src/interfaces/IRewardFeeSource.sol",
+      "sha256": "e8d6e6c5d5b981ad5329571ad5c9f1e432736aefb176b8fb395f889bdf04f183"
+    },
+    {
+      "path": "src/interfaces/IMerkleDistributor.sol",
+      "sha256": "cb247686a110e19d193da632de331c8718bfa959ed1cdd4a95d8046adcac28b0"
+    },
+    {
+      "path": "src/MigrationVault.sol",
+      "sha256": "c57f8c8a94c2e128f74acf5489b1b2e8a1f8714feda331a636a22618188f73ac"
+    },
+    {
+      "path": "src/auxiliary/WalletQuoter.sol",
+      "sha256": "5b9468bb8cbab2d67e57a678f87dc8d711a394d1f8ac9a023e7e2b4d7559fd01"
+    },
+    {
+      "path": "src/auxiliary/NativeSwarmAdapter.sol",
+      "sha256": "c9506051799d68d80ec5ffc3f4b7f834d0f50a76ab3af57646fc40cd12359a7e"
+    },
+    {
+      "path": "src/UnlockV2Hook.sol",
+      "sha256": "a94e17459183d70fae9a9fec45e07ebf95a21698b5968f5d9286696ab40428a8"
+    },
+    {
+      "path": "src/UnlockV2Token.sol",
+      "sha256": "243a290f164aab417cf6d2cdc19fa5352e663d1f0f4cfd8adcd69878f6a4f61e"
+    },
+    {
+      "path": "src/RewardPot.sol",
+      "sha256": "44a586c8c12e3a3f16e887039209bb2881792aa302c3cc232a706aee59c9d790"
+    }
+  ]
+}

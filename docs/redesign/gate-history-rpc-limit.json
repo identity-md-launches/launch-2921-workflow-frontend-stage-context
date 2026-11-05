@@ -1,0 +1,46 @@
+{
+  "recordedAt": "2026-11-05T10:55:16.138Z",
+  "mode": "Live read-only curl POSTs with Mozilla user agent; no wallet, signer or transaction. Historical per-gate Contributed scan at the pinned token creation block.",
+  "request": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "eth_getLogs",
+    "params": [
+      {
+        "address": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+        "topics": [
+          "0xff5258631fc66729124cf65de1cf08f4face6772ee757ff57a7ea821363d43d5",
+          null,
+          "0x0000000000000000000000000000000000000000000000000000000000000005"
+        ],
+        "fromBlock": "0x191d58a",
+        "toBlock": "0x191dd59"
+      }
+    ]
+  },
+  "responses": [
+    {
+      "url": "https://ethereum-rpc.publicnode.com",
+      "response": {
+        "jsonrpc": "2.0",
+        "error": {
+          "code": -32602,
+          "message": "Archive requests require a personal token. Get one at: https://www.allnodes.com/publicnode"
+        },
+        "id": 1
+      }
+    },
+    {
+      "url": "https://eth.drpc.org",
+      "response": {
+        "id": 1,
+        "jsonrpc": "2.0",
+        "error": {
+          "message": "ranges over 10000 blocks are not supported on free plan",
+          "code": 35
+        }
+      }
+    }
+  ],
+  "limitation": "Both pinned public RPCs reject the historical range. Opened-gate history remains unavailable unless the connected wallet/provider supports historical logs. No missing total is fabricated. Future gates derive zero contributions from verified gatesOpen and the contract rejecting out-of-order contributions."
+}

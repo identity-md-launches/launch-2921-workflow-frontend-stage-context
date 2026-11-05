@@ -1,0 +1,2 @@
+PASS: strict TypeScript completed with exit status 0; no diagnostics.
+Command: node test/scratch/tools/node_modules/typescript/bin/tsc --noEmit -p test/scratch/typecheck.json

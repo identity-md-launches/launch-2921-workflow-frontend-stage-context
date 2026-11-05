@@ -1,3 +1,4 @@
+import { trapDialogFocus } from "./focus";
 import { useEffect, useId, useRef, useState } from "react";
 import { getAddress, type Address, type EIP1193Provider } from "viem";
 import { switchChain, type Deployment } from "./config";
@@ -180,6 +181,7 @@ export function WalletDialog({ wallet: w }: { wallet: Wallet }) {
     url = location.href;
   return (
     <dialog
+      onKeyDown={trapDialogFocus}
       ref={ref}
       aria-labelledby={titleId}
       onCancel={() => w.setOpen(false)}

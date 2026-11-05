@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-11-05T11:01:14.441Z",
+  "checks": [
+    {
+      "name": "typecheck",
+      "command": "node test/scratch/tools/node_modules/typescript/bin/tsc --noEmit -p test/scratch/typecheck.json",
+      "exitCode": 0,
+      "diagnostics": "No diagnostics (also repeated after the final source edit; exit 0)."
+    },
+    {
+      "name": "node-tests",
+      "command": "node --import ./web/scripts/offline-register.mjs --experimental-strip-types --test web/tests/core.test.ts web/tests/repair.test.mjs web/tests/routes.test.ts web/tests/gate-history.test.ts",
+      "exitCode": 0,
+      "diagnostics": "\u2714 The offline staircase uses all ten deployed thresholds, never optimistic openings (2.850246ms)\n\u2714 Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass (0.428119ms)\n\u2714 USD history rejects invalid historical rates and never substitutes a current price (0.808527ms)\n\u2714 amount parsing rejects exponent, negative, commas, zero and excessive precision (1.193867ms)\n\u2714 slippage minimum floors safely and rejects unsafe tolerance (0.592856ms)\n\u2714 Universal Router payload, reversed currencies, extended=false (15.267832ms)\n\u2714 Universal Router payload, reversed currencies, extended=true (1.894933ms)\n\u2714 contract and wallet failures have actionable messages (0.77245ms)\n\u2714 Market OHLC uses real observed trades, preserves gaps and sorts chronology (0.985097ms)\n\u2714 Gate history uses the pinned deployment, selected gate, snapshot and nonoverlapping complete ranges (2.904987ms)\n\u2714 A failed history chunk rejects the whole read instead of reporting a partial total (0.968857ms)\n\u2714 A fully fetched empty history is zero; invalid gate and pre-deployment snapshots fail (0.496176ms)\n\u2714 Authentic mainnet native double-hash proof verifies exactly the paid amount (12.37703ms)\n\u2714 Whole-tree proof generation: uneven, sorted, unique and reproducible (11.190117ms)\n\u2714 Only the hook's official key and pinned native reference key can be used (21.53624ms)\n\u2714 Native router plan is one atomic unlock with two strict swaps, exact settlement and buyer refund (11.447026ms)\n\u2714 Shortcuts floor base units and cap sells to CURRENT allowance, including gate-ten max (0.635314ms)\n\u2714 Full-route simulation rejects partial fills, wrong pools, missing buyer credit and unavailable RPC (45.839931ms)\n\u2139 tests 18\n\u2139 suites 0\n\u2139 pass 18\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 615.664996\n"
+    },
+    {
+      "name": "export-validation",
+      "command": "node --import ./web/scripts/offline-register.mjs web/scripts/validate.mjs",
+      "exitCode": 0,
+      "diagnostics": "{\n  \"result\": \"PASS\",\n  \"assets\": 37,\n  \"exportBytes\": 1997225,\n  \"abiHashes\": \"match handoff\",\n  \"network\": \"exact\",\n  \"assetInventory\": \"complete\"\n}\n"
+    }
+  ]
+}

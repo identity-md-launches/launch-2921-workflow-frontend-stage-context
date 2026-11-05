@@ -1,8 +1,8 @@
 {
   "mode": "LIVE READ-ONLY. No signer, broadcast, setup, funding or activation. Activation is a separate reported state.",
-  "checkedAt": "2026-11-05T09:05:25.733Z",
+  "checkedAt": "2026-11-05T10:36:03.388Z",
   "chainId": 1,
-  "block": "26347620",
+  "block": "26348071",
   "state": {
     "activated": false,
     "owner": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
@@ -23,7 +23,7 @@
     "migrationVault": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
     "rewardPot": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
     "imdUsdPrice": [
-      "3110920330515534814",
+      "2930412363524817049",
       true
     ],
     "tokenPriceInImd": [
@@ -36,10 +36,10 @@
     "expectedChainId": "1",
     "routerRegistered": true,
     "quoterRegistered": true,
-    "remainingBacking": "665646916125700000000000000",
-    "remainingCapacity": "665646916125700000000000000",
+    "remainingBacking": "650403086125700000000000000",
+    "remainingCapacity": "650403086125700000000000000",
     "isFullyFunded": true,
-    "totalMigrated": "34353083874300000000000000"
+    "totalMigrated": "49596913874300000000000000"
   },
   "auxiliary": [
     {

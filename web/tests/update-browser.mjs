@@ -23,7 +23,7 @@ const pw = process.env.IMD_PLAYWRIGHT
   ? await import(pathToFileURL(process.env.IMD_PLAYWRIGHT))
   : await import("playwright");
 const root = resolve(new URL("../../", import.meta.url).pathname),
-  evidence = resolve(root, "docs/update/evidence");
+  evidence = resolve(root, "docs/redesign/evidence");
 await mkdir(evidence, { recursive: true });
 const server = createServer(async (req, res) => {
   try {
@@ -210,7 +210,7 @@ async function shot(p, name) {
   if (engine === "webkit") name = name.replace("mock-", "webkit-");
   const path = resolve(evidence, name);
   await p.screenshot({ path, fullPage: false, animations: "disabled" });
-  report.screenshots.push("docs/update/evidence/" + name);
+  report.screenshots.push("docs/redesign/evidence/" + name);
 }
 try {
   await check(
@@ -351,7 +351,7 @@ try {
       });
       await connect(p);
       await p.locator("#active-gate").scrollIntoViewIfNeeded();
-      assert.equal(await p.locator(".energy-scene.gold").count(), 1);
+      assert.equal(await p.locator("#active-gate .energy-scene.gold").count(), 1);
       const field = p.getByLabel("Amount to burn (UNLK2)", { exact: true });
       await field.fill("5");
       await p
@@ -371,7 +371,7 @@ try {
       assert(s.calls.some((c) => c.method === "burn"));
       assert(!s.calls.some((c) => c.method === "contribute"));
       await p.getByRole("button", { name: "Close", exact: true }).click();
-      await p.locator(".energy-scene.gold").scrollIntoViewIfNeeded();
+      await p.locator("#active-gate .energy-scene.gold").scrollIntoViewIfNeeded();
       await shot(p, "mock-golden-390.png");
       await context.close();
     },
@@ -513,7 +513,7 @@ try {
       await p.emulateMedia({ reducedMotion: "reduce" });
       assert.equal(
         await p
-          .locator(".energy-scene")
+          .locator("#active-gate .energy-scene")
           .evaluate((el) => getComputedStyle(el).animationName),
         "none",
       );

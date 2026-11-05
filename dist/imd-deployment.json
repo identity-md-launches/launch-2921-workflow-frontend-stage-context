@@ -91,32 +91,112 @@
       "sha256": "d327eec20cbed4d80c051398d4f206bf1e2c3850e943677cfd2404b738fba996"
     },
     {
+      "path": "art/CC0-1.0.txt",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499"
+    },
+    {
+      "path": "art/LICENSE.txt",
+      "sha256": "83956006dae9e7197966ca4f29d7637fdae873b6f3d0bd4cf814eeefe2ab538b"
+    },
+    {
+      "path": "art/brand-mark.webp",
+      "sha256": "7e7d767dc10b732d1fa3d5cc2e3a0d45e29bb9f80377f2bce1dafdfc10790bae"
+    },
+    {
+      "path": "art/burn-core.webp",
+      "sha256": "e722718f761c5346579c9ea0ab494cb65d9544045b17d16506b4dd32156a5772"
+    },
+    {
+      "path": "art/golden-vault.webp",
+      "sha256": "767557cd56ae7df5ff621214bb913b49832879bf51f0f5d87f37ecf4ebe17113"
+    },
+    {
+      "path": "art/portal-current.webp",
+      "sha256": "c37c36b0ee11d7c7fd89357647aff77cc54700d1d2e29837e77956efdd031efa"
+    },
+    {
+      "path": "art/portal-locked.webp",
+      "sha256": "b0d6c80d2621e05be7e37c713616073dff47d4305dcd99ac4d2c52dc4616074f"
+    },
+    {
+      "path": "art/portal-open.webp",
+      "sha256": "849ee8760fabc9ce15f6cb2444ec086fcb4d3d0e35b347c35d0e5fc39f750155"
+    },
+    {
+      "path": "art/provenance.json",
+      "sha256": "20cd797d0515a8608fbe5578bdb71e86acd6e4f77fc6b1333effb9bab9a727d3"
+    },
+    {
       "path": "assets/chunk-MUSPBBTZ.js",
       "sha256": "ce939f0e742ab1cedc1ed070846ec1fe666f9de8e4bf07554bc9cfb46a4dd15c"
     },
     {
-      "path": "assets/index-7XZDW6JM.js",
-      "sha256": "e4abc0a9963cf18b6edcb345d32550a64c2d862905b8bab4705145f9143db9b9"
+      "path": "assets/index-OYJAAWB5.css",
+      "sha256": "af1fbc973da4abe868385e0864820e898f0acb2d2779aa1e68bd2981afcc0100"
     },
     {
-      "path": "assets/index-Z7R6E2SM.css",
-      "sha256": "a7206216c0cd541bedb1cceb56a4e33e274ffa09afdfda0dda9851cb40ee4804"
+      "path": "assets/index-YZC6LMEH.js",
+      "sha256": "25bac209c778f30691083571d071923c15a988171a8029b8e461a7735b581389"
     },
     {
       "path": "contract-runtime.json",
       "sha256": "d0a15681ed25953f7d44cf9987e894f3f6a0e74441db37ad1b7bbf1c0eb6f258"
     },
     {
+      "path": "design-assets.css",
+      "sha256": "017f4f65eb74304661c843458bf91f63ddc36c0589b87514343065043561ab6f"
+    },
+    {
       "path": "favicon.svg",
       "sha256": "9437dcfb66e63022806538b1ca18617fbde82b03acd8765779193a1cf9e18a3e"
     },
     {
+      "path": "fonts/PROVENANCE.md",
+      "sha256": "93ac3e19fd79e0f83930c6d195daaf33d7077ab86dcc5c8273f72a938fb85125"
+    },
+    {
+      "path": "fonts/cinzel-400.ttf",
+      "sha256": "a0242f6698ae0d3220a29986a09274f9d1eddb4a24da4e50faf387fd1804eb7b"
+    },
+    {
+      "path": "fonts/cinzel-600.ttf",
+      "sha256": "5150b3609eeaaa9c6d7e093cb9b16ab8ec2f7110ddf0cbe751887e6f158398af"
+    },
+    {
+      "path": "fonts/cinzel-OFL.txt",
+      "sha256": "f2b3029aba64c378bf0963b62945eee15e564fe4330b934c8f2eb058282b5e83"
+    },
+    {
+      "path": "fonts/ibm-plex-mono-400.ttf",
+      "sha256": "a7fdc993f9f0387caedba4e42521136fa97e4c0837ae6239bf0413ccf8af00c2"
+    },
+    {
+      "path": "fonts/ibm-plex-mono-600.ttf",
+      "sha256": "754dfc9d50cf7aabfb6b108d2c2f7d20a3f1f2cc6f6c01640c6728091272cec0"
+    },
+    {
+      "path": "fonts/ibm-plex-mono-OFL.txt",
+      "sha256": "7e6b2818edbd8f6a01ae80641cc8f16a51080d08fb4e532be3a0b6f74adb07da"
+    },
+    {
+      "path": "fonts/manrope-400.ttf",
+      "sha256": "ed335894f8d954263675f7e457bf657374d8b7be629be4dc43aef97c309ad3ae"
+    },
+    {
+      "path": "fonts/manrope-600.ttf",
+      "sha256": "68ed4be49ec7d32f07b42f9232dc01ca1df7a77be1d9b0731aac74db58235f34"
+    },
+    {
+      "path": "fonts/manrope-OFL.txt",
+      "sha256": "58172e0c0fac2cda8a37b348164bb55e44b0e69051e557e92b1d3f6910141f7b"
+    },
+    {
       "path": "index.html",
-      "sha256": "d08a6a92cb94ff6a3f2f85155fd0f576700804abd781247ec45634de0f32c97e"
+      "sha256": "a5b23ceed1b74c82f06d6e3c076243086fe22bb8e9dadb0656b2ab020425698f"
     },
     {
       "path": "og-image.png",
-      "sha256": "c30fe2d2fea09371ec8b456ddb5c8703c6cca0c605e78acdaf3cc56a636bc1c4"
+      "sha256": "1613c6b1ba068d39db9101c2045c202ff294aadf3168664cdbc6d0d206edc015"
     },
     {
       "path": "repair-config.json",

@@ -1,0 +1,124 @@
+{
+  "engine": "chromium",
+  "mode": "Synthetic RPC and wallet interaction tests against the production export. No real signing or mainnet broadcasts.",
+  "checks": [
+    {
+      "name": "trade @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "gates @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "migrate @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "my-rights @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "burn-points @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "weekly-imd-rewards @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "golden-vault @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "rules-contracts @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "integration-status @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "trade @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "gates @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "migrate @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "my-rights @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "burn-points @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "weekly-imd-rewards @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "golden-vault @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "rules-contracts @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "integration-status @ 390: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
+      "passed": true
+    },
+    {
+      "name": "All nine routes: 390/1440, assets, fonts, overflow, heading and keyboard skip",
+      "passed": true
+    },
+    {
+      "name": "Every portal selects live thresholds on Home and Gates",
+      "passed": true
+    },
+    {
+      "name": "Contribute action focuses real form; home previews navigate; closed swaps remain disabled",
+      "passed": true
+    },
+    {
+      "name": "Unavailable chain state on all nine routes at mobile and desktop; no signing enabled",
+      "passed": true
+    },
+    {
+      "name": "Historical burn failure stays unavailable, retry fetches complete history",
+      "passed": true
+    },
+    {
+      "name": "Initial loading state, wallet focus trap, navigation-menu Escape and connected rights",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "docs/redesign/evidence/mock-trade-1440.webp",
+    "docs/redesign/evidence/mock-gates-1440.webp",
+    "docs/redesign/evidence/mock-migrate-1440.webp",
+    "docs/redesign/evidence/mock-my-rights-1440.webp",
+    "docs/redesign/evidence/mock-burn-points-1440.webp",
+    "docs/redesign/evidence/mock-weekly-imd-rewards-1440.webp",
+    "docs/redesign/evidence/mock-golden-vault-1440.webp",
+    "docs/redesign/evidence/mock-rules-contracts-1440.webp",
+    "docs/redesign/evidence/mock-integration-status-1440.webp",
+    "docs/redesign/evidence/mock-trade-390.webp",
+    "docs/redesign/evidence/mock-gates-390.webp",
+    "docs/redesign/evidence/mock-migrate-390.webp",
+    "docs/redesign/evidence/mock-my-rights-390.webp",
+    "docs/redesign/evidence/mock-burn-points-390.webp",
+    "docs/redesign/evidence/mock-weekly-imd-rewards-390.webp",
+    "docs/redesign/evidence/mock-golden-vault-390.webp",
+    "docs/redesign/evidence/mock-rules-contracts-390.webp",
+    "docs/redesign/evidence/mock-integration-status-390.webp"
+  ],
+  "resourceFailures": []
+}

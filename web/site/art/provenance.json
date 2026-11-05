@@ -1,0 +1,56 @@
+{
+  "job": "cb1f62ae-cd19-4fa4-9de3-de5f66e847cf",
+  "baseJob": "38c6908b-83e2-4a77-8d65-4fa6c24660d6",
+  "reference": "https://the-imd-daily.duckdns.org/unlock-v2-preview/unlock-v2-design-reference.png",
+  "referenceSha256": "9697a2d80ba51fa704f4fc5918706096478eb7f068c3af06f72829d563fe5eae",
+  "referenceRetrieved": true,
+  "referenceDataUsedAsLive": false,
+  "generator": "OpenAI image generation, original six-panel ancient-tech asset sheet",
+  "atlasSha256": "3e4250988a16cc75eea1be66cdfd1575f554550befbd6a98075acce328b69b5d",
+  "packaging": "Six independent tile crops; lossily optimized WebP quality 85; no full-page screenshot used as interface",
+  "license": "CC0-1.0 to the extent contributor holds rights; see LICENSE.txt and CC0-1.0.txt",
+  "assets": [
+    {
+      "file": "brand-mark.webp",
+      "bytes": 3812,
+      "width": 113,
+      "height": 128,
+      "sha256": "7e7d767dc10b732d1fa3d5cc2e3a0d45e29bb9f80377f2bce1dafdfc10790bae"
+    },
+    {
+      "file": "burn-core.webp",
+      "bytes": 63096,
+      "width": 512,
+      "height": 512,
+      "sha256": "e722718f761c5346579c9ea0ab494cb65d9544045b17d16506b4dd32156a5772"
+    },
+    {
+      "file": "golden-vault.webp",
+      "bytes": 79518,
+      "width": 512,
+      "height": 512,
+      "sha256": "767557cd56ae7df5ff621214bb913b49832879bf51f0f5d87f37ecf4ebe17113"
+    },
+    {
+      "file": "portal-current.webp",
+      "bytes": 36416,
+      "width": 384,
+      "height": 382,
+      "sha256": "c37c36b0ee11d7c7fd89357647aff77cc54700d1d2e29837e77956efdd031efa"
+    },
+    {
+      "file": "portal-locked.webp",
+      "bytes": 29920,
+      "width": 384,
+      "height": 382,
+      "sha256": "b0d6c80d2621e05be7e37c713616073dff47d4305dcd99ac4d2c52dc4616074f"
+    },
+    {
+      "file": "portal-open.webp",
+      "bytes": 32312,
+      "width": 384,
+      "height": 382,
+      "sha256": "849ee8760fabc9ce15f6cb2444ec086fcb4d3d0e35b347c35d0e5fc39f750155"
+    }
+  ]
+}

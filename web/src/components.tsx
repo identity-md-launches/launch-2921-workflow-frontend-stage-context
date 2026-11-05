@@ -1,3 +1,4 @@
+import { trapDialogFocus } from "./focus";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { formatUnits, getAddress, maxUint256, type Address } from "viem";
 import { useApp, type Transaction } from "./context";
@@ -311,6 +312,7 @@ export function Dialog({
   }, [open]);
   return (
     <dialog
+      onKeyDown={trapDialogFocus}
       ref={ref}
       aria-labelledby={titleId}
       onCancel={onClose}

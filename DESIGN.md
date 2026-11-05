@@ -2,75 +2,92 @@
 
 ## Overview
 
-UNLOCK V2 is an Ethereum trading and gate-progress dashboard. Its primary visual is a compact hallway of **ten dimensional doors**, followed by the market and swap workspace. Near-black surfaces, crisp system typography, emerald/cyan utilities and restrained gold distinguish permanent progress from trading and rewards. This continuation preserves the original U mark, favicon, share image and wallet marks; doors and energy/vault artwork are original CSS/SVG, with no stock imagery or remote asset dependency.
+UNLOCK V2 is an Ethereum trading and rights dashboard. The supplied design reference defines its ancient-tech portals, emerald energy, gold current gate and final vault, near-black surfaces and serif headings. The interface uses six original, separately optimized artwork assets; labels, progress, balances, forms, charts and confirmations remain live HTML. No full-page mockup is used as the interface.
 
-Source of truth: `web/src/style.css`, `GateDoors.tsx`, `EnergyCore.tsx`, `Dashboard.tsx`, `Trade.tsx`, `Screens.tsx`, and the shared components. The last `:root` palette/font declaration in the stylesheet overrides the older baseline declaration. This document describes the final values, not the historical monochrome terminal.
+The homepage starts with the ten clickable gates and the selected gate’s three independent conditions. It follows with the official market and swap panel, two illustrated previews, and the complete contribution form. Secondary screens use the same navigation, metallic frames, typography and form components. Ordinary chain data is never replaced by the reference’s example balances or candles.
+
+Source of truth: `web/src/style.css` (base styles and final ancient-tech layer), `web/public/design-assets.css` (local font faces), `web/src/GateDoors.tsx`, `web/src/ArtPanels.tsx` and `web/src/EnergyCore.tsx`.
 
 ## Colors
 
-| Token | Implemented value | Use |
+| Token | Implemented value | Role |
 | --- | --- | --- |
-| `--bg` | `#060b0a` | Page and recessed inputs |
-| `--surface` | `#0b1211` | Panels, dialogs, empty chart surface |
-| `--hover` | `#14221e` | Hover/selected neutral controls |
-| `--text` | `#eef6f2` | Main text and headings |
-| `--muted` | `#a5b7b0` | Explanations, labels and source metadata |
-| `--border` | `#2b3c35` | Panel/input structure and separators |
-| `--mint` | `#79e5b2` | Primary actions, opened doors and burn core |
-| `--cyan` | `#8edce5` | Links, chart price and keyboard focus |
-| `--amber` | `#f2ca7a` | Current gate, gold vault and cautions |
-| `--error` | `#ffb0a8` | Action failures |
-| `--ink` | `#06110c` | Text on emerald primary actions |
+| `--bg` | `#050807` | Page background |
+| `--surface` | `#09100e` | Base surfaces and dialogs |
+| `--hover` | `#14251e` | Neutral hover/selected surfaces |
+| `--text` | `#f2f1e6` | Primary off-white text |
+| `--muted` | `#a9b9b1` | Secondary copy and labels |
+| `--border` | `#35453b` | Fields and internal separators |
+| `--metal` | `#8b8364` | Outer metallic frames |
+| `--mint` | `#54edb3` | Emerald progress and confirmed/open state |
+| `--cyan` | `#8fe4dc` | Links and price context |
+| `--amber` | `#ecd08c` | Current gate, vault and irreversible-action notices |
+| `--error` | `#ffb0a8` | Errors |
+| `--ink` | `#04110b` | Text on the skip-link background |
 
-The body adds a restrained dark-green radial glow; door art uses local dark/gold/emerald tones. Status always has text as well as color (`Open`, `Current`, `Locked`, `Unread`). Progress remains three independent labeled bars. Solid rendered contrast checks and gradient limitations are reported in the validation document; palette declarations alone do not establish rendered contrast.
+The focus ring uses `#b9fff2`. Actions use an off-white foreground over the restrained emerald gradient `#164d36 → #08301f → #0a2319`; hover is `#115638`. Panels use `#0b1510 → #060b09`, thin metallic frames and inset frame lines. The core’s own backing is `#08110c`; preview art uses `#060e0a` to integrate the generated image’s black edges.
+
+Color is redundant with text: each portal says Open, Current, Locked or Unread. Current is gold; open is broken and emerald; future is dim emerald. Read failure is not a locked gate. The validation report distinguishes measured solid contrast from unmeasured art/gradient backgrounds; it does not claim a full contrast certification.
 
 ## Typography
 
-The final font stack is `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`. It intentionally uses the platform's UI font; no font download is required. Addresses and code use `SFMono-Regular, Consolas, monospace`. Installed platform fonts and actual glyph shapes can differ by OS.
+All fonts are local, normal-style static weights **400 and 600**, declared with `font-display: swap`. Files and full SIL Open Font Licenses are in `web/public/fonts/`; `PROVENANCE.md` records source URLs and SHA-256 hashes.
 
-Six existing size tokens remain: `--sm: .8125rem` (13px), `--body: .875rem` (14px), `--input: 1rem` (16px), `--sub: 1.125rem` (18px), `--heading: 1.5rem` (24px), and `--amount: 1.75rem` (28px). Dense trading labels use 13/14px; editable amounts use 28px; other inputs are 16px. Desktop H1 is 28px, mobile H1 24px, H2 18px and H3 16px. The mobile navigation select is 16px to avoid input zoom.
+- **Cinzel**, with Georgia/serif fallback: brand, h1/h2, selected-gate heading and the illustrated preview headings.
+- **Manrope**, with system-ui/sans-serif fallback: body copy, buttons, navigation and explanations.
+- **IBM Plex Mono**, with Consolas/monospace fallback: labels, numbers, inputs, statistics, progress, account data, addresses and chart axes.
 
-Weights are 400, 600 and 700. Body line-height is 1.6; H1 1.3, H2 1.4 and H3 1.5. Large headings use `-.03em` tracking; prose is naturally spaced. The root enables tabular digits and font smoothing. Long paragraphs cap at 76ch. Addresses and large amounts wrap instead of truncating essential values.
+The six size tokens are `--sm: .8125rem` (13px), `--body: .875rem` (14px), `--input: 1rem` (16px), `--sub: 1.125rem` (18px), `--heading: 1.5rem` (24px), and `--amount: 1.75rem` (28px). Body line height is 1.6; headings use 1.3–1.4. Desktop page headings use 28px, mobile 24px. Main panel headings use 24px; compact mobile art headings use 18px. Inputs/selects remain at least 16px. Strong/bold text uses the bundled 600 face, with no synthetic 700 weight.
+
+Numbers use tabular figures. Explanatory paragraphs retain a 76ch maximum measure. Addresses and diagnostic strings wrap. Wide threshold tables scroll within their own labeled content area, not the page.
 
 ## Layout
 
-Shared content/header width is at most 1440px; navigation at most 1360px. Desktop main padding is 32px, mobile 16px. Most panels use 20–24px padding (18px for mobile swap/burn). Control groups use 4–12px gaps; section/panel separation is generally 16–32px.
+The content maximum width is 1600px. Desktop main padding is 20px 28px; mobile is 14px 14px 30px. Common gaps are 8, 12, 16, 18, 20 and 24px. Fields and data groups retain spacing from the existing application.
 
-`GateDoors` uses ten equal columns on desktop. At 760px and below it becomes five columns by two rows, retaining all ten doors without horizontal scrolling. Door artwork shrinks from a 128px scene to 76px; text containers remain content-sized. The current door and contribution link lead the first phone screen. Clicking or pressing Enter/Space on a door reveals its FDV, cumulative volume and gate-specific burn details. The numerical ladder remains on the Gates screen.
+- Above 1250px: compact single-row brand, primary navigation, More menu and wallet utilities.
+- 761–1250px: desktop navigation wraps below the brand/utilities.
+- At 760px and below: a native route selector replaces desktop navigation; the brand and wallet action stay at the top.
+- Ten portals use ten columns on desktop and five columns/two rows on mobile. There is no horizontally hidden gate carousel.
+- Gate progress uses three independent columns on desktop and three stacked bars on mobile. The FDV/observation explanation is a labeled disclosure; amounts and remaining values stay visible.
+- The dashboard uses `minmax(0,1fr) minmax(340px,.45fr)` with an 18px gap. Below 1050px the swap column is 330px. At 800px and below, the swap precedes the chart in a single column.
+- Two illustrated previews are side by side above 800px and stacked below. The complete contribution form follows them.
+- Shared `.two-col` sections stack at 760px. Secondary content never depends on a fixed page height.
 
-`Dashboard` places the chart on the left and a 340–390px swap panel on the right, with a 24px gap. The swap has `position: sticky; top: 18px`. At 760px and below, swap comes first, chart second, then the homepage burn form. Intermediate desktop widths reduce gaps and door art. The chart canvas is 440px high, with volume below the candles in the same chart. Sparse history keeps a 40-bar logical viewport and a 110px minimum price axis; empty space is not filled with invented candles. Empty/error states retain a large readable area.
+All nine routes were rendered at 390px and 1440px in Chromium and WebKit. The probe and existing interaction suite also check homepage reflow at 320px, with the interaction suite checking 768px. Physical devices and native browser zoom are unverified.
 
-Other screens reuse `.two-col`, `.metrics`, `.panel` and `.compact-dl`. Mobile stacks columns. Tables use wrapping cells rather than silently clipping values. Hash navigation requires no server rewrites. The wallet sheet is bottom-aligned on phones and centered on larger screens. Viewports 320, 390, 768 and 1440 are included in browser validation; native device/zoom limitations are listed there.
+## Elevation & Depth
 
-## Elevation & depth
+Detailed carved portals and machinery provide depth. Thin structural borders, small metallic corner accents, controlled inset frames and modest surface gradients support them. Large generic glow fields are avoided. The More menu and native dialogs have elevated shadows; ordinary information panels stay visually quiet.
 
-Application panels use a single border and tonal surface, without a decorative shadow. Native dialogs use an 80% black backdrop and browser-managed modal focus. Selected controls use background/border/text changes.
-
-Doors are the deliberate exception: their decorative frames use perspective, extruded dark shadows and a border to create the dimensional artwork requested by the brief. Open leaves are rotated and jagged; the current door has restrained gold illumination; locked doors remain solid and dark. This illustration treatment is not a reusable card shadow.
-
-The energy core and gold vault use an inline radial glow and a wireframe platform. They do not pulse on page load. Token flow and core flash run once, for 1.8 seconds, **only after a successful receipt containing the exact token/from/zero-recipient/amount burn log**. The visual state clears after 2.4 seconds while the confirmation text remains. Failed/cancelled/unrelated replacements never start it. Reduced motion removes animation and transitions; success still has text.
+The core has a faint ambient opacity pulse. Particles and the stronger core flash are finite and appear only after a matching successful burn receipt. There is no optimistic gate-opening or burn-success animation. `prefers-reduced-motion: reduce` removes all animations, transitions and animated scrolling.
 
 ## Shapes
 
-Controls/inputs generally use 8px radii; panels 12px; segmented child buttons 6px. Wallet dialogs retain the established 3–4px/bottom-sheet shape. Chart bars, table separators and progress tracks are flat. Native targets are at least 24px with spacing; most buttons are 44px tall, compact shortcuts 36px. Doors have a larger full-scene hit target. Every interactive focus indicator is 2px cyan with a 4px offset.
+Panels and art previews use asymmetric `10px 3px 10px 3px` corners. Buttons use 5px, fields 4px, dialogs 8px. Portals are detailed raster artwork with live circular number markers and rectangular percentage plates. They are not rectangular CSS doors.
+
+The selected portal has a structural border. Focus uses a separate 2px outline with a 3px offset. Portal hit areas include artwork and labels. Mobile wallet, route selector and Refresh controls are at least 44px high; compact chart/percentage controls retain appropriate spacing.
 
 ## Components
 
-| Component/source | Purpose and states |
+| Component / source | Use and states |
 | --- | --- |
-| `GateDoors.tsx` / `.gate-door` | Ten native buttons. Stored gate state determines open/current/locked; unavailable reads remain unread. `aria-pressed`, full names and visible percentages support keyboard/touch. Separate progress and a status message reflect FDV/volume/burn openings without a false burn success. |
-| `Trade.tsx` | Buy/sell and IMD/ETH selection, manual amount, four shortcuts, legible output/price/fees/slippage/minimum. Loading, expiry, rejection, unsupported full-route simulation and insufficient quota/funds are explicit. Errors are announced and connected to the input. Relevant state/account/network changes invalidate quotes. |
-| `Charts.tsx` / `MarketChart` | Real timestamped official-pool candles and volume, unit/timeframe controls, crosshair/pan/zoom, source/time/window labels, and a native disclosure with a keyboard-readable table of the latest 30 observed candles. Missing history, archive USD, stale state and RPC failure remain honest. No sample candles or empty-interval synthesis. |
-| `EnergyCore.tsx` | Decorative `gold` and `confirmed` props. Original SVG uses `currentColor`; state text carries meaning. No transaction logic or success trigger lives in the visual itself. |
-| `Screens.tsx` / `Burn`, `Golden`, `VaultSummary` | Irreversible burn preview with separate token, point and estimated-share values. Gate 10 derives voluntary mode even on cold loads. Gold summary separates accrued IMD, claimable/maturing rewards, personal points and weekly timing. |
-| `components.tsx` | `Panel`, `Stat`, `Field`, `Progress`, `Alert`, `Action`, `ContractAction`, `AddressLink`, `Dialog`. Labels and native controls are reused. `Action` connects/switches or disables with a reason; writes always enter review/simulation. `Dialog` has an accessible title and native modal focus/escape behavior. |
-| `wallet.tsx` / `WalletDialog` | EIP-6963 names/icons, browser fallback, wallet-browser mobile links and Coinbase Smart Wallet. Per-row pending/error states, disconnect, network switch, Escape/backdrop/close and focus return. Existing connector stack is retained. |
-| `Founder.tsx` / `Founder` | Read-only integration status, live backing/capacity, registrations, activation state and reviewed addresses. The historical export name is retained; setup/activation controls are removed. |
+| `App.tsx` | Existing hash routes, header, More menu, native mobile navigation, chain/error status, route focus and skip-to-content. Skip moves focus without changing the hash. Escape closes More. |
+| `GateDoors.tsx` | Exactly ten portals on Home and Gates; stored Open/Current/Locked/Unread states; selection and three separate progress bars; verified future-gate zero, current storage counter, complete event totals for past gates or explicit history error/retry. |
+| `gate-history.ts` | Read-only token Contributed scan, fixed snapshot block and bounded nonoverlapping ranges. Any failed range rejects the total; it never supplies a partial amount. |
+| `components.tsx` | Shared Panel, Field, Stat, Progress, Alert, Action, AddressLink and native transaction Dialog. Action retains wallet/network/verification/staleness guards. Progress shows current, target, remaining and a separately computed percentage. |
+| `focus.ts` | Tab/Shift+Tab wrapping for wallet and transaction dialogs. Native dialogs retain inert background, Escape and focus return. |
+| `Trade.tsx` | Existing quote/approval/swap logic with visible fixed route and honest shortcut invalidation feedback. No transaction calldata or economic changes. |
+| `Charts.tsx` | Genuine official-pool candles/volume; existing timeframes, price unit, crosshair and accessible data table. Closed, empty, loading, invalid USD, stale and RPC-error states remain distinct. Methodology is disclosed below the chart. |
+| `EnergyCore.tsx` | Separate emerald and gold art variants, ambient illumination and confirmation-only finite burn flow. Decorative images have empty alt text. |
+| `ArtPanels.tsx` | Live burn/points/share and Golden Vault previews with working contribution/navigation controls. |
+| `Screens.tsx` | Existing migration, rights/claim/transfer, burn, weekly rewards, vault and rules controls. Rights now explicitly separates matured/pending/other credits, balance, sales and allowance. Weekly fee share is labeled conditional, with no promised yield. |
+| `Founder.tsx` | Retained read-only integration/setup verification. There are no activation, registration or funding transaction controls. |
 
-## Do's and don'ts
+## Do’s and Don’ts
 
-Reuse `.panel`, `.two-col`, `Stat`, `Field` and `Action` for another screen; add the screen to the existing hash navigation and keep transaction construction behind the shared review/simulation flow. Preserve all three gate conditions independently. Read live states and label historical/estimated values. Use gold for the current gate/final vault and emerald for opened progress/burning.
+Start a new screen with the existing page heading and Panel/Stat/Field/Action primitives. Use the existing hash route convention. Keep wallet and transaction review behavior in the existing shared components. Pick emerald for progression and gold for the collecting gate/final vault; retain words and shapes alongside color.
 
-Do not copy the doors' extrusion onto application cards, create decorative kicker text, fill missing prices with zero, fabricate candles, animate a pending/failed burn, promise returns, or add alternate pool routes. Do not add owner setup or activation actions to this website.
+Never average the three gate conditions. Never infer stored gate openings from indicative FDV. Never fill a chart with illustrative candles, infer historical USD from a present price, present a partial log scan as complete, or substitute a missing balance. Retain separate explanatory text for current spot context and historical processed observations.
 
-Guidance attribution and retained licenses: [docs/frontend/NOTICE.md](docs/frontend/NOTICE.md). Review coverage, observed corrections and unperformed checks belong in [docs/update/VALIDATION.md](docs/update/VALIDATION.md), not as claims of full accessibility certification here.
+Reuse the optimized artwork and local fonts. Add text and controls as HTML overlays. Do not flatten screens to screenshots or add new pools, aggregators, minting, activation or owner transactions. For the actual limits of the live RPCs, public publication and manual accessibility coverage, consult `docs/redesign/VALIDATION.md`.

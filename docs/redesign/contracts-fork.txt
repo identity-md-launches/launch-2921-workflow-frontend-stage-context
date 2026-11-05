@@ -1,0 +1,12 @@
+Compiling 81 files with Solc 0.8.26
+Solc 0.8.26 finished in 30.14s
+Compiler run successful!
+
+Ran 4 tests for test/EthRouteFork.t.sol:EthRouteForkTest
+[PASS] testETHActualBuyerCreditMatures20PercentAllowedAndExcessSale() (gas: 1644375)
+[PASS] testETHMinimumAndDeadlineRevertAtomically() (gas: 605195)
+[PASS] testETHUnusedNativeIsRefundedToBuyer() (gas: 575940)
+[PASS] testIMDInstalledQuoterMatchesActualRouterBuyAndSell() (gas: 1304899)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 4.56s (6.84s CPU time)
+
+Ran 1 test suite in 4.56s (4.56s CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)

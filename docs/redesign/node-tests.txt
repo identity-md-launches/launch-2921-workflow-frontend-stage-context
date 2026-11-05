@@ -1,0 +1,26 @@
+✔ The offline staircase uses all ten deployed thresholds, never optimistic openings (2.850246ms)
+✔ Full-gate contribution preview preserves previous sales, maturity, floors and gate-ten bypass (0.428119ms)
+✔ USD history rejects invalid historical rates and never substitutes a current price (0.808527ms)
+✔ amount parsing rejects exponent, negative, commas, zero and excessive precision (1.193867ms)
+✔ slippage minimum floors safely and rejects unsafe tolerance (0.592856ms)
+✔ Universal Router payload, reversed currencies, extended=false (15.267832ms)
+✔ Universal Router payload, reversed currencies, extended=true (1.894933ms)
+✔ contract and wallet failures have actionable messages (0.77245ms)
+✔ Market OHLC uses real observed trades, preserves gaps and sorts chronology (0.985097ms)
+✔ Gate history uses the pinned deployment, selected gate, snapshot and nonoverlapping complete ranges (2.904987ms)
+✔ A failed history chunk rejects the whole read instead of reporting a partial total (0.968857ms)
+✔ A fully fetched empty history is zero; invalid gate and pre-deployment snapshots fail (0.496176ms)
+✔ Authentic mainnet native double-hash proof verifies exactly the paid amount (12.37703ms)
+✔ Whole-tree proof generation: uneven, sorted, unique and reproducible (11.190117ms)
+✔ Only the hook's official key and pinned native reference key can be used (21.53624ms)
+✔ Native router plan is one atomic unlock with two strict swaps, exact settlement and buyer refund (11.447026ms)
+✔ Shortcuts floor base units and cap sells to CURRENT allowance, including gate-ten max (0.635314ms)
+✔ Full-route simulation rejects partial fills, wrong pools, missing buyer credit and unavailable RPC (45.839931ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 615.664996

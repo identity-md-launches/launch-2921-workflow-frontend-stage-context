@@ -1,0 +1,15 @@
+UNLOCK V2 redesign artwork, created for this assignment, November 2026.
+
+To the extent the contributor holds copyright or related rights in these original
+image-generation outputs, the contributor dedicates those rights under CC0 1.0
+Universal. The complete dedication is in CC0-1.0.txt. No exclusive copyright,
+human authorship, trademark clearance, or third-party endorsement is asserted.
+
+Created using OpenAI image generation specifically for this project. The supplied
+design-reference image guided the art direction; it is not bundled as interface
+art. Six separate optimized WebP assets are original generated outputs. Cropping
+an asset sheet into its six tiles and WebP encoding are packaging operations.
+The full-page reference and its illustrative data are not interface assets.
+
+Fonts have their own SIL Open Font Licenses in ../fonts/ and are not covered by
+this artwork dedication. The UNLOCK V2 project name remains the project identity.

@@ -289,15 +289,16 @@ export function MarketChart() {
     if (!host.current || !bars.length) return;
     const chart = createChart(host.current, {
       autoSize: true,
-      height: 440,
+      height: 330,
       layout: {
-        background: { type: ColorType.Solid, color: "#0b1211" },
-        textColor: "#a5b7b0",
+        background: { type: ColorType.Solid, color: "#08110c" },
+        textColor: "#a9b9b1",
+        fontFamily: '"IBM Plex Mono", monospace',
         attributionLogo: true,
       },
       grid: {
-        vertLines: { color: "#181818" },
-        horzLines: { color: "#181818" },
+        vertLines: { color: "#183126" },
+        horzLines: { color: "#183126" },
       },
       timeScale: { timeVisible: true },
       rightPriceScale: { borderColor: "#333", minimumWidth: 110 },
@@ -459,6 +460,8 @@ export function MarketChart() {
       >
         Retry / refresh market data
       </button>
+      <p className="chart-freshness helper">{updated ? `History read ${new Date(updated).toUTCString()}` : "History not read yet"} · Official pool only</p>
+      <details className="chart-provenance"><summary>Source, block window and price methodology</summary>
       <p className="helper">
         Source:{" "}
         <a href={r.d.network.rpcUrls[0]} target="_blank" rel="noreferrer">
@@ -477,6 +480,7 @@ export function MarketChart() {
         </a>
         .
       </p>
+      </details>
     </>
   );
 }

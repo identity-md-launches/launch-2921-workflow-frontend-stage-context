@@ -1,5 +1,5 @@
 import { Dashboard } from "./Dashboard";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { loadConfig, withWalletReadFallback, type Runtime } from "./config";
 import { Context } from "./context";
 import { useData } from "./state";
@@ -82,6 +82,12 @@ export default function App() {
     document.getElementById("main-heading")?.focus();
     window.scrollTo(0, 0);
   };
+  const hasRendered = useRef(false);
+  useEffect(() => {
+    if (!hasRendered.current) { hasRendered.current = true; return; }
+    document.getElementById("main-heading")?.focus();
+    window.scrollTo(0, 0);
+  }, [screen]);
   const d = state.data;
   const status = !runtime
     ? "Loading deployment"
@@ -103,18 +109,38 @@ export default function App() {
         : "Connect wallet";
   return (
     <>
-      <a href="#main-content" className="skip-link">
+      <a href="#main-content" className="skip-link" onClick={(event) => {
+        event.preventDefault();
+        document.getElementById("main-content")?.focus();
+        document.getElementById("main-content")?.scrollIntoView();
+      }}>
         Skip to content
       </a>
       <header className="site-header">
         <a className="brand" href="#trade" aria-label="UNLOCK V2 home">
-          <svg width="28" height="32" viewBox="0 0 28 32" aria-hidden="true">
-            <path d="M2 2h7v20h10V2h7v28H2Z" fill="currentColor" />
-          </svg>
+          <img src="./art/brand-mark.webp" width="40" height="44" alt="" />
           <span>
             UNLOCK<span className="version">V2</span>
           </span>
         </a>
+        <nav className="desktop-nav" aria-label="Protocol screens">
+          {screens.filter((s) => !["Gates", "Rules / Contracts", "Integration status"].includes(s)).map((s) => (
+            <a href={`#${key(s)}`} key={s} aria-current={s === screen ? "page" : undefined} onClick={() => setScreen(s)}>
+              {s === "Weekly IMD Rewards" ? "Rewards" : s}
+            </a>
+          ))}
+          <details className="more-nav" onKeyDown={(e) => {
+            if (e.key === "Escape") { e.currentTarget.open = false; e.currentTarget.querySelector("summary")?.focus(); }
+          }}>
+            <summary>More</summary>
+            <div>{["Gates", "Rules / Contracts", "Integration status"].map((s) => (
+              <a href={`#${key(s)}`} key={s} aria-current={s === screen ? "page" : undefined} onClick={(e) => {
+                setScreen(s);
+                e.currentTarget.closest("details")?.removeAttribute("open");
+              }}>{s}</a>
+            ))}</div>
+          </details>
+        </nav>
         <div className="header-utilities">
           <span className="chain-label">
             <i />
@@ -131,18 +157,6 @@ export default function App() {
           </button>
         </div>
       </header>
-      <nav className="desktop-nav" aria-label="Protocol screens">
-        {screens.map((s) => (
-          <a
-            href={`#${key(s)}`}
-            key={s}
-            aria-current={s === screen ? "page" : undefined}
-            onClick={() => setScreen(s)}
-          >
-            {s}
-          </a>
-        ))}
-      </nav>
       <div className="mobile-nav">
         <label className="sr-only" htmlFor="screen-nav">
           Protocol screen
@@ -158,13 +172,12 @@ export default function App() {
         </select>
         <span className="muted">UNLK2 / IMD</span>
       </div>
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} data-screen={key(screen)}>
         <div className="page-heading">
           <h1 id="main-heading" tabIndex={-1}>
             {screen === "Trade" ? (
               <>
-                UNLOCK V2{" "}
-                <span className="muted">Ten gates. Permanent progress.</span>
+                Ten gates. Permanent progress.
               </>
             ) : (
               screen

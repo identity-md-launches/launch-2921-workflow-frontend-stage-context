@@ -1,11 +1,9 @@
 # UNLOCK V2 frontend
 
-The current website targets **https://unlock-v2.imd.site/**. Source lives here; the publisher serves repository-root `dist/`. `site/` is an identical export mirror.
+The source continues the existing UNLOCK V2 website at **https://unlock-v2.imd.site/**. Repository-root `dist/` is the static publication artifact; `web/site/` is its identical build mirror. Current publication status is recorded in [the root README](../README.md) and [PUBLISH.md](../docs/redesign/PUBLISH.md).
 
-See the [root README](../README.md) for installation, preview, rebuilding, route constraints and checks; [DESIGN.md](../DESIGN.md) for the implemented interface; and [current validation](../docs/update/VALIDATION.md) for actual results and publication limits.
+Normal workflow: `npm ci`, `npm run typecheck`, `npm run build:vite`, `npm run preview`. The retained default `npm run build` uses the integrity-checked offline source builder; run a separate typecheck. Both production paths regenerate ABI/asset inventories and the root export, with relative URLs.
 
-`npm ci`, `npm run typecheck`, `npm run build:vite`, and `npm run preview` provide normal development. The default `npm run build` is the retained integrity-checked offline Linux x64 source build; it does not typecheck. Both build paths regenerate root `dist/` with relative assets and verified ABI/asset manifests. Existing manifests, lockfiles and dependencies are unchanged.
+Do not change deployed addresses, ABIs, wallet identity, pool routing or economics for a visual update. Transaction behavior remains in the existing core/config/integration/transaction modules. This redesign adds separate local art/fonts, shared visual styling, accessible focus handling and read-only historical gate display. Historical RPC failures remain explicitly unavailable.
 
-`public/repair-config.json` now contains the supplied **reviewed installed adapter and WalletQuoter**, with their actual hashes. Runtime bindings, registrations, pool IDs and remaining migration backing are checked onchain. The integration screen is read-only. Completed setup is distinct from the hook's `activated()` status, which is refreshed automatically.
-
-`tests/browser.mjs` invokes the current synthetic production-export suite. `tests/fork-browser.mjs` separately exercises actual pools and installed contracts through the production interface on a locally managed Anvil fork. Neither broadcasts to mainnet. Test dependencies and caches belong outside the submitted source.
+See [DESIGN.md](../DESIGN.md), [ASSETS.md](../docs/redesign/ASSETS.md), and [current validation](../docs/redesign/VALIDATION.md). No node_modules, browser binaries or caches belong in the source submission.

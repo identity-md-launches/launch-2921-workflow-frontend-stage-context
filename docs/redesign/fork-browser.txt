@@ -1,0 +1,10 @@
+20% 0.001819405761533843
+50% 0.0045485521741427
+75% 0.006822735260738463
+MAX 0.009097100072401465
+PASS ETH gas shortcuts use fresh simulation and buffered gas; floor selected base units
+PASS Production ETH buy executes two pools with zero pre-owned IMD and no approval; actual buyer credited
+PASS Maturity shows 20% cumulative entitlement; production sell shortcut and both Permit2 approvals work
+PASS Production IMD buy uses received sale proceeds, approvals, fresh quote and exact buyer credit
+PASS ETH MAX executes with protected calldata gas and leaves the fee reserve
+PASS Actual official swap logs render candles, volume and keyboard-readable data at desktop/mobile widths

@@ -1,10 +1,10 @@
 {
   "mode": "Read-only HTTPS public-site verification. No publishing command, wallet or chain write.",
-  "checkedAt": "2026-11-05T08:53:04.653Z",
+  "checkedAt": "2026-11-05T11:19:47.497Z",
   "url": "https://unlock-v2.imd.site/",
   "httpStatus": 200,
   "https": true,
-  "title": "UNLOCK V2 | UNLK2 / IMD Terminal",
+  "title": "UNLOCK V2 | Ten Gates. Permanent Progress.",
   "assets": [
     {
       "path": "abi/MigrationVault.json",
@@ -32,12 +32,12 @@
       "hashMatches": true
     },
     {
-      "path": "assets/index-6YAYEHKW.js",
+      "path": "assets/index-7XZDW6JM.js",
       "status": 200,
       "hashMatches": true
     },
     {
-      "path": "assets/index-ZVM226P3.css",
+      "path": "assets/index-Z7R6E2SM.css",
       "status": 200,
       "hashMatches": true
     },
@@ -94,11 +94,11 @@
   ],
   "allPublicAssetsMatchTheirManifest": true,
   "matchesDeliveredExport": false,
-  "matchesDeliveredConfig": false,
+  "matchesDeliveredConfig": true,
   "publicationStatus": "Existing public version is still different; publication/post-publication verification pending",
   "publicConfig": {
-    "adapter": null,
-    "quoter": null,
-    "installationReviewed": false
+    "adapter": "0x17565820374de9d122519d5e701e8c2345622058",
+    "quoter": "0xb36788ea2612b72eb4fe07364c2406aaf47f67a6",
+    "installationReviewed": true
   }
 }

@@ -1,0 +1,104 @@
+{
+  "mode": "Read-only HTTPS public-site verification. No publishing command, wallet or chain write.",
+  "checkedAt": "2026-11-05T11:19:47.497Z",
+  "url": "https://unlock-v2.imd.site/",
+  "httpStatus": 200,
+  "https": true,
+  "title": "UNLOCK V2 | Ten Gates. Permanent Progress.",
+  "assets": [
+    {
+      "path": "abi/MigrationVault.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/RewardPot.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Hook.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Token.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/chunk-MUSPBBTZ.js",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index-7XZDW6JM.js",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index-Z7R6E2SM.css",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "contract-runtime.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "favicon.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "og-image.png",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "repair-config.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-browser.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-coinbase.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-metamask.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-phantom.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-rabby.svg",
+      "status": 200,
+      "hashMatches": true
+    }
+  ],
+  "allPublicAssetsMatchTheirManifest": true,
+  "matchesDeliveredExport": false,
+  "matchesDeliveredConfig": true,
+  "publicationStatus": "Existing public version is still different; publication/post-publication verification pending",
+  "publicConfig": {
+    "adapter": "0x17565820374de9d122519d5e701e8c2345622058",
+    "quoter": "0xb36788ea2612b72eb4fe07364c2406aaf47f67a6",
+    "installationReviewed": true
+  }
+}

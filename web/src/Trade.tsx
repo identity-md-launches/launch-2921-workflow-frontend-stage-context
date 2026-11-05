@@ -381,7 +381,10 @@ export function Trade() {
             throw Error("Gas changed during estimation. Retry the shortcut.");
         }
       }
-      if (liveTag.current !== initialTag) return;
+      if (liveTag.current !== initialTag) {
+        setError("State changed while calculating this amount. Retry the shortcut.");
+        return;
+      }
       setInput(formatUnits(portion(base, percent), 18));
     } catch (e) {
       setError(errorText(e));
@@ -706,6 +709,7 @@ export function Trade() {
               : "Review swap"
           : "Get live quote"}
       </Action>
+      <p className="visible-route"><span>Fixed official route</span><strong>{eth ? "ETH → IMD → UNLK2" : buy ? "IMD → UNLK2" : "UNLK2 → IMD"}</strong></p>
       <details className="swap-context">
         <summary>Route, fees and protections</summary>
         <p>
