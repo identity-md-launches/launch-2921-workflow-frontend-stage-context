@@ -25,8 +25,8 @@ export function GateChart() {
   const y = (pct: number) => 285 - pct * 2.3;
   let path = "M 35 285 H 75";
   rows.forEach((row, i) => {
-      path += ` H ${x(row[1])} V ${y(row[0])}${i === 9 ? " H 790" : ""}`;
-    });
+    path += ` H ${x(row[1])} V ${y(row[0])}${i === 9 ? " H 790" : ""}`;
+  });
   return (
     <>
       <p className="helper">
@@ -70,7 +70,11 @@ export function GateChart() {
               r={selected === i + 1 ? 7 : 5}
               stroke="#eee"
               fill={
-                state(i + 1) === "Opened" ? "#83dcb9" : state(i + 1) === "Current" ? "#efc47d" : "#333"
+                state(i + 1) === "Opened"
+                  ? "#83dcb9"
+                  : state(i + 1) === "Current"
+                    ? "#efc47d"
+                    : "#333"
               }
             />
             <text x={x(row[1])} y={y(row[0]) - 15} textAnchor="middle">
@@ -88,11 +92,31 @@ export function GateChart() {
           $25M
         </text>
       </svg>
-      <div className="gate-legend"><span className="mint">● Opened</span><span className="amber">◉ Current</span><span>○ Future</span></div>
-      <div className="gate-selector" aria-label="Select gate details">
-        {rows.map((_, i) => <button key={i} data-state={state(i + 1)} aria-label={`View gate ${i + 1}: ${state(i + 1)}`} aria-pressed={selected === i + 1} onClick={() => setSelected(i + 1)}>{i + 1}</button>)}
+      <div className="gate-legend">
+        <span className="mint">● Opened</span>
+        <span className="amber">◉ Current</span>
+        <span>○ Future</span>
       </div>
-      <p className="helper">{!d || stale ? "Contract thresholds shown. Live gate states unavailable." : `Stored openings: ${d.gates} / 10 · block ${d.block.toString()}.`} The FDV axis shows thresholds; volume or contributions can also open each gate.</p>
+      <div className="gate-selector" aria-label="Select gate details">
+        {rows.map((_, i) => (
+          <button
+            key={i}
+            data-state={state(i + 1)}
+            aria-label={`View gate ${i + 1}: ${state(i + 1)}`}
+            aria-pressed={selected === i + 1}
+            onClick={() => setSelected(i + 1)}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+      <p className="helper">
+        {!d || stale
+          ? "Contract thresholds shown. Live gate states unavailable."
+          : `Stored openings: ${d.gates} / 10 · block ${d.block.toString()}.`}{" "}
+        The FDV axis shows thresholds; volume or contributions can also open
+        each gate.
+      </p>
       <div className="gate-detail" aria-live="polite">
         <strong>
           Gate {selected} · {state(selected)} · {g?.[0] ?? "—"}% unlocked
@@ -157,6 +181,12 @@ export function MarketChart() {
   const host = useRef<HTMLDivElement>(null);
   const readout = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") setRetry((n) => n + 1);
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
     if (!d?.poolKey) return;
     let canceled = false;
     async function load() {
@@ -198,27 +228,34 @@ export function MarketChart() {
           }
           blocks.set(block, { time: Number(b.timestamp), usd });
         }
-        logs.sort((a,b) => Number(a.blockNumber - b.blockNumber) || a.transactionIndex - b.transactionIndex || a.logIndex - b.logIndex);
-        const trades = logs.filter(l => !l.removed).flatMap((l) => {
-          const a = l.args;
-          const token0 =
-            d!.poolKey!.currency0.toLowerCase() ===
-            r.addresses.UnlockV2Token.toLowerCase();
-          const abs = (n: bigint) => (n < 0n ? -n : n);
-          const t = abs(token0 ? a.amount0 : a.amount1),
-            i = abs(token0 ? a.amount1 : a.amount0);
-          if (t === 0n || i === 0n) return [];
-          const b = blocks.get(l.blockNumber)!;
-          return [
-            {
-              time: b.time,
-              imdPerToken:
-                Number(formatUnits(i, 18)) / Number(formatUnits(t, 18)),
-              imdVolume: Number(formatUnits(i, 18)),
-              usdPerImd: b.usd,
-            },
-          ];
-        });
+        logs.sort(
+          (a, b) =>
+            Number(a.blockNumber - b.blockNumber) ||
+            a.transactionIndex - b.transactionIndex ||
+            a.logIndex - b.logIndex,
+        );
+        const trades = logs
+          .filter((l) => !l.removed && l.args.id === d!.poolId)
+          .flatMap((l) => {
+            const a = l.args;
+            const token0 =
+              d!.poolKey!.currency0.toLowerCase() ===
+              r.addresses.UnlockV2Token.toLowerCase();
+            const abs = (n: bigint) => (n < 0n ? -n : n);
+            const t = abs(token0 ? a.amount0 : a.amount1),
+              i = abs(token0 ? a.amount1 : a.amount0);
+            if (t === 0n || i === 0n) return [];
+            const b = blocks.get(l.blockNumber)!;
+            return [
+              {
+                time: b.time,
+                imdPerToken:
+                  Number(formatUnits(i, 18)) / Number(formatUnits(t, 18)),
+                imdVolume: Number(formatUnits(i, 18)),
+                usdPerImd: b.usd,
+              },
+            ];
+          });
         if (!canceled) {
           setPoints(trades);
           setUpdated(Date.now());
@@ -252,10 +289,10 @@ export function MarketChart() {
     if (!host.current || !bars.length) return;
     const chart = createChart(host.current, {
       autoSize: true,
-      height: 340,
+      height: 440,
       layout: {
-        background: { type: ColorType.Solid, color: "#050505" },
-        textColor: "#aaa",
+        background: { type: ColorType.Solid, color: "#0b1211" },
+        textColor: "#a5b7b0",
         attributionLogo: true,
       },
       grid: {
@@ -263,7 +300,7 @@ export function MarketChart() {
         horzLines: { color: "#181818" },
       },
       timeScale: { timeVisible: true },
-      rightPriceScale: { borderColor: "#333" },
+      rightPriceScale: { borderColor: "#333", minimumWidth: 110 },
       crosshair: { mode: 0 },
     });
     const series = chart.addSeries(CandlestickSeries, {
@@ -292,7 +329,14 @@ export function MarketChart() {
         color: b.close >= b.open ? "#315e4e" : "#633e31",
       })),
     );
-    chart.timeScale().fitContent();
+    if (bars.length < 40)
+      chart
+        .timeScale()
+        .setVisibleLogicalRange({
+          from: bars.length - 40,
+          to: bars.length + 3,
+        });
+    else chart.timeScale().fitContent();
     const tooltip = readout.current;
     chart.subscribeCrosshairMove((p) => {
       const v = p.seriesData.get(series) as
@@ -307,6 +351,14 @@ export function MarketChart() {
   }, [points, unit, frame, unitError]);
   return (
     <>
+      <div className="spread market-heading">
+        <h2>Official market</h2>
+        <strong>
+          {!stale && d?.tokenPrice[1]
+            ? `${display(d.tokenPrice[0], 18, 10)} IMD / UNLK2`
+            : "Price unavailable"}
+        </strong>
+      </div>
       <div className="spread">
         <div className="segmented">
           {[60, 300, 900, 3600, 14400].map((s) => (
@@ -332,7 +384,10 @@ export function MarketChart() {
         Price: {unit} per UNLK2 · Volume: {unit} · official-pool executed trades
       </p>
       {!d?.poolKey ? (
-        <div className="chart-empty" role="status"><strong>Official-pool state unavailable</strong><p>Use Refresh above to verify the pool, then retry market data.</p></div>
+        <div className="chart-empty" role="status">
+          <strong>Official-pool state unavailable</strong>
+          <p>Use Refresh above to verify the pool, then retry market data.</p>
+        </div>
       ) : loading ? (
         <p role="status">Reading official-pool Swap logs…</p>
       ) : error ? (
@@ -345,7 +400,8 @@ export function MarketChart() {
               : "Trading closed · no official trade history in this window"}
           </strong>
           <p>
-            Candles appear only after official-pool swaps. View permanent thresholds in Gate Staircase.
+            Candles appear only after official-pool swaps. The ten doors above
+            show permanent gate progress.
           </p>
         </div>
       ) : unitError ? (
@@ -358,19 +414,64 @@ export function MarketChart() {
           <div ref={host} className="market-canvas" />
         </div>
       )}
-      {stale && d && <Alert>Pool snapshot is stale. Trading status is unavailable; history is a separately dated snapshot.</Alert>}
-      <button disabled={loading || !d?.poolKey} onClick={() => setRetry((n) => n + 1)}>
+      {bars.length > 0 && (
+        <details className="candle-data">
+          <summary>Read candle data</summary>
+          <table>
+            <caption>
+              Latest {Math.min(bars.length, 30)} observed candles. Prices and
+              volume in {unit}. Empty intervals have no candle.
+            </caption>
+            <thead>
+              <tr>
+                <th>Time (UTC)</th>
+                <th>Open / high / low / close</th>
+                <th>Volume</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bars.slice(-30).map((bar) => (
+                <tr key={bar.time}>
+                  <th>{new Date(bar.time * 1000).toISOString()}</th>
+                  <td>
+                    {(["open", "high", "low", "close"] as const).map((k) => (
+                      <div key={k}>
+                        {k}: {bar[k].toPrecision(8)}
+                      </div>
+                    ))}
+                  </td>
+                  <td>{bar.volume.toPrecision(8)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </details>
+      )}
+      {stale && d && (
+        <Alert>
+          Pool snapshot is stale. Trading status is unavailable; history is a
+          separately dated snapshot.
+        </Alert>
+      )}
+      <button
+        disabled={loading || !d?.poolKey}
+        onClick={() => setRetry((n) => n + 1)}
+      >
         Retry / refresh market data
       </button>
       <p className="helper">
-        Source: <a href={r.d.network.rpcUrls[0]} target="_blank" rel="noreferrer">Ethereum public RPC</a> · PoolManager Swap logs filtered to official pool{" "}
+        Source:{" "}
+        <a href={r.d.network.rpcUrls[0]} target="_blank" rel="noreferrer">
+          Ethereum public RPC
+        </a>{" "}
+        · PoolManager Swap logs filtered to official pool{" "}
         {d?.poolId.slice(0, 12)}… · block window {range || "unavailable"} (last
         7,200 blocks). Updated{" "}
         {updated ? new Date(updated).toISOString() : "not yet"}. USD uses the
-        historical valid IMD/USD reference at each trade block; archive RPC
-        support is required. Prices use executed pool IMD/token legs, excluding
-        the extra reward fee. Empty intervals stay empty. Public RPC only; no
-        paid API. Charts by{" "}
+        historical valid end-of-block IMD/USD reference at each trade block;
+        archive RPC support is required. Prices use executed pool IMD/token
+        legs, excluding the extra reward fee. Empty intervals stay empty. Public
+        RPC only; no paid API. Charts by{" "}
         <a href="https://www.tradingview.com/" target="_blank" rel="noreferrer">
           TradingView Lightweight Charts 5.0.9
         </a>
@@ -380,17 +481,29 @@ export function MarketChart() {
   );
 }
 export function Charts() {
-  const [tab, setTab] = useState("gates");
+  const [tab, setTab] = useState("market");
   return (
     <section className="panel chart-panel">
-      <div className="segmented chart-tabs" role="tablist" aria-label="Dashboard charts" onKeyDown={e => {
-        if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
-          e.preventDefault();
-          const next = e.key === "Home" ? "gates" : e.key === "End" ? "market" : tab === "gates" ? "market" : "gates";
-          setTab(next);
-          document.getElementById(`chart-tab-${next}`)?.focus();
-        }
-      }}>
+      <div
+        className="segmented chart-tabs"
+        role="tablist"
+        aria-label="Dashboard charts"
+        onKeyDown={(e) => {
+          if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
+            e.preventDefault();
+            const next =
+              e.key === "Home"
+                ? "gates"
+                : e.key === "End"
+                  ? "market"
+                  : tab === "gates"
+                    ? "market"
+                    : "gates";
+            setTab(next);
+            document.getElementById(`chart-tab-${next}`)?.focus();
+          }
+        }}
+      >
         <button
           role="tab"
           id="chart-tab-gates"
@@ -412,7 +525,13 @@ export function Charts() {
           Market Chart
         </button>
       </div>
-      <div id="chart-content" role="tabpanel" aria-labelledby={`chart-tab-${tab}`}>{tab === "gates" ? <GateChart /> : <MarketChart />}</div>
+      <div
+        id="chart-content"
+        role="tabpanel"
+        aria-labelledby={`chart-tab-${tab}`}
+      >
+        {tab === "gates" ? <GateChart /> : <MarketChart />}
+      </div>
     </section>
   );
 }

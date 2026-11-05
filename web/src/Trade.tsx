@@ -12,6 +12,8 @@ import {
   same,
   swapData,
 } from "./core";
+import { ETH_ROUTE_VERIFIED, ethSwapData, quoteEthRoute } from "./eth-route";
+import { portion, sellable, gasReserve, spendableEth } from "./shortcuts";
 import { verifyAuxiliary, walletQuoterAbi } from "./integration";
 
 export function GateProgress() {
@@ -30,7 +32,9 @@ export function GateProgress() {
         </h2>
         <span className="gate-status">
           {d
-            ? d.gates === 10 ? "100% · every holder" : `${d.percents[0]}% buys / ${d.percents[1]}% other → ${next?.[0]}%`
+            ? d.gates === 10
+              ? "100% · every holder"
+              : `${d.percents[0]}% buys / ${d.percents[1]}% other → ${next?.[0]}%`
             : "Awaiting state"}
         </span>
       </div>
@@ -41,7 +45,13 @@ export function GateProgress() {
             value={processed ? d.lastGateFdv : undefined}
             target={next?.[1]}
             unit="USD"
-            valid={!!processed && !!fresh && !!d?.gatePrice[1] && !!d?.tokenPrice[1] && !stale}
+            valid={
+              !!processed &&
+              !!fresh &&
+              !!d?.gatePrice[1] &&
+              !!d?.tokenPrice[1] &&
+              !stale
+            }
           />
           <Progress
             label="OR · Cumulative official gross USD volume"
@@ -59,7 +69,12 @@ export function GateProgress() {
           />
         </>
       )}
-      <p className="helper">Any one trigger opens the gate permanently. {stale ? "Live state unavailable; refresh to verify progress." : "Open states come only from stored gatesOpen."}</p>
+      <p className="helper">
+        Any one trigger opens the gate permanently.{" "}
+        {stale
+          ? "Live state unavailable; refresh to verify progress."
+          : "Open states come only from stored gatesOpen."}
+      </p>
       <details>
         <summary>Market FDV, processed FDV and pending observations</summary>
         <p>
@@ -85,17 +100,21 @@ export function GateProgress() {
           {d?.gatePrice[1] && !stale
             ? `$${display(d.gatePrice[0], 18, 6)}`
             : "Unavailable"}
-          . Pending observation could reach {!stale && d?.gatePrice[1] && d?.tokenPrice[1] ? d.pendingGates : "unavailable"} gates; this
-          is a preview, never an open state.
+          . Pending observation could reach{" "}
+          {!stale && d?.gatePrice[1] && d?.tokenPrice[1]
+            ? d.pendingGates
+            : "unavailable"}{" "}
+          gates; this is a preview, never an open state.
         </p>
         <p>
           The immutable hook reads the official price left by the previous block
           before the first successful official swap of a later block. It is not
           an immediate spot gate. Its IMD-per-ETH tracker moves at most 5% per
-          hour, with a four-hour gap cap (upper bound ×1.20, lower bound ÷1.20 per update). Gate USD uses the
-          lower of spot IMD/USD and tracker-derived IMD/USD; IMD price declines
-          count immediately. Invalid or stale feed prices do not count. Gates
-          opened in storage never close.
+          hour, with a four-hour gap cap (upper bound ×1.20, lower bound ÷1.20
+          per update). Gate USD uses the lower of spot IMD/USD and
+          tracker-derived IMD/USD; IMD price declines count immediately. Invalid
+          or stale feed prices do not count. Gates opened in storage never
+          close.
         </p>
       </details>
     </>
@@ -112,29 +131,65 @@ type Quote = {
   lp: bigint;
   at: number;
   block: bigint;
+  tag: string;
+  referenceLp?: bigint;
+  gas?: bigint;
+  deadline?: bigint;
 };
 export function Trade() {
   const { r, data: d, wallet: w, request, verified, stale } = useApp();
   const [buy, setBuy] = useState(true),
+    [payment, setPayment] = useState<"IMD" | "ETH">("IMD"),
     [input, setInput] = useState(""),
     [slippage, setSlippage] = useState("0.50");
   const [quote, setQuote] = useState<Quote>(),
     [error, setError] = useState(""),
-    [quoting, setQuoting] = useState(false);
+    [quoting, setQuoting] = useState(false),
+    [shortcutPending, setShortcutPending] = useState(false);
   const [allow, setAllow] = useState<{
     token: bigint;
     permit: bigint;
     expiry: number;
   }>();
   const version = useRef(0);
+  const eth = buy && payment === "ETH";
+  const from = buy ? payment : "UNLK2",
+    to = buy ? "UNLK2" : "IMD";
   const source = (
     buy ? r.d.network.pairToken.address : r.addresses.UnlockV2Token
   ) as Address;
-  const from = buy ? "IMD" : "UNLK2",
-    to = buy ? "UNLK2" : "IMD";
-  const dec = buy ? r.d.network.pairToken.decimals : 18;
+  const available = stale
+    ? undefined
+    : buy
+      ? eth
+        ? d?.ethBalance
+        : d?.imdBalance
+      : d?.balance !== undefined && d.sellAllowance !== undefined
+        ? sellable(d.balance, d.sellAllowance)
+        : undefined;
+  const tag = [
+    buy,
+    payment,
+    input,
+    slippage,
+    w.address,
+    w.chainId,
+    d?.gates,
+    d?.tokenPrice[0],
+    d?.imdUsd[0],
+    d?.balance,
+    d?.imdBalance,
+    d?.ethBalance,
+    d?.sellAllowance,
+    d?.poolId,
+    d?.activated,
+    verified,
+    stale,
+  ].join(":");
+  const liveTag = useRef(tag);
+  liveTag.current = tag;
   const allowance = useCallback(async () => {
-    if (!w.address) return;
+    if (!w.address || eth) return;
     const [token, p] = await Promise.all([
       r.client.readContract({
         address: source,
@@ -152,47 +207,75 @@ export function Trade() {
     const a = { token, permit: p[0], expiry: p[1] };
     setAllow(a);
     return a;
-  }, [r, source, w.address]);
+  }, [r, source, w.address, eth]);
   useEffect(() => {
-    if (quote) void allowance().catch((e) => setError(errorText(e)));
-  }, [d?.time, allowance, quote?.at]);
+    if (quote && !eth) void allowance().catch((e) => setError(errorText(e)));
+  }, [d?.time, quote?.at, allowance, eth]);
+  const ready = () => {
+    if (
+      !d?.poolKey ||
+      !d.activated ||
+      !d.routerSupported ||
+      !verified ||
+      stale ||
+      !w.address ||
+      w.wrong
+    )
+      throw Error("Connect on Ethereum and wait for verified active trading.");
+    if (!eth && !d!.quoterSupported)
+      throw Error(
+        "The reviewed wallet quoter is not registered. IMD trading is unavailable.",
+      );
+    if (eth && !ETH_ROUTE_VERIFIED)
+      throw Error("ETH mode awaits actual-buyer fork verification.");
+  };
   const getQuote = async () => {
-    const id = ++version.current;
+    const id = ++version.current,
+      atTag = tag;
     setQuote(undefined);
     setError("");
     setQuoting(true);
     try {
-      if (
-        !d?.poolKey ||
-        !d.activated ||
-        !d.routerSupported ||
-        !verified ||
-        stale ||
-        !w.address ||
-        w.wrong
-      )
-        throw Error(
-          "Connect on Ethereum and wait for trading and verified router setup.",
-        );
-      const n = amount(input, dec);
+      ready();
+      const n = amount(input);
       minimumOut(1n, slippage);
-      if (n > (buy ? (d.imdBalance ?? 0n) : (d.balance ?? 0n)))
-        throw Error(`Insufficient ${from} balance.`);
-      const target = await verifyAuxiliary(r, "quoter");
-      const block = await r.client.getBlockNumber();
-      const result = await r.client.simulateContract({
-        address: target,
-        abi: [...walletQuoterAbi, ...r.abis.UnlockV2Hook],
-        functionName: "quoteExactInput",
-        args: [same(source, d.poolKey.currency0), n],
-        account: w.address,
-        blockNumber: block,
-      });
-      if (id !== version.current) return;
-      const [out, fee, lp] = result.result as readonly [bigint, bigint, bigint];
-      const min = minimumOut(out, slippage);
+      if (available === undefined || n > available)
+        throw Error(
+          buy
+            ? `Insufficient available ${from}.`
+            : "Amount exceeds your currently sellable UNLK2.",
+        );
+      let q: Omit<Quote, "min" | "amount" | "tag">;
+      if (eth) {
+        q = await quoteEthRoute(r, d!.poolKey!, w.address!, n, 1n, slippage);
+        const fees = await r.client.estimateFeesPerGas();
+        const balance = await r.client.getBalance({ address: w.address! });
+        if (n > spendableEth(balance, gasReserve(q.gas!, fees.maxFeePerGas)))
+          throw Error(
+            "Keep more ETH for the fresh gas estimate and fee buffer. Use a smaller amount.",
+          );
+      } else {
+        const target = await verifyAuxiliary(r, "quoter"),
+          block = await r.client.getBlockNumber();
+        const result = await r.client.simulateContract({
+          address: target,
+          abi: [...walletQuoterAbi, ...r.abis.UnlockV2Hook],
+          functionName: "quoteExactInput",
+          args: [same(source, d!.poolKey!.currency0), n],
+          account: w.address!,
+          blockNumber: block,
+        });
+        const [out, fee, lp] = result.result as readonly [
+          bigint,
+          bigint,
+          bigint,
+        ];
+        q = { out, fee, lp, block, at: Date.now() };
+      }
+      if (id !== version.current || liveTag.current !== atTag) return;
+      const min = minimumOut(q.out, slippage);
       if (min <= 0n) throw Error("No usable output was quoted.");
-      setQuote({ out, min, amount: n, fee, lp, at: Date.now(), block });
+      setQuote({ ...q, min, amount: n, tag: atTag });
       await allowance();
     } catch (e) {
       if (id === version.current) setError(errorText(e));
@@ -212,90 +295,235 @@ export function Trade() {
       clearTimeout(timer);
       ++version.current;
     };
-  }, [
-    buy,
-    input,
-    slippage,
-    w.address,
-    w.chainId,
-    d?.activated,
-    d?.routerSupported,
-    verified,
-    stale,
-  ]);
+  }, [tag]);
   useEffect(() => {
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       if (quote && Date.now() - quote.at > 45000) {
         setQuote(undefined);
         setError("Quote expired. Refresh before trading.");
       }
     }, 1000);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [quote]);
-  const step = async () => {
+  const shortcut = async (percent: number) => {
+    const initialTag = tag;
+    setError("");
+    setQuote(undefined);
+    ++version.current;
+    setShortcutPending(true);
     try {
-      if (!quote || !d?.poolKey || !w.address || Date.now() - quote.at > 45000)
-        throw Error("Get a fresh quote first.");
-      const id = version.current;
-      const a = await allowance();
-      if (!a || id !== version.current)
-        throw Error("Wallet or inputs changed. Refresh the quote.");
-      if (a.token < quote.amount)
-        return request({
-          title: `Approve ${from}`,
-          description: `Permit2 may spend exactly ${formatUnits(quote.amount, dec)} ${from}.`,
+      if (!w.address || w.wrong || !verified || stale)
+        throw Error("Connect on Ethereum and refresh balances first.");
+      let base: bigint;
+      if (!buy) {
+        const [balance, quota] = await Promise.all([
+          r.client.readContract({
+            address: r.addresses.UnlockV2Token,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [w.address],
+          }),
+          r.client.readContract({
+            address: r.addresses.UnlockV2Hook,
+            abi: r.abis.UnlockV2Hook,
+            functionName: "sellAllowance",
+            args: [w.address],
+          }),
+        ]);
+        base = sellable(balance, quota as bigint);
+      } else if (!eth)
+        base = await r.client.readContract({
           address: source,
           abi: erc20Abi,
-          functionName: "approve",
-          args: [r.d.network.uniswapV4.permit2, quote.amount],
+          functionName: "balanceOf",
+          args: [w.address],
         });
-      if (a.permit < quote.amount || a.expiry < Date.now() / 1000 + 300)
-        return request({
-          title: "Approve router in Permit2",
-          description: `Authorize exactly ${formatUnits(quote.amount, dec)} ${from} for 30 minutes.`,
-          address: r.d.network.uniswapV4.permit2,
-          abi: permitAbi,
-          functionName: "approve",
-          args: [
-            source,
-            r.d.network.uniswapV4.universalRouter,
-            quote.amount,
-            Math.floor(Date.now() / 1000) + 1800,
-          ],
-        });
-      const data = swapData(
-        d.poolKey,
-        source,
-        quote.amount,
-        quote.min,
-        BigInt(Math.floor(Date.now() / 1000) + 600),
-        !!r.d.network.uniswapV4.extendedSwapParams,
-      );
-      const args = decodeFunctionData({ abi: routerAbi, data }).args;
-      request({
-        title: `Swap ${from} → ${to}`,
-        description: `Spend ${formatUnits(quote.amount, dec)} ${from}; receive at least ${formatUnits(quote.min, 18)} ${to}. The actual Universal Router execution is simulated before signing.`,
-        address: r.d.network.uniswapV4.universalRouter,
-        abi: routerAbi,
-        functionName: "execute",
-        args,
-        validUntil: quote.at + 45000,
-        validate: async () => {
-          if (id !== version.current)
-            throw Error("Quote inputs or wallet changed.");
+      else {
+        ready();
+        const [balance, fees] = await Promise.all([
+          r.client.getBalance({ address: w.address }),
+          r.client.estimateFeesPerGas(),
+        ]);
+        const seed = balance / 100n;
+        if (seed <= 0n) throw Error("No spendable ETH.");
+        const probe = await quoteEthRoute(
+          r,
+          d!.poolKey!,
+          w.address,
+          seed,
+          1n,
+          slippage,
+        );
+        base = spendableEth(balance, gasReserve(probe.gas, fees.maxFeePerGas));
+        // Re-estimate the actual selected size; larger trades may cross more ticks.
+        for (let i = 0; i < 3; i++) {
+          const selected = portion(base, percent);
+          if (!selected) throw Error("No ETH remains after network fees.");
+          const actual = await quoteEthRoute(
+            r,
+            d!.poolKey!,
+            w.address,
+            selected,
+            1n,
+            slippage,
+          );
+          const freshBalance = await r.client.getBalance({
+            address: w.address,
+          });
+          const freshFees = await r.client.estimateFeesPerGas();
+          const next = spendableEth(
+            freshBalance,
+            gasReserve(actual.gas, freshFees.maxFeePerGas),
+          );
+          if (portion(next, percent) >= selected) break;
+          base = next;
+          if (i === 2)
+            throw Error("Gas changed during estimation. Retry the shortcut.");
+        }
+      }
+      if (liveTag.current !== initialTag) return;
+      setInput(formatUnits(portion(base, percent), 18));
+    } catch (e) {
+      setError(errorText(e));
+    } finally {
+      setShortcutPending(false);
+    }
+  };
+  const step = async () => {
+    try {
+      ready();
+      const q = quote;
+      if (!q || q.tag !== liveTag.current || Date.now() - q.at > 45000)
+        throw Error("Get a fresh quote first.");
+      const revalidate = async () => {
+        if (q.tag !== liveTag.current)
+          throw Error("Wallet, inputs or state changed. Refresh the quote.");
+        const h = (functionName: string, args: readonly unknown[] = []) =>
+          r.client.readContract({
+            address: r.addresses.UnlockV2Hook,
+            abi: r.abis.UnlockV2Hook,
+            functionName,
+            args,
+          });
+        if (
+          !(await h("activated")) ||
+          !(await h("isRouter", [r.d.network.uniswapV4.universalRouter]))
+        )
+          throw Error("Trading or router is unavailable.");
+        if (eth) {
+          const fresh = await quoteEthRoute(
+            r,
+            d!.poolKey!,
+            w.address!,
+            q.amount,
+            q.min,
+            undefined,
+            q.deadline,
+          );
+          const [balance, fees] = await Promise.all([
+            r.client.getBalance({ address: w.address! }),
+            r.client.estimateFeesPerGas(),
+          ]);
+          if (
+            q.amount >
+            spendableEth(balance, gasReserve(fresh.gas, fees.maxFeePerGas))
+          )
+            throw Error(
+              "ETH balance cannot cover input plus buffered gas. Reduce the amount.",
+            );
+        } else {
+          const balance = await r.client.readContract({
+            address: source,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [w.address!],
+          });
+          const base = buy
+            ? balance
+            : sellable(
+                balance,
+                (await h("sellAllowance", [w.address!])) as bigint,
+              );
+          if (q.amount > base)
+            throw Error(
+              "Balance or currently sellable amount changed. Refresh the quote.",
+            );
           const target = await verifyAuxiliary(r, "quoter");
           const fresh = await r.client.simulateContract({
             address: target,
             abi: walletQuoterAbi,
             functionName: "quoteExactInput",
-            args: [same(source, d.poolKey!.currency0), quote.amount],
-            account: w.address,
+            args: [same(source, d!.poolKey!.currency0), q.amount],
+            account: w.address!,
           });
-          if (fresh.result[0] < quote.min)
+          if (fresh.result[0] < q.min)
             throw Error(
               "Output fell below the reviewed minimum. Refresh the quote.",
             );
-        },
+        }
+      };
+      if (!eth) {
+        const a = await allowance();
+        if (q.tag !== liveTag.current || !a)
+          throw Error("Inputs changed. Refresh the quote.");
+        if (a.token < q.amount)
+          return request({
+            title: `Approve ${from}`,
+            description: `Permit2 may spend exactly ${formatUnits(q.amount, 18)} ${from}.`,
+            address: source,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [r.d.network.uniswapV4.permit2, q.amount],
+            validUntil: q.at + 45000,
+            validate: revalidate,
+          });
+        if (a.permit < q.amount || a.expiry < Date.now() / 1000 + 300)
+          return request({
+            title: "Approve router in Permit2",
+            description: `Authorize exactly ${formatUnits(q.amount, 18)} ${from} for 30 minutes.`,
+            address: r.d.network.uniswapV4.permit2,
+            abi: permitAbi,
+            functionName: "approve",
+            args: [
+              source,
+              r.d.network.uniswapV4.universalRouter,
+              q.amount,
+              Math.floor(Date.now() / 1000) + 1800,
+            ],
+            validUntil: q.at + 45000,
+            validate: revalidate,
+          });
+      }
+      const deadline =
+        q.deadline ?? BigInt(Math.floor(Date.now() / 1000) + 180);
+      const data = eth
+        ? ethSwapData(
+            d!.poolKey!,
+            r.d.network.pairToken.address,
+            r.addresses.UnlockV2Token,
+            w.address!,
+            q.amount,
+            q.min,
+            deadline,
+          )
+        : swapData(
+            d!.poolKey!,
+            source,
+            q.amount,
+            q.min,
+            deadline,
+            !!r.d.network.uniswapV4.extendedSwapParams,
+          );
+      request({
+        title: `Swap ${from} → ${to}`,
+        description: `Spend ${formatUnits(q.amount, 18)} ${from}; receive at least ${formatUnits(q.min, 18)} ${to}.${eth ? " Native ETH → pinned ETH/IMD pool → official IMD/UNLK2 pool → your wallet. Both legs revert together; no IMD approval is needed." : " Only the hook’s official pool is used."}`,
+        address: r.d.network.uniswapV4.universalRouter,
+        abi: routerAbi,
+        functionName: "execute",
+        args: decodeFunctionData({ abi: routerAbi, data }).args,
+        value: eth ? q.amount : 0n,
+        validUntil: q.at + 45000,
+        validate: revalidate,
       });
     } catch (e) {
       setError(errorText(e));
@@ -305,27 +533,21 @@ export function Trade() {
   const reason = !d
     ? "Reading verified pool state."
     : !d.activated
-      ? "Trading closed · owner setup pending."
+      ? d.setupReady
+        ? "Trading is closed. Setup is verified complete; activation is detected automatically."
+        : "Trading is closed. Review the live integration status."
       : !d.routerSupported
-        ? "Universal Router registration pending."
-        : !r.repair.quoter
-          ? "Wallet quoter installation pending."
-          : undefined;
-  const spotOutput =
-    quote && !stale && d?.tokenPrice[1]
-      ? buy
-        ? (quote.amount * 10n ** 18n) / d.tokenPrice[0]
-        : (quote.amount * d.tokenPrice[0]) / 10n ** 18n
-      : undefined;
-  const impact =
-    quote && spotOutput && spotOutput > 0n
-      ? Number(((spotOutput - quote.out) * 10000n) / spotOutput) / 100
-      : undefined;
+        ? "Pinned Universal Router unavailable."
+        : eth && !ETH_ROUTE_VERIFIED
+          ? "ETH buying is disabled until the actual-buyer fork suite passes."
+          : (!r.repair.quoter || !d.quoterSupported) && !eth
+            ? "Reviewed wallet quoter unavailable or unregistered."
+            : undefined;
   return (
-    <section className="panel swap-panel">
+    <section className="panel swap-panel" aria-label="Swap UNLK2">
       <div className="spread">
-        <h2>IMD / UNLK2</h2>
-        <span className="muted">Official pool</span>
+        <h2>Swap UNLK2</h2>
+        <span className="mint">Official route</span>
       </div>
       <div className="segmented">
         <button aria-pressed={buy} onClick={() => setBuy(true)}>
@@ -335,37 +557,99 @@ export function Trade() {
           Sell UNLK2
         </button>
       </div>
+      {buy && (
+        <div className="payment-choice" role="group" aria-label="Pay with">
+          <span>Pay with</span>
+          <button
+            aria-pressed={payment === "IMD"}
+            onClick={() => {
+              setPayment("IMD");
+              setInput("");
+            }}
+          >
+            IMD
+          </button>
+          <button
+            aria-pressed={payment === "ETH"}
+            onClick={() => {
+              setPayment("ETH");
+              setInput("");
+            }}
+          >
+            ETH
+          </button>
+        </div>
+      )}
       <div className="spread">
         <label htmlFor="swap-amount">You pay · {from}</label>
-        <span>Balance {display(buy ? d?.imdBalance : d?.balance, dec)}</span>
+        <span className="muted">
+          {buy ? "Balance" : "Currently sellable"} {display(available)}
+        </span>
       </div>
       <input
         id="swap-amount"
         inputMode="decimal"
+        autoComplete="off"
         placeholder="0.00"
         value={input}
         onChange={(e) => setInput(e.target.value)}
+        aria-invalid={!!error}
+        aria-describedby={
+          error ? "shortcut-context swap-error" : "shortcut-context"
+        }
       />
-      <UsdValue
-        value={(() => {
-          try {
-            return amount(input, dec);
-          } catch {
-            return undefined;
-          }
-        })()}
-        token={from}
-      />
-      <div className="spread">
-        <span>You receive · {to}</span>
+      <div className="shortcuts" role="group" aria-label="Amount shortcuts">
+        {[20, 50, 75, 100].map((p) => (
+          <button
+            key={p}
+            disabled={
+              !w.address ||
+              w.wrong ||
+              stale ||
+              shortcutPending ||
+              (eth && (!ETH_ROUTE_VERIFIED || !d?.activated))
+            }
+            onClick={() => void shortcut(p)}
+          >
+            {p === 100 ? "MAX" : `${p}%`}
+          </button>
+        ))}
+      </div>
+      <p id="shortcut-context" className="helper">
+        {shortcutPending
+          ? "Reading fresh balance and gas…"
+          : !buy
+            ? "Percentages are portions of your CURRENTLY SELLABLE amount, capped by balance and onchain allowance."
+            : eth
+              ? "Shortcuts use spendable ETH after a fresh gas estimate, 20% gas margin and 25% fee buffer."
+              : "Percentages use your available IMD balance. Keep ETH for network fees."}
+      </p>
+      {!eth && (
+        <UsdValue
+          value={(() => {
+            try {
+              return amount(input);
+            } catch {
+              return undefined;
+            }
+          })()}
+          token={buy ? "IMD" : "UNLK2"}
+        />
+      )}
+      <div className="receive-line">
+        <span className="muted">You receive · {to}</span>
         <strong>
-          {quoting ? "Quoting…" : quote ? display(quote.out) : "—"}
+          {quoting ? "Quoting…" : quote ? display(quote.out) : "Unavailable"}
         </strong>
       </div>
       <div className="slippage-setting">
         <label htmlFor="slippage">Slippage %</label>
-        <input id="slippage" inputMode="decimal" value={slippage}
-          onChange={(e) => setSlippage(e.target.value)} />
+        <input
+          id="slippage"
+          inputMode="decimal"
+          value={slippage}
+          onChange={(e) => setSlippage(e.target.value)}
+        />
       </div>
       {quote && (
         <dl className="compact-dl">
@@ -373,54 +657,65 @@ export function Trade() {
           <dd>
             {display(quote.min)} {to}
           </dd>
+          <dt>Execution price · incl. fees</dt>
+          <dd>
+            {display(
+              buy
+                ? (quote.amount * 10n ** 18n) / quote.out
+                : (quote.out * 10n ** 18n) / quote.amount,
+              18,
+              10,
+            )}{" "}
+            {buy ? from : "IMD"} / UNLK2
+          </dd>
           <dt>Reward fee · exact</dt>
           <dd>{display(quote.fee)} IMD</dd>
-          <dt>LP fee · rounding estimate</dt>
+          <dt>Official LP fee · estimate</dt>
           <dd>
-            {display(quote.lp)} {from}
+            {display(quote.lp)} {eth ? "IMD" : from}
           </dd>
-          <dt>Price impact · incl. fees</dt>
-          <dd>
-            {impact === undefined ? "Unavailable" : `${impact.toFixed(2)}%`}
-          </dd>
-          <dt>Source</dt>
-          <dd>
-            PoolManager wallet simulation · block {quote.block.toString()}
-          </dd>
-          <dt>Updated</dt>
-          <dd>{new Date(quote.at).toLocaleTimeString()} · 45s validity</dd>
+          {eth && (
+            <>
+              <dt>Reference LP fee · estimate</dt>
+              <dd>{display(quote.referenceLp)} ETH</dd>
+              <dt>Route gas estimate</dt>
+              <dd>{quote.gas?.toString()} units</dd>
+            </>
+          )}
+          <dt>Quoted at</dt>
+          <dd>Block {quote.block.toString()} · 45s validity</dd>
         </dl>
       )}
-      {error && <Alert error>{error}</Alert>}
+      {error && (
+        <div id="swap-error">
+          <Alert error>{error}</Alert>
+        </div>
+      )}
       <Action
         onClick={() => void (quote ? step() : getQuote())}
         reason={quoting ? "Quoting…" : reason}
       >
         {quote
-          ? allow && allow.token < quote.amount
+          ? allow && !eth && allow.token < quote.amount
             ? `Approve ${from}`
             : allow &&
+                !eth &&
                 (allow.permit < quote.amount ||
                   allow.expiry < Date.now() / 1000 + 300)
               ? "Approve router"
               : "Review swap"
           : "Get live quote"}
       </Action>
-      {!r.repair.quoter && <p className="swap-context amber">Wallet quoter installation pending · <a className="setup-link" href="#founder-setup">Review owner checklist ↗</a></p>}
       <details className="swap-context">
-        <summary>Fees and quote integration</summary>
-        <p className="helper">
-        Automatic wallet quotes include hook effects. 1.25% LP fee on pool
-        input; 1% reward fee on the IMD leg. Spot deviation includes fees and
-        pool price movement. No manual minimum or shared-identity fallback.
-        </p>
-      {!r.repair.quoter && (
+        <summary>Route, fees and protections</summary>
         <p>
-          Pending installation: deploy and review WalletQuoter, register it and
-          the Universal Router before sealing. Stock V4Quoter is incompatible
-          with wallet sell rights.
+          {eth
+            ? "Native ETH → ETH/IMD v4 (1% LP) → official IMD/UNLK2 (1.25% LP + 1% IMD reward fee) → connected buyer. Full-route RPC simulation includes first-leg price changes and hook fees. No pre-owned IMD, approvals, split routes or fallback pools. Unsupported simulation stops the trade."
+            : "IMD ↔ UNLK2 through the hook’s official pool only. WalletQuoter includes hook effects and wallet sell rights. 1.25% LP fee and 1% IMD reward fee."}{" "}
+          Network fees are additional. Minimum output and a three-minute router
+          deadline are enforced. Every transaction is simulated again before
+          signing.
         </p>
-      )}
       </details>
     </section>
   );

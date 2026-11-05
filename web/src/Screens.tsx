@@ -1,3 +1,4 @@
+import { EnergyCore } from "./EnergyCore";
 import { adapterAbi, verifyAuxiliary } from "./integration";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -42,9 +43,10 @@ export function Gates() {
           <p>
             FDV uses current supply, including reserves and excluding burned
             tokens. The first official swap in a later block observes the
-            settled price. The IMD-per-ETH tracker moves at most 5% per hour with a four-hour
-            elapsed-time cap. Gate IMD/USD uses the lower of spot and the
-            tracker-derived USD rate; IMD price declines count immediately.
+            settled price. The IMD-per-ETH tracker moves at most 5% per hour
+            with a four-hour elapsed-time cap. Gate IMD/USD uses the lower of
+            spot and the tracker-derived USD rate; IMD price declines count
+            immediately.
           </p>
           <p>
             Volume is cumulative gross official USD volume, not organic demand.
@@ -298,7 +300,7 @@ export function Migrate() {
   );
 }
 export function Rights() {
-  const { r, data: d, wallet: w, request, view } = useApp();
+  const { r, data: d, wallet: w, request, view, stale } = useApp();
   const [claimAmount, setClaimAmount] = useState(""),
     [proof, setProof] = useState(""),
     [error, setError] = useState("");
@@ -418,7 +420,10 @@ export function Rights() {
             Current buy / other percentages:{" "}
             {d ? `${d.percents[0]}% / ${d.percents[1]}%` : "Unavailable"}.
             Pending FDV observation:{" "}
-            {d ? `${d.pendingGates} gates would be open` : "Unavailable"}.
+            {d && !stale && d.gatePrice[1] && d.tokenPrice[1]
+              ? `${d.pendingGates} gates would be open`
+              : "Unavailable"}
+            .
           </p>
         </Panel>
       </div>
@@ -542,7 +547,7 @@ function Transfer() {
 export function Burn({ home = false }: { home?: boolean } = {}) {
   const { r, data: d, wallet: w, request } = useApp();
   const [input, setInput] = useState(""),
-    [contribute, setContribute] = useState(!(home && d?.gates === 10)),
+    [contributionMode, setContribute] = useState(true),
     [error, setError] = useState(""),
     [pending, setPending] = useState(false),
     [preview, setPreview] = useState<{
@@ -556,14 +561,32 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       myPoints: bigint;
       rights: NonNullable<Data["rights"]>;
     }>();
+  const [confirmedBurn, setConfirmedBurn] = useState<{
+    n: bigint;
+    hash: string;
+  }>();
+  const [animateBurn, setAnimateBurn] = useState(false);
+  const burnActor = useRef(`${w.chainId}:${w.address}`);
+  burnActor.current = `${w.chainId}:${w.address}`;
+  useEffect(() => {
+    setConfirmedBurn(undefined);
+    setAnimateBurn(false);
+  }, [w.address, w.chainId]);
+  useEffect(() => {
+    if (confirmedBurn === undefined) return;
+    setAnimateBurn(true);
+    const timer = setTimeout(() => setAnimateBurn(false), 2400);
+    return () => clearTimeout(timer);
+  }, [confirmedBurn]);
+  const contribute = contributionMode && d?.gates !== 10;
   useEffect(() => {
     setPreview(undefined);
     setError("");
-  }, [input, contribute, w.address, w.chainId]);
+  }, [input, contribute, w.address, w.chainId, d?.gates]);
   const previewVersion = useRef(0);
   useEffect(() => {
     ++previewVersion.current;
-  }, [input, contribute, w.address, w.chainId]);
+  }, [input, contribute, w.address, w.chainId, d?.gates]);
   const readPreview = async () => {
     const version = ++previewVersion.current;
     const selectedGate = d?.contribution[0];
@@ -589,9 +612,26 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
           functionName: "contributionQuote",
           blockNumber: block,
         }),
-        r.client.readContract({ address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook, functionName: "rightsOf", args: [w.address], blockNumber: block }),
-        r.client.readContract({ address: d.pot, abi: r.abis.RewardPot, functionName: "totalPoints", blockNumber: block }),
-        r.client.readContract({ address: d.pot, abi: r.abis.RewardPot, functionName: "points", args: [w.address], blockNumber: block }),
+        r.client.readContract({
+          address: r.addresses.UnlockV2Hook,
+          abi: r.abis.UnlockV2Hook,
+          functionName: "rightsOf",
+          args: [w.address],
+          blockNumber: block,
+        }),
+        r.client.readContract({
+          address: d.pot,
+          abi: r.abis.RewardPot,
+          functionName: "totalPoints",
+          blockNumber: block,
+        }),
+        r.client.readContract({
+          address: d.pot,
+          abi: r.abis.RewardPot,
+          functionName: "points",
+          args: [w.address],
+          blockNumber: block,
+        }),
       ]);
       if (version !== previewVersion.current) return;
       const [gate, max] = q as readonly [number, bigint];
@@ -611,9 +651,16 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
         gate,
         max,
         at: Date.now(),
-        openingAllowance: contribute && n === max
-          ? allowanceAfterOpening(rights as NonNullable<typeof d.rights>, values as readonly bigint[], gate, d.gateTable[gate - 1][0], block)
-          : undefined,
+        openingAllowance:
+          contribute && n === max
+            ? allowanceAfterOpening(
+                rights as NonNullable<typeof d.rights>,
+                values as readonly bigint[],
+                gate,
+                d.gateTable[gate - 1][0],
+                block,
+              )
+            : undefined,
         totalPoints: totalPoints as bigint,
         myPoints: myPoints as bigint,
         rights: rights as NonNullable<Data["rights"]>,
@@ -631,6 +678,7 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       setError("Burn preview expired. Read a fresh preview.");
       return;
     }
+    const id = previewVersion.current;
     request({
       title: contribute ? "Contribute and burn" : "Burn for points",
       description: `Destroy ${formatUnits(preview.n, 18)} UNLK2 permanently and earn ${formatUnits(preview.n, 18)} nontransferable points.${contribute ? ` Contribute only to gate ${preview.gate}; a changed gate or excessive amount reverts.` : " This voluntary burn will not advance any gate."} Your credits will decrease: pending ${formatUnits(preview.values[0], 18)}, buy ${formatUnits(preview.values[1], 18)}, other ${formatUnits(preview.values[2], 18)}. Sales never reset.`,
@@ -640,21 +688,56 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
       args: contribute ? [preview.gate, preview.n] : [preview.n],
       irreversible: true,
       validUntil: preview.at + 60000,
+      onConfirmed: (receipt) => {
+        if (burnActor.current !== `${w.chainId}:${w.address}`) return;
+        const from = w.address?.toLowerCase().slice(2).padStart(64, "0");
+        if (
+          receipt.logs.some(
+            (log) =>
+              log.address.toLowerCase() ===
+                r.addresses.UnlockV2Token.toLowerCase() &&
+              log.topics[0] ===
+                "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef" &&
+              log.topics[1]?.slice(2) === from &&
+              log.topics[2] === "0x" + "0".repeat(64) &&
+              BigInt(log.data) === preview.n,
+          )
+        ) {
+          setConfirmedBurn({ n: preview.n, hash: receipt.transactionHash });
+          setPreview(undefined);
+          setInput("");
+        }
+      },
       validate: async () => {
+        if (id !== previewVersion.current)
+          throw Error("Burn inputs or wallet changed. Read a new preview.");
         const block = await r.client.getBlockNumber();
-        const current = await r.client.readContract({
-          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook,
-          functionName: "previewBurn", args: [w.address!, preview.n],
+        const current = (await r.client.readContract({
+          address: r.addresses.UnlockV2Hook,
+          abi: r.abis.UnlockV2Hook,
+          functionName: "previewBurn",
+          args: [w.address!, preview.n],
           blockNumber: block,
-        }) as readonly bigint[];
-        const rights = await r.client.readContract({
-          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook,
-          functionName: "rightsOf", args: [w.address!], blockNumber: block,
-        }) as NonNullable<Data["rights"]>;
+        })) as readonly bigint[];
+        const rights = (await r.client.readContract({
+          address: r.addresses.UnlockV2Hook,
+          abi: r.abis.UnlockV2Hook,
+          functionName: "rightsOf",
+          args: [w.address!],
+          blockNumber: block,
+        })) as NonNullable<Data["rights"]>;
         if (current.some((value, i) => value !== preview.values[i]))
-          throw Error("Your burn debits or rights changed. Close and read a new preview.");
-        if ((Object.keys(preview.rights) as (keyof typeof rights)[]).some(key => rights[key] !== preview.rights[key]))
-          throw Error("Your origin credits changed. Close and read a new preview.");
+          throw Error(
+            "Your burn debits or rights changed. Close and read a new preview.",
+          );
+        if (
+          (Object.keys(preview.rights) as (keyof typeof rights)[]).some(
+            (key) => rights[key] !== preview.rights[key],
+          )
+        )
+          throw Error(
+            "Your origin credits changed. Close and read a new preview.",
+          );
         if (contribute) {
           const q = (await r.client.readContract({
             address: r.addresses.UnlockV2Hook,
@@ -683,10 +766,19 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
             : "Burn & Points"
         }
       >
+        <EnergyCore gold={d?.gates === 10} confirmed={animateBurn} />
+        {confirmedBurn !== undefined && (
+          <div className="burn-confirmation" role="status">
+            <strong>Burn confirmed</strong>
+            <span>{exact(confirmedBurn.n)} UNLK2 destroyed</span>
+            <span>{exact(confirmedBurn.n)} points earned</span>
+          </div>
+        )}
         {!home && (
           <div className="segmented">
             <button
               aria-pressed={contribute}
+              disabled={d?.gates === 10}
               onClick={() => setContribute(true)}
             >
               Gate contribution
@@ -713,6 +805,19 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
             label="Your points"
             value={w.address ? display(d?.myPoints) : "Connect wallet"}
           />
+          <Stat
+            label="Your reward share"
+            value={
+              !w.address
+                ? "Connect wallet"
+                : d?.myPoints === undefined
+                  ? "Unavailable"
+                  : d.points > 0n
+                    ? `${Number((d.myPoints * 10000n) / d.points) / 100}%`
+                    : "0%"
+            }
+            note="Share of future fees; changes with new points"
+          />
         </div>
         <Field
           label="Amount to burn (UNLK2)"
@@ -738,8 +843,8 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
         </button>
         {contribute && (
           <p>
-            Collecting gate: {d ? d.contribution[0] || "None" : "Unavailable"} · Maximum
-            contribution: {display(d?.contribution[1])} UNLK2.
+            Collecting gate: {d ? d.contribution[0] || "None" : "Unavailable"} ·
+            Maximum contribution: {display(d?.contribution[1])} UNLK2.
           </p>
         )}
         {error && <Alert error>{error}</Alert>}
@@ -760,19 +865,34 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
                 </div>
               ))}
             </dl>
-            <p>
-              Burned: {exact(preview.n)} UNLK2. Points added: {exact(preview.n)}. Your point share becomes{" "}
-              {total + preview.n > 0n
-                ? (
-                    Number(
-                      ((mine + preview.n) * 10000n) / (total + preview.n),
-                    ) / 100
-                  ).toFixed(2)
-                : "0"}
-              %, before later burns by others.
+            <div className="metrics burn-preview-metrics">
+              <Stat
+                label="UNLK2 to burn"
+                value={exact(preview.n)}
+                unit="UNLK2"
+              />
+              <Stat label="Points to earn" value={exact(preview.n)} />
+              <Stat
+                label="Estimated future reward share"
+                value={
+                  total + preview.n > 0n
+                    ? `${Number(((mine + preview.n) * 10000n) / (total + preview.n)) / 100}%`
+                    : "0%"
+                }
+                note="Before later burns by others; no guaranteed reward"
+              />
+            </div>
+            {preview.openingAllowance !== undefined && (
+              <p>
+                Allowance if this contribution opens gate {preview.gate}:{" "}
+                <strong>{exact(preview.openingAllowance)} UNLK2</strong>. This
+                is a preview, not a stored opening.
+              </p>
+            )}
+            <p className="helper">
+              The debit preview uses the current gate. Reward share changes as
+              others earn points. Review again if your rights change.
             </p>
-            {preview.openingAllowance !== undefined && <p>Allowance if this contribution opens gate {preview.gate}: <strong>{exact(preview.openingAllowance)} UNLK2</strong>. This is a preview, not a stored opening.</p>}
-            <p className="helper">The debit preview uses the current gate. Reward share changes as others earn points. Review again if your rights change.</p>
             <Action onClick={burn}>
               {contribute
                 ? `Contribute UNLK2 · gate ${preview.gate}`
@@ -803,7 +923,10 @@ export function Burn({ home = false }: { home?: boolean } = {}) {
           </Action>
         )}
       </Panel>
-      <details className={home ? "home-burn-notes" : "panel"} open={home ? undefined : true}>
+      <details
+        className={home ? "home-burn-notes" : "panel"}
+        open={home ? undefined : true}
+      >
         <summary>Points, selling rights and weekly rewards</summary>
         <div className="metrics">
           <Stat label="Total points" value={display(d?.points)} />
@@ -981,6 +1104,57 @@ export function Rewards() {
     </div>
   );
 }
+export function VaultSummary() {
+  const { data: d, wallet: w, stale } = useApp();
+  return (
+    <Panel title="Golden Vault rewards">
+      <div className="metrics">
+        <Stat
+          label="Accrued IMD · all beneficiaries"
+          value={display(stale ? undefined : d?.solvency[0])}
+          unit="IMD"
+        />
+        <Stat
+          label="Your points"
+          value={
+            w.address
+              ? display(stale ? undefined : d?.myPoints)
+              : "Connect wallet"
+          }
+        />
+        <Stat
+          label="Your claimable reward"
+          value={
+            w.address
+              ? display(stale ? undefined : d?.rewards?.[0])
+              : "Connect wallet"
+          }
+          unit="IMD"
+        />
+        <Stat
+          label="Your maturing reward"
+          value={
+            w.address
+              ? display(stale ? undefined : d?.rewards?.[1])
+              : "Connect wallet"
+          }
+          unit="IMD"
+        />
+      </div>
+      <p>
+        Next weekly distribution:{" "}
+        {d?.activated && !stale
+          ? new Date(
+              Number(d.epochStart + (d.epoch + 1n) * 604800n) * 1000,
+            ).toUTCString()
+          : "After activation"}
+        . Estimates of future rewards depend on actual fees and everyone’s
+        points. No yield is guaranteed.
+      </p>
+      <a href="#weekly-imd-rewards">Review and claim matured IMD ↗</a>
+    </Panel>
+  );
+}
 export function Golden() {
   const { data: d, view } = useApp();
   return (
@@ -1021,28 +1195,35 @@ export function Golden() {
           earning points. All prior points and matured IMD rewards survive.
         </p>
         <button className="full" onClick={() => view("Burn & Points")}>
-          Open voluntary burn →
+          Open Burn & Points →
         </button>
         <button className="full" onClick={() => view("Weekly IMD Rewards")}>
           View your IMD rewards →
         </button>
       </Panel>
-      <Panel title="What remains permanent">
-        <p>
-          There is no later mint, token upgrade, transfer tax, seizure or
-          blacklist. Supply only decreases through holder-authorized burns.
-        </p>
-        <p>
-          The owner’s configuration is permanently sealed on activation.
-          Migration remains available while capacity and backing remain. Weekly
-          beneficiary claims continue, with no expiry.
-        </p>
-        <Alert>
-          Golden Vault is a protocol state, not a treasury investment or a
-          promise of returns. Rewards depend on actual fees and are diluted by
-          future points.
-        </Alert>
-      </Panel>
+      {d?.gates === 10 ? (
+        <div>
+          <Burn home />
+          <VaultSummary />
+        </div>
+      ) : (
+        <Panel title="What remains permanent">
+          <p>
+            There is no later mint, token upgrade, transfer tax, seizure or
+            blacklist. Supply only decreases through holder-authorized burns.
+          </p>
+          <p>
+            The owner’s configuration is permanently sealed on activation.
+            Migration remains available while capacity and backing remain.
+            Weekly beneficiary claims continue, with no expiry.
+          </p>
+          <Alert>
+            Golden Vault is a protocol state, not a treasury investment or a
+            promise of returns. Rewards depend on actual fees and are diluted by
+            future points.
+          </Alert>
+        </Panel>
+      )}
     </div>
   );
 }
@@ -1072,9 +1253,9 @@ export function Rules() {
             </div>
           </div>
           <p>
-            The factory’s 750m remainder includes 700m the founder must fund
-            into the immutable migration vault. Founder rights credit only the
-            50m allocation, net of earlier uncredited burns.
+            The factory’s 750m remainder includes the initial 700m funded into
+            the immutable migration vault. Founder rights credit only the 50m
+            allocation, net of earlier uncredited burns.
           </p>
           <p>
             The pool LP fee is 1.25% of swap input: 1% founder and 0.25%
@@ -1147,7 +1328,7 @@ export function Rules() {
             d && !same(d.swarm, ZERO) ? d.swarm : undefined,
           ],
           ["Authentic native distributor", r.repair.nativeDistributor],
-          ["Wallet quoter · pending installation", r.repair.quoter?.address],
+          ["Reviewed wallet quoter", r.repair.quoter?.address],
           ...Object.entries(r.d.network.uniswapV4).filter(
             ([, v]) => typeof v === "string",
           ),

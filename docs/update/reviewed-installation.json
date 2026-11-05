@@ -1,0 +1,35 @@
+{
+  "chainId": 1,
+  "checkedAt": "2026-11-04T11:36:07.210Z",
+  "block": "26341189",
+  "entries": [
+    {
+      "kind": "quoter",
+      "address": "0xb36788ea2612b72eb4fe07364c2406aaf47f67a6",
+      "hash": "0xdb06ae86ec1350f5960846efd800dd3cb0618b245cdf07aef889ddfc850df314",
+      "getters": {
+        "hook": "0x4f811b89eF9a19800101705262681F715AC668CC",
+        "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90"
+      },
+      "runtimeCodeHash": "0x0786d9ce6c629f82837f78ce797d6357fb510f1129a452fa65f4d0a33ca2e60e",
+      "creationBlock": "26341147",
+      "gasUsed": "669376"
+    },
+    {
+      "kind": "adapter",
+      "address": "0x17565820374de9d122519d5e701e8c2345622058",
+      "hash": "0x33ede84e23fc373d725d76077dbe033f3738c1b684aac217d092b5cf94e05cbe",
+      "getters": {
+        "hook": "0x4f811b89eF9a19800101705262681F715AC668CC",
+        "nativeDistributor": "0x00aEcDb1Da9FaFac4B5717D54C8B9adc860e189a",
+        "nativeRound": "0",
+        "nativeRoot": "0x0442e07558c3a49da44ffafc43fde948057ee5f5d02c63bbde025369ab4c96fb",
+        "nativeFunded": "100000000000000000000000000",
+        "allocationCount": "441"
+      },
+      "runtimeCodeHash": "0x99d8fbac9d9513d91c3e70a24126e3e3e023a41fe0245163b104abb7c4404499",
+      "creationBlock": "26341155",
+      "gasUsed": "2917373"
+    }
+  ]
+}

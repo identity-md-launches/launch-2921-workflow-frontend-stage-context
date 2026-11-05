@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { getAddress, type Address, type EIP1193Provider } from "viem";
 import { switchChain, type Deployment } from "./config";
 import { errorText } from "./core";
@@ -170,6 +170,7 @@ export function useWallet(d?: Deployment) {
 }
 export type Wallet = ReturnType<typeof useWallet>;
 export function WalletDialog({ wallet: w }: { wallet: Wallet }) {
+  const titleId = useId();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (w.open) ref.current?.showModal();
@@ -180,6 +181,7 @@ export function WalletDialog({ wallet: w }: { wallet: Wallet }) {
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onCancel={() => w.setOpen(false)}
       onClick={(e) => {
         if (e.target === ref.current) w.setOpen(false);
@@ -187,7 +189,7 @@ export function WalletDialog({ wallet: w }: { wallet: Wallet }) {
       className="wallet-dialog"
     >
       <div className="dialog-heading">
-        <h2>{w.address ? "Your wallet" : "Connect wallet"}</h2>
+        <h2 id={titleId}>{w.address ? "Your wallet" : "Connect wallet"}</h2>
         <button
           type="button"
           aria-label="Close wallet dialog"

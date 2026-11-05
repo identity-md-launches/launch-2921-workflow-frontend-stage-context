@@ -1,240 +1,75 @@
-import { useEffect, useState } from "react";
 import { useApp } from "./context";
-import { Action, AddressLink, Alert, display, Panel } from "./components";
-import { errorText, same } from "./core";
-import { verifyAuxiliary } from "./integration";
-
+import { AddressLink, Panel, Stat, display } from "./components";
 export function Founder() {
-  const { r, data: d, wallet: w, request, stale, verified } = useApp();
-  const [unsigned, setUnsigned] = useState(false),
-    [error, setError] = useState("");
-  const [installed, setInstalled] = useState<Record<string, string>>({});
-  useEffect(() => {
-    let canceled = false;
-    setInstalled({});
-    for (const kind of ["adapter", "quoter"] as const) {
-      if (!r.repair[kind] || !r.repair.installationReviewed || !d || stale) continue;
-      void verifyAuxiliary(r, kind).then(async address => {
-        const configured = kind === "adapter" ? same(address, d.swarm) : await r.client.readContract({
-          address: r.addresses.UnlockV2Hook, abi: r.abis.UnlockV2Hook, functionName: "isRouter", args: [address],
-        });
-        if (!canceled) setInstalled(s => ({...s, [kind]: configured ? "Verified and configured" : "Verified; registration pending"}));
-      }).catch(e => { if (!canceled) setInstalled(s => ({...s, [kind]: errorText(e)})); });
-    }
-    return () => { canceled = true; };
-  }, [r, d?.block, stale]);
-  const reason = !d || stale || !verified
-    ? "Waiting for verified chain state."
-    : !same(w.address, d.owner)
-      ? "Connect the contract owner’s wallet."
-      : d.activated
-        ? "Configuration is permanently sealed."
-        : undefined;
-  const act = async (kind: "fund" | "router" | "adapter" | "quoter") => {
-    if (!d || reason) return;
-    setError("");
-    try {
-      const common = { prepareOnly: unsigned, account: d.owner };
-      if (kind === "fund") {
-        const deficit = d.capacity > d.backing ? d.capacity - d.backing : 0n;
-        if (!deficit) throw Error("No funding deficit remains.");
-        request({
-          ...common,
-          title: "Fund immutable migration reserve",
-          description: `Transfer exactly ${display(deficit, 18, 18)} UNLK2 to the migration vault. Principal cannot be withdrawn. This is a separately reviewed owner transaction.`,
-          address: r.addresses.UnlockV2Token,
-          abi: r.abis.UnlockV2Token,
-          functionName: "transfer",
-          args: [d.vault, deficit],
-          irreversible: true,
-        });
-      } else {
-        const target =
-          kind === "router"
-            ? r.d.network.uniswapV4.universalRouter
-            : await verifyAuxiliary(
-                r,
-                kind === "adapter" ? "adapter" : "quoter",
-              );
-        const isAdapter = kind === "adapter";
-        request({
-          ...common,
-          title: `Configure ${kind}`,
-          description: `Set ${target} as ${isAdapter ? "the verified native swarm compatibility adapter" : "a supported msgSender() router"}. Review deployed code and all bindings first. Configuration seals permanently at activation.`,
-          address: r.addresses.UnlockV2Hook,
-          abi: r.abis.UnlockV2Hook,
-          functionName: isAdapter ? "setSwarmDistributor" : "setRouter",
-          args: isAdapter ? [target] : [target, true],
-        });
-      }
-    } catch (e) {
-      setError(errorText(e));
-    }
-  };
+  const { r, data: d, stale } = useApp();
+  const status = (ok: boolean | undefined) =>
+    !d || stale ? "Unavailable" : ok ? "Verified" : "Check required";
   return (
-    <>
-      <Alert>
-        {r.repair.status}. This repair job has not deployed, funded, registered
-        or activated anything. Owner transactions below require separate review,
-        simulation and wallet confirmation.
-      </Alert>
-      <Panel title="Owner checklist · before permanent sealing">
-        <ol>
-          <li>
-            Verify Ethereum chain ID 1, the manifest addresses, runtime code and
-            immutable token/hook/vault bindings. The terminal verifies these
-            before enabling actions.
-          </li>
-          <li>
-            Obtain the full canonical native round-0 allocation corpus. Rebuild
-            its root, reject duplicate accounts, and simulate adapter deployment
-            using the package in docs/repair-integration.md. An individual proof
-            is insufficient to establish whole-tree uniqueness.
-          </li>
-          <li>
-            Review and deploy NativeSwarmAdapter and WalletQuoter externally.
-            Publish their actual addresses and runtime code hashes in
-            repair-config.json after independent review. No placeholder
-            addresses are bundled.
-          </li>
-          <li>
-            Prove native claim sync and adversarial cases; prove wallet buy/sell
-            quote identity against actual Universal Router execution on a fork.
-            Review the exact router version’s calldata layout. Do not register
-            stock V4Quoter.
-          </li>
-          <li>
-            Fund the 700m UNLK2 migration reserve; register the Universal
-            Router, the compatible wallet quoter and the adapter in separate
-            owner transactions. Refresh after each receipt.
-          </li>
-          <li>
-            Review liquidity and pricing, verify all mandatory integrations,
-            then consider activation externally. It irreversibly opens trading
-            and seals settings. Activation is disabled in this delivery.
-          </li>
-        </ol>
-        <div className="checklist">
-          {[
-            ["Ethereum / deployed bindings", !!d && verified && !stale],
-            ["Official pool initialized", d?.poolInitialized],
-            ["Hook bound to token", d?.isBound],
-            ["Remaining 700m reserve backed", d?.funded],
-            ["Valid current pricing references", d?.reference],
-            ["Universal Router registered", d?.routerSupported],
-            [
-              "Adapter installation reviewed",
-              installed.adapter === "Verified and configured",
-            ],
-            [
-              "Wallet quoter installation reviewed",
-              installed.quoter === "Verified and configured",
-            ],
-            ["Trading activated / sealed", d?.activated],
-          ].map(([label, ok]) => (
-            <div key={String(label)}>
-              <span className={ok && !stale ? "mint" : "amber"}>{ok && !stale ? "✓" : "○"}</span>
-              <span>{label}</span>
-              <span>{stale ? "Unavailable" : ok ? "Yes" : "Pending"}</span>
-            </div>
-          ))}
+    <div className="two-col">
+      <Panel title="Live integration status">
+        <p>
+          This site reads the completed setup. Trading opens only when the hook
+          reports activation; this page refreshes automatically.
+        </p>
+        <dl className="compact-dl">
+          <dt>Token and hook bindings</dt>
+          <dd>{status(d?.isBound)}</dd>
+          <dt>Official pool initialized</dt>
+          <dd>{status(d?.poolInitialized)}</dd>
+          <dt>Universal Router registered</dt>
+          <dd>{status(d?.routerSupported)}</dd>
+          <dt>WalletQuoter registered</dt>
+          <dd>{status(d?.quoterSupported)}</dd>
+          <dt>Native adapter registered</dt>
+          <dd>
+            {status(
+              d?.swarm.toLowerCase() ===
+                r.repair.adapter?.address.toLowerCase(),
+            )}
+          </dd>
+          <dt>Remaining backing ≥ capacity</dt>
+          <dd>{status(d && d.backing >= d.capacity)}</dd>
+          <dt>Pricing reference</dt>
+          <dd>{status(d?.reference)}</dd>
+          <dt>Trading</dt>
+          <dd>
+            {!d || stale
+              ? "Unavailable"
+              : d.activated
+                ? "Active"
+                : "Closed; awaiting activation"}
+          </dd>
+        </dl>
+        <div className="metrics">
+          <Stat
+            label="Remaining backing"
+            value={display(stale ? undefined : d?.backing)}
+            unit="UNLK2"
+          />
+          <Stat
+            label="Remaining capacity"
+            value={display(stale ? undefined : d?.capacity)}
+            unit="UNLK2"
+          />
         </div>
-        {(installed.adapter || installed.quoter) && <p className="helper">Adapter: {installed.adapter ?? "Pending"}. Quoter: {installed.quoter ?? "Pending"}.</p>}
-        <AddressLink address={d?.owner} label="Immutable owner" />
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={unsigned}
-            onChange={(e) => setUnsigned(e.target.checked)}
-          />
-          Download unsigned transactions for Safe review instead of wallet
-          submission
-        </label>
       </Panel>
-      {error && <Alert error>{error}</Alert>}
-      <div className="two-col">
-        <Panel title="1 · Migration funding">
-          <p>
-            Backing {display(d?.backing)} / remaining capacity{" "}
-            {display(d?.capacity)} UNLK2. The 700m reserve is part of the
-            founder’s initial 750m remainder; founder allocation remains 50m.
-          </p>
-          <AddressLink address={d?.vault} label="Immutable migration vault" />
-          <Action
-            onClick={() => void act("fund")}
-            reason={reason ?? (d?.funded ? "Already backed." : undefined)}
-          >
-            Review exact reserve top-up
-          </Action>
-        </Panel>
-        <Panel title="2 · Universal Router">
-          <AddressLink address={r.d.network.uniswapV4.universalRouter} />
-          <p>
-            Uses the locker’s authenticated msgSender(). Unregistered routers
-            share rights; a wrong registration cannot be fixed after sealing.
-          </p>
-          <Action onClick={() => void act("router")} reason={reason}>
-            Review router registration
-          </Action>
-        </Panel>
-        <Panel title="3 · Native proof adapter">
-          <p>
-            The native distributor’s roundOf / claimed interface is incompatible
-            directly. Only the reviewed NativeSwarmAdapter may be installed. It
-            verifies the full canonical tree at deployment and native proof plus
-            actual claimed state at sync.
-          </p>
-          <AddressLink
-            address={r.repair.nativeDistributor}
-            label="Authentic native distributor"
-          />
-          <Action
-            onClick={() => void act("adapter")}
-            reason={
-              reason ??
-              (!r.repair.adapter
-                ? "Pending adapter deployment, allocation corpus and review."
-                : undefined)
-            }
-          >
-            Review adapter setting
-          </Action>
-        </Panel>
-        <Panel title="4 · Wallet quoter">
-          <p>
-            Register WalletQuoter to attribute quote simulations to their
-            caller. It cannot settle a swap. Stock V4Quoter lacks compatible
-            trader authentication and must remain unregistered.
-          </p>
-          <Action
-            onClick={() => void act("quoter")}
-            reason={
-              reason ??
-              (!r.repair.quoter
-                ? "Pending quoter deployment and Universal Router fork equivalence proof."
-                : undefined)
-            }
-          >
-            Review quoter registration
-          </Action>
-        </Panel>
-      </div>
-      <Panel title="5 · Activation · disabled">
+      <Panel title="Reviewed installations">
         <p>
-          Pending canonical allocation inputs and auxiliary installation. Local
-          fork evidence must be repeated for the installed auxiliaries. activate() itself does
-          not enforce router/distributor configuration; a successful activation
-          simulation alone is insufficient.
+          Runtime hashes and contract bindings are checked before transactions
+          are enabled.
         </p>
-        <button disabled>
-          Activation disabled · mandatory installation and review outstanding
-        </button>
-        <p>
-          Post-activation liquidity additions are restricted to the factory.
-          Migration principal cannot be withdrawn, gate openings cannot be
-          reversed and the contract has no pause or configuration recovery.
+        <h3>Native claims adapter</h3>
+        <AddressLink address={r.repair.adapter?.address} />
+        <h3>WalletQuoter</h3>
+        <AddressLink address={r.repair.quoter?.address} />
+        <h3>Universal Router</h3>
+        <AddressLink address={r.d.network.uniswapV4.universalRouter} />
+        <p className="helper">
+          Registration and the initial 700 million UNLK2 migration funding are
+          complete. Backing falls with successful migrations; it is compared
+          with remaining capacity, not the original cap.
         </p>
       </Panel>
-    </>
+    </div>
   );
 }

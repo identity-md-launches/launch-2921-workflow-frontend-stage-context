@@ -1,77 +1,74 @@
-# UNLOCK V2 terminal
+# UNLOCK V2
 
-Continuation of [unlock-v2.identitymd.eth.limo](https://unlock-v2.identitymd.eth.limo), using the existing Ethereum deployment and source repository. The updated static hosting deliverable is **`dist/`**, with source in `web/`. `web/site/` is an identical build mirror for existing tooling. Both use relative assets and hash navigation.
+Website continuation for **https://unlock-v2.imd.site/** on Ethereum mainnet, chain 1. Source is in `web/`; the complete static hosting export is **`dist/`**. `web/site/` is an identical build mirror retained for existing tooling. Assets use relative URLs and navigation uses hashes, so the export works below a gateway subpath.
 
-**Trading is closed and auxiliary installation is pending.** This work sends no mainnet transactions. It does not deploy, register, fund, activate or alter V1 or any deployed V2 contract. The continuation delivery service must publish `dist/` under **unlock-v2.identitymd.eth** and commit this bundle to the existing repository; no replacement identity or completed remote publication is claimed here.
+This assignment changes the website only. It deploys no contracts and performs no mainnet activation, registration, funding, transfers or ownership/economic changes. At the read-only verification block **26347620**, trading was closed (`activated() == false`), the reviewed adapter and routers were registered, and remaining migration backing equaled remaining capacity: **665,646,916.1257 UNLK2**. Closed trading is shown separately from completed setup and activation is detected on subsequent reads. There is no activation or setup transaction button.
+
+The export is ready for the existing IdentityMD publication pipeline. **A new public version/commit is not claimed by this worker:** this session exposes no hosting or repository publication tool, and `.git/` is protected. The existing URL was checked read-only; post-publication comparison is still required. See [delivery and validation](docs/update/VALIDATION.md).
 
 ## Install, preview and rebuild
 
-Full development toolchain, Node 22.18+:
+Node **22.18+**; the existing package manifest and lockfile are unchanged.
 
 ```sh
 npm --prefix web ci
 npm --prefix web run typecheck
-npm --prefix web test
 npm --prefix web run build:vite
 npm --prefix web run preview
 ```
 
-The existing manifest and lockfile are unchanged. Preview uses Vite's printed local URL. For live source editing use `npm --prefix web run dev` after one build has generated the runtime manifest.
+Open Vite's printed preview URL. `npm --prefix web run dev` starts source development after the first build. Both build paths regenerate verified ABI/asset inventories and replace `dist/` and `web/site/` together.
 
-A compact, pinned Linux x64 build is also retained. It needs Node 22.18+ and `xz`, and requires no npm registry, installed packages or package cache:
+The retained Linux x64 production build also works without installing dependencies (Node and `xz` required):
 
 ```sh
-sh web/scripts/offline-install.sh
-npm --prefix web test
 npm --prefix web run build
 npm --prefix web run validate
-npm --prefix web run check:bundle
 python3 -m http.server 4173 --directory dist
 ```
 
-Open the printed local server URL. The offline build compiles the current TSX source, bundles the committed dependencies and copies local assets; it **does not typecheck**. Both build paths regenerate the verified ABI/asset inventory and replace `dist/` and `web/site/` together. Required compact compiler/runtime bundles and their licenses remain in `web/vendor/offline/`; generated dependency/cache directories are excluded from Git. No paid API is required. Wallet and Ethereum reads still require network access.
+Open `http://localhost:4173/`. This default production build bundles the actual TSX source using the committed, integrity-checked offline compiler/runtime assets. It **does not typecheck**; run the separate typecheck above. Required offline assets and licenses remain in `web/vendor/offline/`. No npm registry mirror, vendored npm archives or generated dependencies are part of the delivery. Wallets and chain reads require an internet connection.
 
-## What the terminal does
+## What changed
 
-- A black V1-style dashboard: large gate/market chart on the left, compact IMD/UNLK2 swap on the right. Phones put the swap first; its main control fits the first 390px screen, including an RPC error state.
-- A home-page active-gate contribution panel with three **OR** tracks: processed contract FDV, cumulative official gross USD volume and this gate's UNLK2 contributions. Each shows actual, target, completion and remaining amounts. Contributions use `UnlockV2Token.contribute(expectedGate, amount)`, with capped Max, full-precision burn/points/rights preview and stale-target rejection. Gate 10 changes the home panel to voluntary Golden Vault burning and continuing fee rewards.
-- Ten interactive permanent gate steps, $250K–$25M FDV, clickable details, native keyboard/touch selectors and an alternative table. Initial official-buy rights are 20%; migration/swarm/founder rights are 0%. The gate percentages remain 25/30/35/40/50/60/70/80/90/100%.
-- Real official-pool Swap-log candles, volume, timeframes, crosshair and pan/zoom using locally bundled TradingView Lightweight Charts. USD conversion uses a valid historical IMD/USD reference at each trade block. Missing/invalid USD, RPC failure and no trades have explicit retryable states; no production example candles exist. History is bounded to 7,200 blocks; historical USD requires archive reads.
-- Wallet-driven migration, separate origin rights and previous sales, burn previews, weekly IMD claims, and a safe owner checklist with separate simulation/review and unsigned transaction downloads. EIP-6963 browser wallets, mobile wallet-browser links and Coinbase Smart Wallet share one connection dialog; no relay/project ID.
+- Ten dimensional doors lead the homepage. Stored open gates appear broken/open, the current gate is gold and future gates remain locked. Numerical cumulative selling percentages remain visible. Selecting a door shows separate onchain FDV, volume and burn targets/progress. Any one condition opens a gate; past gate burn counters are not invented.
+- Current gate progress and a contribution link are on the first phone screen. The full contribution form is on the homepage. After gate 10, including a cold load, it uses voluntary Golden Vault burning rather than a nonexistent contribution.
+- A large official-pool candlestick/volume chart sits beside the desktop sticky swap panel. Mobile stacks the swap above the chart. Candles use timestamped PoolManager events filtered to the official pool; empty intervals are not filled. IMD history works without historical USD pricing. USD history requires valid end-of-block archive reads. History covers the latest 7,200 blocks and refreshes every minute while visible.
+- IMD/ETH payment selection; IMD buys and UNLK2-to-IMD sells remain available when the live hook permits them. 20%, 50%, 75%, MAX and manual entry use integer base units. Sell percentages mean a portion of **currently sellable** tokens, capped by balance and the onchain allowance. ETH shortcuts use fresh full-route simulation and `eth_estimateGas`, a 20% gas margin and 25% fee buffer.
+- Emerald burn core, separate burn/point/share values, and a brief token flow only after a successful matching burn receipt. Failed, cancelled and unrelated replacements do not animate success. Golden Vault uses a distinct gold visual, voluntary burns, separately accrued/claimable/maturing rewards, points and weekly timing. Burns remain irreversible.
+- Existing migration, authentic native claim credit, cumulative selling counters and weekly reward claims remain connected. EIP-6963 browser wallets, wallet-browser mobile links and Coinbase Smart Wallet remain behind the existing connect sheet. No relay or project ID is needed.
 
-## Immutable integration limits
+## Strict ETH route
 
-`fdvUsd()` is **indicative market FDV**, calculated using current `totalSupply()`. Gate decisions instead use `gateImdUsdPrice()`, settled observations and `lastFdvUsd`. Only stored `gatesOpen` marks a gate open; `pendingGatesOpen` is a preview. Invalid, missing or stale prices show unavailable.
+`native ETH → pinned ETH/IMD v4 pool → hook's official IMD/UNLK2 pool → connected buyer`
 
-The deployed hook processes the official pool price left before the first successful official swap of a later block. Its IMD/ETH tracker is rate limited to 5% per hour with a four-hour gap cap (upper ×1.20 / lower ÷1.20 per update). Gate pricing uses the lower of spot and tracker-derived IMD/USD; IMD price declines count immediately. This is **not immediate-spot gating**, and a frontend cannot remove that limitation. Openings are permanent. Supply excludes burns, includes reserves, and is never replaced by a fixed initial supply.
+The reference key is native ETH/IMD, fee 10000, tick spacing 200, no hook. Its hash must equal `hook.referencePoolId()`. The official key is read from the hook and checked against `officialPoolId()`, the token pair, fee, spacing and hook. No route search, alternate pool, split or fallback exists.
 
-The native distributor's `roundOf`/`claimed` interface and double-hashed account/amount leaves do not match the hook's legacy proof interface. `src/auxiliary/NativeSwarmAdapter.sol` bridges authentic completed claims after rebuilding the entire native allocation tree at construction and proving account uniqueness. The full canonical corpus is still required; one authentic proof is not a substitute. No adapter address is invented.
+The buyer calls the registered Universal Router directly. Two swaps share one atomic V4 unlock; the first leg's IMD credit funds the second without pre-owned IMD or approval. Exact native settlement and leaving intermediate deltas unsettled reject partial route settlement; a final native sweep refunds surplus to the buyer. Final minimum output and a three-minute router deadline are enforced.
 
-`src/auxiliary/WalletQuoter.sol` simulates the real pool with the caller's identity and rolls back all effects. It must be installed, reviewed and registered before automatic trading quotes can operate. Stock V4Quoter is incompatible with these sell rights. There is no manual-minimum workaround. `web/public/repair-config.json` keeps both auxiliary records null and installation review false.
+WalletQuoter remains **single-pool only** for IMD buys/sells. ETH quotes use `eth_simulateV1` to run the real complete router transaction with sequential before/after buyer-balance and credit reads, followed by gas estimation of the final protected calldata. This includes first-leg reference-price changes, hook deltas and fees. Unexpected pools, partial/refund events, inconsistent buyer credit, stale quotes or unsupported RPC simulation stop ETH buying. There is no approximation fallback. Quotes last at most 45 seconds, invalidate on relevant state/account/network/input changes, and are revalidated before signing.
 
-## Owner package and verified deployment
+`ETH_ROUTE_VERIFIED` is enabled only after the actual-pool fork tests passed. That does not activate mainnet trading: the live hook's activation and runtime checks still gate all swaps.
 
-Token: `0xbd769d71d535030e47b0a024b8edae4a923d7819`
-
-Hook: `0x4f811b89ef9a19800101705262681f715ac668cc`
-
-Chain: Ethereum, ID 1. The supplied deployment ABI hashes are verified during every export; the frontend also verifies deployed runtime hashes and companion bindings before enabling transactions.
-
-Read [the integration/package guide](docs/repair-integration.md), [owner checklist](docs/frontend/OWNER-SETUP.md) and [delivery status](docs/repair/DELIVERY.md). Auxiliary ABIs, bytecode and immutable references are in `docs/repair/package/`. Owner preparation is read-only:
+## Checks
 
 ```sh
-npm --prefix web run check:live
-npm --prefix web run prepare:owner
-# After forge build, compare deployed runtimes, pinned ABIs and auxiliary packages:
-node --import ./web/scripts/offline-register.mjs web/scripts/runtime-inventory.mjs
+# Pure calculations, authentic proofs, route encoding and fail-closed simulations
+node --import ./web/scripts/offline-register.mjs --experimental-strip-types --test web/tests/core.test.ts web/tests/repair.test.mjs web/tests/routes.test.ts
+
+# Production export, explicitly synthetic RPC/wallet interactions
+npm --prefix web run test:browser
+
+# Read-only mainnet hashes, ABI hashes, bindings, pools, registrations and backing
+node --import ./web/scripts/offline-register.mjs web/scripts/verify-update.mjs
+
+# Actual installed contracts/pools on an isolated fork; NEVER mainnet writes
+UNLOCK_ETH_FORK=true forge test --match-contract EthRouteForkTest -vvv
+node --import ./web/scripts/offline-register.mjs web/tests/fork-browser.mjs
 ```
 
-The owner must obtain and validate the complete allocation corpus, deploy/review both auxiliaries, publish their actual runtime hashes, register only supported integrations, and fund the remaining 700m migration reserve. Every step needs fresh state and separate simulation/review. Activation remains disabled and is absent from the owner package. The immutable hook does not itself enforce all mandatory router/distributor configuration before sealing.
+Playwright browsers and OS libraries must be installed for browser checks. `IMD_PLAYWRIGHT` may point to Playwright's `index.mjs` when installed outside `web/`. `UNLOCK_ETH_FORK_BLOCK=latest` selects a fresh browser-test fork; a numeric `UNLOCK_ETH_FORK_BLOCK` overrides the pinned fork block (26347457); the Solidity suite also accepts `UNLOCK_ETH_FORK_RPC`. Replaying old blocks requires an archive-capable RPC. Fork scripts create test balances/activation only in isolated local forks and shut down their children when finished.
 
-## Validation
+Current worker evidence: production build and strict equivalent typecheck passed; pure Node tests, **14 Chromium interaction checks**, **4 Solidity fork cases**, and **6 production-interface fork flows** passed. Source retrieval, live reads, limitations, exact commands and the six-domain Better Interface review are recorded in [docs/update/VALIDATION.md](docs/update/VALIDATION.md). Screenshots are explicitly identified as mock or fork evidence. Earlier `docs/repair/` and `docs/frontend/` reports are historical.
 
-Current worker results, with evidence and limits: [artifacts/validation.md](artifacts/validation.md). Production build, equivalent strict TypeScript check, 11 Node tests, 136 local Solidity tests, 3 isolated mainnet-fork tests and 15 Chromium interaction cases passed. Live read-only browser checks covered 320/390/768/1440px and all screens. No real wallet signature or mainnet write occurred. These are regression checks, not an independent security audit.
-
-The pinned design probe ran on `dist/`; its applicable geometry, target, contrast, motion and metadata checks passed. The remaining two probe flags are documented: required monospace prose and navigation mistaken for decorative labels. WebKit/native mobile wallets and assistive-technology sessions remain unverified. [DESIGN.md](DESIGN.md) describes the implemented source and six-domain review.
-
-Independent fork tests opt in with `UNLOCK_REPAIR_FORK=true forge test --match-path test/RepairFork.t.sol -vv`. A process-local `UNLOCK_REPAIR_RPC_URL` can select a read provider; setup and activation occur only on the isolated fork. Normal `forge test --no-match-path 'test/*Fork*.sol'` has no mainnet writes. Deployment source, allocation, fees, ten gates, burn debits, previous-sales accounting and weekly rewards remain unchanged.
+Read [DESIGN.md](DESIGN.md) for the final implemented system, [retrieval/provenance](docs/update/RETRIEVAL.md) for the corrected package merge, and [guidance attribution](docs/frontend/NOTICE.md) for retained licenses.

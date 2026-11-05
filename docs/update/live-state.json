@@ -1,0 +1,134 @@
+{
+  "mode": "LIVE READ-ONLY. No signer, broadcast, setup, funding or activation. Activation is a separate reported state.",
+  "checkedAt": "2026-11-05T09:05:25.733Z",
+  "chainId": 1,
+  "block": "26347620",
+  "state": {
+    "activated": false,
+    "owner": "0x48E4E74fE1d0c14404cEB57B9fec5b21329C6ec9",
+    "swarmDistributor": "0x17565820374DE9d122519D5e701E8c2345622058",
+    "gatesOpen": 0,
+    "poolInitialized": true,
+    "isBound": true,
+    "isReferenceAvailable": true,
+    "poolKey": [
+      "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+      "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+      12500,
+      60,
+      "0x4f811b89eF9a19800101705262681F715AC668CC"
+    ],
+    "officialPoolId": "0xb97e547a02a8c4d8374725d6c01fff1337f97e36ca37c25f34a8ddc04933a4be",
+    "referencePoolId": "0xb07d640fd9e2eb9dc81b953c8e4fd006bdfeaf276010fb5418eb763ca15abfb3",
+    "migrationVault": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+    "rewardPot": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+    "imdUsdPrice": [
+      "3110920330515534814",
+      true
+    ],
+    "tokenPriceInImd": [
+      "2499999999999",
+      true
+    ],
+    "token": "0xbD769D71d535030e47b0A024B8edAE4A923D7819",
+    "imd": "0xD34a99Bc0f67aE1bbd63C660e6d0b0dd03E263B7",
+    "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90",
+    "expectedChainId": "1",
+    "routerRegistered": true,
+    "quoterRegistered": true,
+    "remainingBacking": "665646916125700000000000000",
+    "remainingCapacity": "665646916125700000000000000",
+    "isFullyFunded": true,
+    "totalMigrated": "34353083874300000000000000"
+  },
+  "auxiliary": [
+    {
+      "kind": "adapter",
+      "address": "0x17565820374de9d122519d5e701e8c2345622058",
+      "runtimeCodeHash": "0x99d8fbac9d9513d91c3e70a24126e3e3e023a41fe0245163b104abb7c4404499",
+      "actualCodeHash": "0x99d8fbac9d9513d91c3e70a24126e3e3e023a41fe0245163b104abb7c4404499",
+      "hook": "0x4f811b89eF9a19800101705262681F715AC668CC",
+      "nativeDistributor": "0x00aEcDb1Da9FaFac4B5717D54C8B9adc860e189a",
+      "nativeRound": "0",
+      "nativeRoot": "0x0442e07558c3a49da44ffafc43fde948057ee5f5d02c63bbde025369ab4c96fb",
+      "nativeFunded": "100000000000000000000000000",
+      "allocationCount": "441"
+    },
+    {
+      "kind": "quoter",
+      "address": "0xb36788ea2612b72eb4fe07364c2406aaf47f67a6",
+      "runtimeCodeHash": "0x0786d9ce6c629f82837f78ce797d6357fb510f1129a452fa65f4d0a33ca2e60e",
+      "actualCodeHash": "0x0786d9ce6c629f82837f78ce797d6357fb510f1129a452fa65f4d0a33ca2e60e",
+      "hook": "0x4f811b89eF9a19800101705262681F715AC668CC",
+      "poolManager": "0x000000000004444c5dc75cB358380D2e3dE08A90"
+    }
+  ],
+  "core": [
+    {
+      "name": "UnlockV2Token",
+      "address": "0xbd769d71d535030e47b0a024b8edae4a923d7819",
+      "runtimeCodeHash": "0x399abcd5bd485a0a5e88b287ab5d372bb6d120bf73d1f748f9b5dfacb0bbdeb3",
+      "actualCodeHash": "0x399abcd5bd485a0a5e88b287ab5d372bb6d120bf73d1f748f9b5dfacb0bbdeb3"
+    },
+    {
+      "name": "UnlockV2Hook",
+      "address": "0x4f811b89ef9a19800101705262681f715ac668cc",
+      "runtimeCodeHash": "0xbb91bad1216738c6e8f87b7c8df4f1e9a38d0f8a2587ed103602a14f9dcd63da",
+      "actualCodeHash": "0xbb91bad1216738c6e8f87b7c8df4f1e9a38d0f8a2587ed103602a14f9dcd63da"
+    },
+    {
+      "name": "MigrationVault",
+      "address": "0xCf52776A56f0b6d326DB9F1Da7abD4Dad7BD711F",
+      "runtimeCodeHash": "0x32678cb7087706f5ef06d2cf3670271aea471ceb6910b4ff23ae182ffb297c0d",
+      "actualCodeHash": "0x32678cb7087706f5ef06d2cf3670271aea471ceb6910b4ff23ae182ffb297c0d"
+    },
+    {
+      "name": "RewardPot",
+      "address": "0x2AEf897A8D289981C991e7A182A74c41AbEc2901",
+      "runtimeCodeHash": "0x5c9a2dfcb9e3b3d1aae4986aced87496a3442b19e281a6bcd77c112ea8ee4f8b",
+      "actualCodeHash": "0x5c9a2dfcb9e3b3d1aae4986aced87496a3442b19e281a6bcd77c112ea8ee4f8b"
+    },
+    {
+      "name": "IMD",
+      "address": "0xd34a99bc0f67ae1bbd63c660e6d0b0dd03e263b7",
+      "runtimeCodeHash": "0x79a1ae149d27d4aae006d4dd75cb834222c9623799bbf34359428aaf66fec3bf",
+      "actualCodeHash": "0x79a1ae149d27d4aae006d4dd75cb834222c9623799bbf34359428aaf66fec3bf"
+    },
+    {
+      "name": "poolManager",
+      "address": "0x000000000004444c5dc75cb358380d2e3de08a90",
+      "runtimeCodeHash": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293",
+      "actualCodeHash": "0x785f1014552b7ce7d5fb7d0c970ca60edee94fd00425d7ca21609acac7ce1293"
+    },
+    {
+      "name": "universalRouter",
+      "address": "0x66a9893cc07d91d95644aedd05d03f95e1dba8af",
+      "runtimeCodeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f",
+      "actualCodeHash": "0x6a5f46971b50c6e1b7eef97902311444e479d734e4f80ad88367783cf373fe7f"
+    },
+    {
+      "name": "quoter",
+      "address": "0x52f0e24d1c21c8a0cb1e5a5dd6198556bd9e1203",
+      "runtimeCodeHash": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441",
+      "actualCodeHash": "0x06de58fa119c5deaa7a667fb92d3894e25d9160e62fb82c8d86d43b47eefe441"
+    },
+    {
+      "name": "permit2",
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "runtimeCodeHash": "0xc67d1657868aa5146eaf24fb879fb1fdec3d2d493b3683a61c9c2f4fb2851131",
+      "actualCodeHash": "0xc67d1657868aa5146eaf24fb879fb1fdec3d2d493b3683a61c9c2f4fb2851131"
+    }
+  ],
+  "abiHashes": [
+    {
+      "name": "UnlockV2Token",
+      "expected": "fd080158be9b762f48aff57828548dbfad24e87b7f5cdf882adea07b4e2acf12",
+      "actual": "fd080158be9b762f48aff57828548dbfad24e87b7f5cdf882adea07b4e2acf12"
+    },
+    {
+      "name": "UnlockV2Hook",
+      "expected": "14aa7579295752ea04ee3bf33e5f68b88806497a37a569396887dd6c4746ce19",
+      "actual": "14aa7579295752ea04ee3bf33e5f68b88806497a37a569396887dd6c4746ce19"
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "method": "Conservative uncompressed sum of the complete contents of every added/modified file (including this report); ignored disposable scratch and deleted paths excluded.",
+  "addedOrModifiedBytes": 3399907,
+  "limit": 8388608,
+  "withinBudget": true,
+  "protectedPathChanges": [],
+  "submodules": [],
+  "changedIgnoreFiles": [],
+  "exportBytes": 1037597,
+  "exportMirrorIdentical": true,
+  "exportFiles": 18,
+  "largestChanges": [
+    {
+      "path": "dist/assets/index-7XZDW6JM.js",
+      "bytes": 752011
+    },
+    {
+      "path": "web/site/assets/index-7XZDW6JM.js",
+      "bytes": 752011
+    },
+    {
+      "path": "docs/update/evidence/mock-home-1440.png",
+      "bytes": 463858
+    },
+    {
+      "path": "docs/update/evidence/fork-trade-1440.png",
+      "bytes": 347161
+    },
+    {
+      "path": "docs/update/evidence/mock-opened-door-390.png",
+      "bytes": 188916
+    },
+    {
+      "path": "docs/update/evidence/live-read-only-390.png",
+      "bytes": 188885
+    },
+    {
+      "path": "docs/update/evidence/mock-home-390.png",
+      "bytes": 180891
+    },
+    {
+      "path": "docs/update/evidence/mock-golden-390.png",
+      "bytes": 82048
+    },
+    {
+      "path": "web/src/Screens.tsx",
+      "bytes": 47576
+    },
+    {
+      "path": "web/src/style.css",
+      "bytes": 33908
+    },
+    {
+      "path": "dist/assets/index-Z7R6E2SM.css",
+      "bytes": 26649
+    },
+    {
+      "path": "web/site/assets/index-Z7R6E2SM.css",
+      "bytes": 26649
+    }
+  ]
+}

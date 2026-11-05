@@ -2,6 +2,9 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import {
   decodeFunctionData,
+  encodeAbiParameters,
+  keccak256,
+  parseAbiParameters,
   encodeFunctionResult,
   parseAbi,
   toHex,
@@ -84,6 +87,37 @@ const walletQuoterAbi = parseAbi([
   "function poolManager() view returns(address)",
   "function quoteExactInput(bool zeroForOne,uint128 amountIn) returns(uint256 amountOut,uint256 rewardFee,uint256 lpFeeInput)",
 ]);
+export const adapter = "0x5555555555555555555555555555555555555555";
+const repairConfig = await read("web/public/repair-config.json");
+const adapterAbi = parseAbi([
+  "function nativeDistributor() view returns(address)",
+  "function hook() view returns(address)",
+  "function nativeRound() view returns(uint256)",
+  "function nativeRoot() view returns(bytes32)",
+  "function nativeFunded() view returns(uint256)",
+  "function allocationCount() view returns(uint256)",
+  "function indexOf(address) view returns(uint256)",
+  "function synced(address) view returns(bool)",
+  "function syncClaim(address,uint256,bytes32[])",
+]);
+const officialPoolId = keccak256(
+  encodeAbiParameters(
+    parseAbiParameters("address,address,uint24,int24,address"),
+    [token, net.pairToken.address, 12500, 60, hook],
+  ),
+);
+const referencePoolId = keccak256(
+  encodeAbiParameters(
+    parseAbiParameters("address,address,uint24,int24,address"),
+    [
+      "0x0000000000000000000000000000000000000000",
+      net.pairToken.address,
+      10000,
+      200,
+      "0x0000000000000000000000000000000000000000",
+    ],
+  ),
+);
 export const owner = "0x48e4e74fe1d0c14404ceb57b9fec5b21329c6ec9";
 export const E = 10n ** 18n;
 const rows = [
@@ -108,7 +142,7 @@ export function fixture() {
     gates: 0,
     routerSupported: true,
     quoterSupported: true,
-    swarm: distributor,
+    swarm: adapter,
     funded: true,
     balance: 750000000n * E,
     imdBalance: 10000n * E,
@@ -154,6 +188,7 @@ export function rpcMock(s) {
     [net.uniswapV4.universalRouter.toLowerCase()]: router,
     [distributor]: distributorAbi,
     [walletQuoter]: walletQuoterAbi,
+    [adapter]: adapterAbi,
   };
   function decode(tx) {
     const target = tx.to.toLowerCase();
@@ -203,7 +238,7 @@ export function rpcMock(s) {
       unlockedPercents: s.gates
         ? [BigInt(rows[s.gates - 1][0]), BigInt(rows[s.gates - 1][0])]
         : [20n, 0n],
-      gateImdUsdPrice: [1n * E, true],
+      gateImdUsdPrice: s.invalidUsd ? [0n, false] : [1n * E, true],
       lastFdvUsd: 80000n * E,
       lastFdvBlock: s.block - 1n,
       lastValidObservation: BigInt(Math.floor(Date.now() / 1000)),
@@ -214,7 +249,15 @@ export function rpcMock(s) {
       cumulativeVolumeUsd: 50000n * E,
       burnProgress: s.burnProgress,
       totalBurned: 1000n * E,
-      officialPoolId: "0x" + "ab".repeat(32),
+      officialPoolId,
+      referencePoolId,
+      nativeDistributor: repairConfig.nativeDistributor,
+      nativeRound: BigInt(repairConfig.nativeRound),
+      nativeRoot: repairConfig.nativeRoot,
+      nativeFunded: BigInt(repairConfig.nativeFunded),
+      allocationCount: 441n,
+      indexOf: 1n,
+      synced: !!s.nativeSynced,
       contributionQuote:
         s.gates === 10
           ? [0, 0n]
@@ -340,14 +383,37 @@ export function rpcMock(s) {
   async function rpc(q) {
     const { id, method, params = [] } = q;
     let result;
+    if (method === "eth_simulateV1")
+      return {
+        jsonrpc: "2.0",
+        id,
+        error: {
+          code: -32601,
+          message: "Synthetic RPC does not support eth_simulateV1",
+        },
+      };
     switch (method) {
       case "eth_getLogs":
-        if (s.failMarket) return {jsonrpc:"2.0",id,error:{code:-32000,message:"Historical logs unavailable"}};
+        if (s.failMarket)
+          return {
+            jsonrpc: "2.0",
+            id,
+            error: { code: -32000, message: "Historical logs unavailable" },
+          };
         result = (s.marketLogs ?? []).filter(
           (l) =>
             BigInt(l.blockNumber) >= BigInt(params[0].fromBlock) &&
             BigInt(l.blockNumber) <= BigInt(params[0].toBlock),
         );
+        break;
+      case "eth_getBalance":
+        result = toHex(s.ethBalance ?? E);
+        break;
+      case "eth_maxPriorityFeePerGas":
+        result = "0x3b9aca00";
+        break;
+      case "eth_gasPrice":
+        result = "0x77359400";
         break;
       case "eth_chainId":
         result = "0x1";
@@ -387,7 +453,7 @@ export function rpcMock(s) {
               cumulativeGasUsed: "0x10000",
               gasUsed: "0x10000",
               contractAddress: null,
-              logs: [],
+              logs: s.receiptLogs ?? [],
               logsBloom: "0x" + "00".repeat(256),
               status: s.receiptReverted ? "0x0" : "0x1",
               type: "0x2",
@@ -503,6 +569,7 @@ export function rpcMock(s) {
           if (f === "contribute") s.burnProgress += n;
         }
         if (f === "claim") s.claimable = 0n;
+        if (f === "syncClaim") s.nativeSynced = true;
         const hash = "0x" + s.sends.length.toString(16).padStart(64, "0");
         s.hashes.push(hash);
         return hash;

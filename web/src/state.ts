@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type Address, type Abi, type Hex } from "viem";
 import { verifyChain, type Runtime } from "./config";
+import { assertRouteKeys } from "./eth-route";
+import { verifyAuxiliary } from "./integration";
 import { erc20Abi, same, type PoolKey } from "./core";
 export type Data = {
   vault: Address;
@@ -51,6 +53,8 @@ export type Data = {
   gateTable: readonly (readonly [number, bigint, bigint, bigint])[];
   block: bigint;
   time: number;
+  ethBalance?: bigint;
+  setupReady: boolean;
   balance?: bigint;
   imdBalance?: bigint;
   v1Balance?: bigint;
@@ -74,12 +78,14 @@ export function useData(r?: Runtime, address?: Address) {
     [loading, setLoading] = useState(false),
     [verified, setVerified] = useState(false),
     [stale, setStale] = useState(true);
+  const generation = useRef(0);
   const running = useRef(false),
     identity = useRef("");
   identity.current = address ?? "";
   const refresh = useCallback(async () => {
     if (!r || running.current) return;
     running.current = true;
+    const run = ++generation.current;
     setLoading(true);
     const who = address ?? "";
     try {
@@ -189,7 +195,9 @@ export function useData(r?: Runtime, address?: Address) {
         p("solvency"),
         p("isSolvent"),
         h("isRouter", [r.d.network.uniswapV4.universalRouter]),
-        h("isRouter", [r.d.network.uniswapV4.quoter]),
+        r.repair.quoter
+          ? h("isRouter", [r.repair.quoter.address])
+          : Promise.resolve(false),
         t(token, "totalSupply", [], r.abis.UnlockV2Token),
         t(derived.v1, "decimals"),
         h("poolKey"),
@@ -223,7 +231,30 @@ export function useData(r?: Runtime, address?: Address) {
         )
           throw Error("Unexpected pool currencies or hook.");
       }
+      if (poolKey) {
+        const ref = await h("referencePoolId");
+        assertRouteKeys(
+          poolKey,
+          x.officialPoolId,
+          ref,
+          r.d.network.pairToken.address,
+          token,
+          hook,
+        );
+      }
+      await Promise.all([
+        verifyAuxiliary(r, "adapter"),
+        verifyAuxiliary(r, "quoter"),
+      ]);
       const next: Data = {
+        setupReady: !!(
+          x.isBound &&
+          x.poolInitialized &&
+          routerSupported &&
+          quoterSupported &&
+          same(x.swarmDistributor, r.repair.adapter?.address) &&
+          backing >= capacity
+        ),
         ...derived,
         v1Decimals: Number(v1Decimals),
         owner: x.owner,
@@ -295,6 +326,10 @@ export function useData(r?: Runtime, address?: Address) {
         ]);
         Object.assign(next, {
           balance,
+          ethBalance: await r.client.getBalance({
+            address,
+            blockNumber: snapshotBlock,
+          }),
           imdBalance,
           v1Balance,
           sellAllowance,
@@ -305,21 +340,26 @@ export function useData(r?: Runtime, address?: Address) {
           claimed: account.claimed,
         });
       }
-      if (who !== identity.current) return;
+      if (who !== identity.current || run !== generation.current) return;
       setData(next);
       setVerified(true);
       setStale(false);
       setError("");
     } catch (e) {
+      if (run !== generation.current) return;
       setError(e instanceof Error ? e.message : "Network read failed.");
       setVerified(false);
       setStale(true);
     } finally {
-      running.current = false;
-      setLoading(false);
+      if (run === generation.current) {
+        running.current = false;
+        setLoading(false);
+      }
     }
   }, [r, address]);
   useEffect(() => {
+    ++generation.current;
+    running.current = false;
     setData(undefined);
     setVerified(false);
     setStale(true);
@@ -335,6 +375,7 @@ export function useData(r?: Runtime, address?: Address) {
     };
     document.addEventListener("visibilitychange", resume);
     return () => {
+      ++generation.current;
       clearInterval(timer);
       document.removeEventListener("visibilitychange", resume);
     };

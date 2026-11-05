@@ -1,0 +1,104 @@
+{
+  "mode": "Read-only HTTPS public-site verification. No publishing command, wallet or chain write.",
+  "checkedAt": "2026-11-05T08:53:04.653Z",
+  "url": "https://unlock-v2.imd.site/",
+  "httpStatus": 200,
+  "https": true,
+  "title": "UNLOCK V2 | UNLK2 / IMD Terminal",
+  "assets": [
+    {
+      "path": "abi/MigrationVault.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/RewardPot.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Hook.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "abi/UnlockV2Token.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/chunk-MUSPBBTZ.js",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index-6YAYEHKW.js",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "assets/index-ZVM226P3.css",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "contract-runtime.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "favicon.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "og-image.png",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "repair-config.json",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-browser.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-coinbase.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-metamask.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-phantom.svg",
+      "status": 200,
+      "hashMatches": true
+    },
+    {
+      "path": "wallet-rabby.svg",
+      "status": 200,
+      "hashMatches": true
+    }
+  ],
+  "allPublicAssetsMatchTheirManifest": true,
+  "matchesDeliveredExport": false,
+  "matchesDeliveredConfig": false,
+  "publicationStatus": "Existing public version is still different; publication/post-publication verification pending",
+  "publicConfig": {
+    "adapter": null,
+    "quoter": null,
+    "installationReviewed": false
+  }
+}

@@ -1,10 +1,16 @@
 {
-  "status": "PENDING INSTALLATION — auxiliary source only; no mainnet deployment or setup was performed",
+  "status": "Reviewed auxiliary installations. Runtime bindings, registrations and remaining migration backing are verified on every refresh; trading activation is read separately.",
   "nativeDistributor": "0x00aecdb1da9fafac4b5717d54c8b9adc860e189a",
   "nativeRound": "0",
   "nativeRoot": "0x0442e07558c3a49da44ffafc43fde948057ee5f5d02c63bbde025369ab4c96fb",
   "nativeFunded": "100000000000000000000000000",
-  "adapter": null,
-  "quoter": null,
-  "installationReviewed": false
+  "adapter": {
+    "address": "0x17565820374de9d122519d5e701e8c2345622058",
+    "runtimeCodeHash": "0x99d8fbac9d9513d91c3e70a24126e3e3e023a41fe0245163b104abb7c4404499"
+  },
+  "quoter": {
+    "address": "0xb36788ea2612b72eb4fe07364c2406aaf47f67a6",
+    "runtimeCodeHash": "0x0786d9ce6c629f82837f78ce797d6357fb510f1129a452fa65f4d0a33ca2e60e"
+  },
+  "installationReviewed": true
 }

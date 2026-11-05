@@ -26,7 +26,7 @@ const screens = [
   "Weekly IMD Rewards",
   "Golden Vault",
   "Rules / Contracts",
-  "Founder setup",
+  "Integration status",
 ];
 const key = (s: string) =>
   s
@@ -34,7 +34,9 @@ const key = (s: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-$/, "");
 const current = () =>
-  screens.find((s) => key(s) === location.hash.slice(1)) ?? "Trade";
+  location.hash === "#founder-setup"
+    ? "Integration status"
+    : (screens.find((s) => key(s) === location.hash.slice(1)) ?? "Trade");
 export default function App() {
   const [baseRuntime, setRuntime] = useState<Runtime>(),
     [configError, setConfigError] = useState(""),
@@ -89,9 +91,9 @@ export default function App() {
         ? "RPC unavailable"
         : state.stale
           ? "Verifying chain"
-        : d?.activated
-          ? "Trading active"
-          : "Trading closed";
+          : d?.activated
+            ? "Trading active"
+            : "Trading closed";
   const connectLabel = wallet.pending
     ? "Wallet pending…"
     : wallet.wrong
@@ -161,7 +163,8 @@ export default function App() {
           <h1 id="main-heading" tabIndex={-1}>
             {screen === "Trade" ? (
               <>
-                Trade <span className="muted">UNLK2 / IMD</span>
+                UNLOCK V2{" "}
+                <span className="muted">Ten gates. Permanent progress.</span>
               </>
             ) : (
               screen
@@ -198,7 +201,8 @@ export default function App() {
         {state.error && (
           <div className="system-message" role="status">
             <span className="amber">
-              Live state unavailable; actions disabled. {d ? "Previous snapshot is stale." : ""}
+              Live state unavailable; actions disabled.{" "}
+              {d ? "Previous snapshot is stale." : ""}
             </span>
             <details>
               <summary>Connection details</summary>
@@ -230,30 +234,6 @@ export default function App() {
               view,
             }}
           >
-            {screen === "Trade" && (
-              <div className="market-strip">
-                <Stat
-                  label="UNLK2 price"
-                  value={
-                    d?.tokenPrice[1] && !state.stale
-                      ? display(d.tokenPrice[0], 18, 8)
-                      : "Unavailable"
-                  }
-                  unit="IMD"
-                />
-                <Stat
-                  label="Current supply"
-                  value={display(d?.supply, 18, 0)}
-                  unit="UNLK2"
-                />
-                <Stat label="Gates open" value={d && !state.stale ? `${d.gates} / 10` : "Unavailable"} />
-                <Stat
-                  label="Gross official volume"
-                  value={display(d?.volume, 18, 0)}
-                  unit="USD"
-                />
-              </div>
-            )}
             {screen === "Trade" ? (
               <Dashboard />
             ) : screen === "Gates" ? (

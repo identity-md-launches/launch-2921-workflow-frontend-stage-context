@@ -252,11 +252,21 @@ export function Progress({
       <div className="spread">
         <span>{label}</span>
         <span>
-          {valid && value !== undefined && target !== undefined ? `${pct.toFixed(1)}%` : "Unavailable"}
+          {valid && value !== undefined && target !== undefined
+            ? `${pct.toFixed(1)}%`
+            : "Unavailable"}
         </span>
       </div>
-      <progress value={pct} max={100} aria-label={label}
-        aria-valuetext={valid && value !== undefined && target !== undefined ? `${pct.toFixed(1)}% completed` : "Unavailable"} />
+      <progress
+        value={pct}
+        max={100}
+        aria-label={label}
+        aria-valuetext={
+          valid && value !== undefined && target !== undefined
+            ? `${pct.toFixed(1)}% completed`
+            : "Unavailable"
+        }
+      />
       <div className="spread muted">
         <span>
           {valid ? display(value) : "Unavailable / stale"} {unit}
@@ -293,6 +303,7 @@ export function Dialog({
   title: string;
   children: ReactNode;
 }) {
+  const titleId = useId();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     if (open) ref.current?.showModal();
@@ -301,13 +312,14 @@ export function Dialog({
   return (
     <dialog
       ref={ref}
+      aria-labelledby={titleId}
       onCancel={onClose}
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
     >
       <div className="dialog-heading">
-        <h2>{title}</h2>
+        <h2 id={titleId}>{title}</h2>
         <button aria-label="Close review" onClick={onClose}>
           ×
         </button>

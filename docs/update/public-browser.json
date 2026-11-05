@@ -1,0 +1,10 @@
+{
+  "mode": "Existing public URL, read-only browser inspection. RPC POST bodies forwarded unchanged through the worker Node transport; no mock data, wallet or signer. This does not publish or establish that the new export is public.",
+  "url": "https://unlock-v2.imd.site/",
+  "checkedAt": "2026-11-05T09:02:38.181Z",
+  "pageErrors": [],
+  "failedResources": [],
+  "viewports": [],
+  "result": "Incomplete",
+  "error": "page.goto: net::ERR_EMPTY_RESPONSE at https://unlock-v2.imd.site/"
+}

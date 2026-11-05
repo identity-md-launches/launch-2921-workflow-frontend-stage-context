@@ -134,7 +134,7 @@ export function errorText(error: unknown): string {
     return "Request declined in your wallet. You can retry when ready.";
   const errors: Record<string, string> = {
     TradingClosed:
-      "Trading is closed until owner setup and activation are complete.",
+      "Trading is closed because the hook has not been activated. Check the live integration status.",
     SellExceedsAllowance:
       "This sell exceeds your official-pool allowance. Review My Rights.",
     StaleGate:

@@ -1,0 +1,6 @@
+{
+  "engine": "WebKit 26.0, Playwright 1.56.1",
+  "status": "Not verified",
+  "observation": "After installing the browser and its shared libraries in disposable scratch space, the browser launch succeeded but creating a page did not complete. A bounded smoke test was terminated after 40 seconds before navigation. No rendered WebKit observation or interaction pass is claimed.",
+  "fallback": "Chromium production-export screenshots, responsive checks and interaction tests were performed. This is not a physical iPhone or Safari verification."
+}

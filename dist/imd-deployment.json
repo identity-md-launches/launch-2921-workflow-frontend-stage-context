@@ -95,12 +95,12 @@
       "sha256": "ce939f0e742ab1cedc1ed070846ec1fe666f9de8e4bf07554bc9cfb46a4dd15c"
     },
     {
-      "path": "assets/index-6YAYEHKW.js",
-      "sha256": "8517cb091ee126d20b823d7005768bde8ccd195b8b1fc75b5d358c30a8e5dddb"
+      "path": "assets/index-7XZDW6JM.js",
+      "sha256": "e4abc0a9963cf18b6edcb345d32550a64c2d862905b8bab4705145f9143db9b9"
     },
     {
-      "path": "assets/index-ZVM226P3.css",
-      "sha256": "8433f3e52cf0a359dfafaed9cccc870ab3bed99a3b8dbc6769e4bef2565a3c3e"
+      "path": "assets/index-Z7R6E2SM.css",
+      "sha256": "a7206216c0cd541bedb1cceb56a4e33e274ffa09afdfda0dda9851cb40ee4804"
     },
     {
       "path": "contract-runtime.json",
@@ -112,7 +112,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "d003b35c9c6fa2bf85ebd2ee1b223a7f30b60cf68fc74af4d224ce6257dca9ac"
+      "sha256": "d08a6a92cb94ff6a3f2f85155fd0f576700804abd781247ec45634de0f32c97e"
     },
     {
       "path": "og-image.png",
@@ -120,7 +120,7 @@
     },
     {
       "path": "repair-config.json",
-      "sha256": "42ed619a0163c7ef5d40b51ca0ad103160467524f638a68b132264a25b16b0f5"
+      "sha256": "7a93de4292a0cb9c1f5023e545c9d8f30f20f38e3cd4910fc8bed8e812b47cbd"
     },
     {
       "path": "wallet-browser.svg",

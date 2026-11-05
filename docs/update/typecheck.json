@@ -1,0 +1,5 @@
+{
+  "result": "PASS",
+  "command": "node test/scratch/toolchain/node_modules/typescript/bin/tsc --noEmit -p test/scratch/typecheck.json",
+  "details": "Strict equivalent of web/tsconfig.json. The unchanged pinned toolchain was installed in disposable test/scratch; paths/typeRoots resolve those same packages. Includes web/src, web/tests/*.ts and web/vite.config.ts. TypeScript reported no diagnostics. The install and temporary config are not submitted. Normal reproduction: npm --prefix web ci && npm --prefix web run typecheck."
+}

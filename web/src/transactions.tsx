@@ -78,6 +78,8 @@ export function useTransactions(
         { receiptResolved: true },
       );
     await refresh();
+    if (reason !== "cancelled" && reason !== "replaced")
+      review?.onConfirmed?.(receipt);
     setConfirmed(true);
     setReady(false);
     setStage(

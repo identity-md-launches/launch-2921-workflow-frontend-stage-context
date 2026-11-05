@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Abi, Address } from "viem";
+import type { Abi, Address, TransactionReceipt } from "viem";
 import type { Runtime } from "./config";
 import type { Wallet } from "./wallet";
 import type { Data } from "./state";
@@ -16,6 +16,7 @@ export type Transaction = {
   account?: Address;
   validUntil?: number;
   validate?: () => Promise<void>;
+  onConfirmed?: (receipt: TransactionReceipt) => void;
 };
 export type AppContext = {
   r: Runtime;
