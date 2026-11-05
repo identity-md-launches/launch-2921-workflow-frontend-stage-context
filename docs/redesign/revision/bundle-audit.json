@@ -1,0 +1,248 @@
+{
+  "method": "Full uncompressed bytes of every changed/new ordinary file compared with the revision-start workspace baseline, including this report. Disposable scratch, inputs, existing dependencies/build caches and prohibited Git metadata excluded; no Git metadata accessed.",
+  "limitBytes": 8388608,
+  "changedBytes": 3363397,
+  "remainingBytes": 5025211,
+  "passes": true,
+  "exportBytes": 2009215,
+  "runtimeAssets": 37,
+  "relativeExportAndInventoryMatch": true,
+  "exportMirrorMatches": true,
+  "currentRouteScreenshots": 18,
+  "protectedConfigurationAndIgnoreFilesUnchanged": true,
+  "changedFileCount": 58,
+  "changedFiles": [
+    {
+      "path": "DESIGN.md",
+      "bytes": 11118
+    },
+    {
+      "path": "web/site/imd-deployment.json",
+      "bytes": 7173
+    },
+    {
+      "path": "web/site/assets/index-INMOMK5T.css",
+      "bytes": 40795
+    },
+    {
+      "path": "web/site/assets/index-OIYOCBEI.js",
+      "bytes": 757795
+    },
+    {
+      "path": "web/site/index.html",
+      "bytes": 1411
+    },
+    {
+      "path": "web/tests/redesign-browser.mjs",
+      "bytes": 18542
+    },
+    {
+      "path": "web/tests/update-browser.mjs",
+      "bytes": 24821
+    },
+    {
+      "path": "web/src/Trade.tsx",
+      "bytes": 24769
+    },
+    {
+      "path": "web/src/Charts.tsx",
+      "bytes": 18761
+    },
+    {
+      "path": "web/src/ArtPanels.tsx",
+      "bytes": 1981
+    },
+    {
+      "path": "web/src/GateDoors.tsx",
+      "bytes": 7470
+    },
+    {
+      "path": "web/src/style.css",
+      "bytes": 49720
+    },
+    {
+      "path": "README.md",
+      "bytes": 6972
+    },
+    {
+      "path": "docs/redesign/revision/preservation.json",
+      "bytes": 4908
+    },
+    {
+      "path": "docs/redesign/revision/contracts-fork.txt",
+      "bytes": 657
+    },
+    {
+      "path": "docs/redesign/revision/webkit-tests.txt",
+      "bytes": 808
+    },
+    {
+      "path": "docs/redesign/revision/production-build.txt",
+      "bytes": 410
+    },
+    {
+      "path": "docs/redesign/revision/live-state.json",
+      "bytes": 5740
+    },
+    {
+      "path": "docs/redesign/revision/public-url.txt",
+      "bytes": 182
+    },
+    {
+      "path": "docs/redesign/revision/design-probe.json",
+      "bytes": 4309
+    },
+    {
+      "path": "docs/redesign/revision/frontend-tests.txt",
+      "bytes": 1268
+    },
+    {
+      "path": "docs/redesign/revision/live-export-browser.json",
+      "bytes": 2309
+    },
+    {
+      "path": "docs/redesign/revision/reproduced-findings.json",
+      "bytes": 1117
+    },
+    {
+      "path": "docs/redesign/revision/typecheck.txt",
+      "bytes": 44
+    },
+    {
+      "path": "docs/redesign/revision/bundle-audit.json",
+      "bytes": 5693
+    },
+    {
+      "path": "docs/redesign/revision/node-tests.txt",
+      "bytes": 1844
+    },
+    {
+      "path": "docs/redesign/revision/redesign-tests.txt",
+      "bytes": 690
+    },
+    {
+      "path": "docs/redesign/revision/export-validation.txt",
+      "bytes": 151
+    },
+    {
+      "path": "docs/redesign/revision/fork-browser.txt",
+      "bytes": 773
+    },
+    {
+      "path": "docs/redesign/revision/public-url.json",
+      "bytes": 2358
+    },
+    {
+      "path": "docs/redesign/revision/live-verification.txt",
+      "bytes": 226
+    },
+    {
+      "path": "docs/redesign/REVISION.md",
+      "bytes": 13948
+    },
+    {
+      "path": "docs/redesign/PUBLISH.md",
+      "bytes": 1901
+    },
+    {
+      "path": "docs/redesign/evidence/mock-gates-390.webp",
+      "bytes": 104280
+    },
+    {
+      "path": "docs/redesign/evidence/mock-trade-390.webp",
+      "bytes": 109720
+    },
+    {
+      "path": "docs/redesign/evidence/mock-home-1440.webp",
+      "bytes": 95400
+    },
+    {
+      "path": "docs/redesign/evidence/all-routes-webkit.json",
+      "bytes": 4413
+    },
+    {
+      "path": "docs/redesign/evidence/mock-webkit-trade-390.webp",
+      "bytes": 122274
+    },
+    {
+      "path": "docs/redesign/evidence/mock-home-390.webp",
+      "bytes": 29786
+    },
+    {
+      "path": "docs/redesign/evidence/fork-browser.json",
+      "bytes": 15499
+    },
+    {
+      "path": "docs/redesign/evidence/live-read-only-1440.webp",
+      "bytes": 96278
+    },
+    {
+      "path": "docs/redesign/evidence/live-read-only-390.webp",
+      "bytes": 30042
+    },
+    {
+      "path": "docs/redesign/evidence/mock-gates-1440.webp",
+      "bytes": 128684
+    },
+    {
+      "path": "docs/redesign/evidence/fork-trade-1440.webp",
+      "bytes": 83218
+    },
+    {
+      "path": "docs/redesign/evidence/mock-webkit-trade-1440.webp",
+      "bytes": 147058
+    },
+    {
+      "path": "docs/redesign/evidence/mock-rules-contracts-390.webp",
+      "bytes": 163932
+    },
+    {
+      "path": "docs/redesign/evidence/all-routes-chromium.json",
+      "bytes": 5384
+    },
+    {
+      "path": "docs/redesign/evidence/mock-opened-door-390.webp",
+      "bytes": 29954
+    },
+    {
+      "path": "docs/redesign/evidence/optimization.json",
+      "bytes": 7245
+    },
+    {
+      "path": "docs/redesign/evidence/mock-golden-390.webp",
+      "bytes": 30806
+    },
+    {
+      "path": "docs/redesign/evidence/mock-rules-contracts-1440.webp",
+      "bytes": 170416
+    },
+    {
+      "path": "docs/redesign/evidence/mock-trade-1440.webp",
+      "bytes": 141250
+    },
+    {
+      "path": "docs/redesign/VALIDATION.md",
+      "bytes": 17923
+    },
+    {
+      "path": ".imd-responses.json",
+      "bytes": 1997
+    },
+    {
+      "path": "dist/imd-deployment.json",
+      "bytes": 7173
+    },
+    {
+      "path": "dist/assets/index-INMOMK5T.css",
+      "bytes": 40795
+    },
+    {
+      "path": "dist/assets/index-OIYOCBEI.js",
+      "bytes": 757795
+    },
+    {
+      "path": "dist/index.html",
+      "bytes": 1411
+    }
+  ]
+}

@@ -3,6 +3,10 @@
   "mode": "Synthetic RPC and wallet interaction tests against the production export. No real signing or mainnet broadcasts.",
   "checks": [
     {
+      "name": "Desktop reference composition keeps progress, swap action and both previews on the first screen",
+      "passed": true
+    },
+    {
       "name": "trade @ 1440: heading, loaded artwork/fonts, no overflow, skip focus and route preserved",
       "passed": true
     },
@@ -87,6 +91,10 @@
       "passed": true
     },
     {
+      "name": "Gate ten preview names voluntary burning and transfers keyboard focus without signing",
+      "passed": true
+    },
+    {
       "name": "Unavailable chain state on all nine routes at mobile and desktop; no signing enabled",
       "passed": true
     },
@@ -104,5 +112,27 @@
     "docs/redesign/evidence/mock-webkit-trade-1440.webp",
     "docs/redesign/evidence/mock-webkit-trade-390.webp"
   ],
-  "resourceFailures": []
+  "resourceFailures": [],
+  "desktopComposition": {
+    ".gate-disclosure": {
+      "y": 269,
+      "height": 77,
+      "bottom": 346
+    },
+    ".dashboard-grid": {
+      "y": 358,
+      "height": 321,
+      "bottom": 679
+    },
+    ".swap-panel .action": {
+      "y": 584,
+      "height": 36,
+      "bottom": 620
+    },
+    ".art-panels": {
+      "y": 693,
+      "height": 239,
+      "bottom": 932
+    }
+  }
 }

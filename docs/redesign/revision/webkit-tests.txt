@@ -1,0 +1,9 @@
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+PASS Desktop reference composition keeps progress, swap action and both previews on the first screen
+PASS All nine routes: 390/1440, assets, fonts, overflow, heading and keyboard skip
+PASS Every portal selects live thresholds on Home and Gates
+PASS Contribute action focuses real form; home previews navigate; closed swaps remain disabled
+PASS Gate ten preview names voluntary burning and transfers keyboard focus without signing
+PASS Unavailable chain state on all nine routes at mobile and desktop; no signing enabled
+PASS Historical burn failure stays unavailable, retry fetches complete history
+PASS Initial loading state, wallet focus trap, navigation-menu Escape and connected rights

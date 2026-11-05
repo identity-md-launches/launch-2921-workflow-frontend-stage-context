@@ -1,5 +1,7 @@
 # UNLOCK V2 redesign: worker validation
 
+Current revision results supersede the original homepage composition measurements below: see [REVISION.md](REVISION.md) and [.imd-responses.json](../../.imd-responses.json). The original report is retained as history.
+
 ## Outcome and scope
 
 **Implemented and locally validated; public publication/commit and post-publication verification remain incomplete.** Source is in `web/`, production export in `dist/`, identical tooling mirror in `web/site/`. This continues completed job `38c6908b-83e2-4a77-8d65-4fa6c24660d6` (supplied source commit `e71f51d9cb2424955a224c1f97d4aad9f295585a`). Checks below are the worker’s observations, not independent certification.

@@ -1,0 +1,121 @@
+{
+  "checks": [
+    {
+      "name": "render",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 11237,
+      "output": "renders, no script errors or missing local files\nexternal hosts: ethereum-rpc.publicnode.com, eth.drpc.org"
+    },
+    {
+      "name": "layout",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 1,
+      "output": "no horizontal scroll at 320, 390 or 1440\nno text box overlaps another\nno floating control covers text\nno text cut off by overflow: hidden"
+    },
+    {
+      "name": "targets",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "all 44 controls at least 24px or spaced at 390\n22 under the 44px comfortable size"
+    },
+    {
+      "name": "contrast",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "all measured text meets 4.5:1 (3:1 large)\n120 text boxes over images, video, canvas or gradients not measured"
+    },
+    {
+      "name": "casing",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no all-caps text in content"
+    },
+    {
+      "name": "tracking",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "letter-spacing natural in content (display type may run tight)"
+    },
+    {
+      "name": "eyebrows",
+      "passed": false,
+      "exitCode": 1,
+      "durationMs": 0,
+      "output": "2 kicker labels above headings:\n1440px: \"Unread\" above \"Gate 1 \u00b7 State unavailable\" (section.gate-hall:nth-of-type(1) > div.door-grid:nth-of-type(1) > button.gate-door:nth-of-type(1) > span.door-state:nth-of-type(3))\n1440px: \"Remaining: Unavailable UNLK2\" above \"Swap UNLK2\" (div.gate-three:nth-of-type(2) > div.progress-row:nth-of-type(3) > div.spread.muted:nth-of-type(3) > span:nth-of-type(1))"
+    },
+    {
+      "name": "type-sizes",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "390: 5 sizes in use, 5 with one-offs (13px\u00d775, 14px\u00d722, 16px\u00d74, 18px\u00d77, 24px\u00d74)\n1440: 5 sizes in use, 6 with one-offs (13px\u00d768, 14px\u00d736, 16px\u00d74, 18px\u00d75, 24px\u00d75, 28px\u00d71)\nbar: 6 sizes used more than once, 8 counting one-offs, per width"
+    },
+    {
+      "name": "type-faces",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "families (3): cinzel, manrope, ibm plex mono\nweights (2): 400, 600"
+    },
+    {
+      "name": "glyphs",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 1,
+      "output": "no em dashes or emoji in text"
+    },
+    {
+      "name": "slogans",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "2 two-beat lines; a stack is four or more, so keep the best and cut the rest:\n\"Ten gates. Permanent progress.\" (#main-heading)\n\"Burn for points. Claim matured IMD.\" (div.art-panels:nth-of-type(4) > section.art-panel.vault-art-panel:nth-of-type(2) > div.art-panel-content:nth-of-type(2) > p:nth-of-type(2))"
+    },
+    {
+      "name": "repetition",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "no repeated lines"
+    },
+    {
+      "name": "copy-budget",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "prose on the first screen: 6 words at 390 (bar 60), 30 at 1440 (bar 90)\nall words on the first screen: 74 at 390, 196 at 1440\nwhole page: 302 words, 88 of them prose"
+    },
+    {
+      "name": "chrome",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "border and shadow together: 0\ncards inside cards: 0\ngradient text: 0"
+    },
+    {
+      "name": "motion",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "transition: all on 0 elements\nendless animations: 2; still running with reduced motion: 0"
+    },
+    {
+      "name": "share",
+      "passed": true,
+      "exitCode": 0,
+      "durationMs": 0,
+      "output": "title \"UNLOCK V2 | Ten Gates. Permanent Progress.\", favicon, og:title, og:image, description"
+    }
+  ],
+  "viewports": [
+    "390",
+    "1440"
+  ],
+  "scope": "Pinned taste@1 probe against final export; live RPC may be unavailable in direct browser calls. Solid text pairs measured; image, canvas and gradient pairs excluded by probe."
+}

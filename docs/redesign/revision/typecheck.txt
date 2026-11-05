@@ -1,0 +1,1 @@
+PASS: command exited 0 without diagnostics.

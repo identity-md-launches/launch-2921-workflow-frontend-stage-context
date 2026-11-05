@@ -16,7 +16,10 @@ export function ArtPanels() {
             <dt>Your points</dt><dd>{w.address ? display(stale ? undefined : d?.myPoints) : "Connect wallet"}</dd>
             <dt>Reward share</dt><dd>{w.address && !stale && d?.myPoints !== undefined ? d.points > 0n ? `${Number(d.myPoints * 10000n / d.points) / 100}%` : "0%" : "Unavailable"}</dd>
           </dl>
-          <button className="preview-action" onClick={() => document.getElementById("active-gate")?.scrollIntoView({ behavior: "instant", block: "start" })}>Contribute UNLK2 ↓</button>
+          <button className="preview-action" onClick={() => {
+            const form = document.getElementById("active-gate");
+            if (form) { form.scrollIntoView({ behavior: "instant", block: "start" }); form.focus({ preventScroll: true }); }
+          }}>{open ? "Burn for points" : "Contribute UNLK2"} ↓</button>
           <span className="art-caption">Irreversible burns · Nontransferable points</span>
         </div>
       </section>

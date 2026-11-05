@@ -1,0 +1,11 @@
+No files changed, compilation skipped
+
+Ran 4 tests for test/EthRouteFork.t.sol:EthRouteForkTest
+[PASS] testETHActualBuyerCreditMatures20PercentAllowedAndExcessSale() (gas: 1644375)
+[PASS] testETHMinimumAndDeadlineRevertAtomically() (gas: 605195)
+[PASS] testETHUnusedNativeIsRefundedToBuyer() (gas: 575940)
+[PASS] testIMDInstalledQuoterMatchesActualRouterBuyAndSell() (gas: 1304899)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.25s (3.68s CPU time)
+
+Ran 1 test suite in 3.26s (3.25s CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
+Read-only source: https://ethereum-rpc.publicnode.com (contributor transport); 110 RPC calls.

@@ -352,6 +352,7 @@ export function MarketChart() {
   }, [points, unit, frame, unitError]);
   return (
     <>
+      <div className="market-topbar">
       <div className="spread market-heading">
         <h2>Official market</h2>
         <strong>
@@ -381,9 +382,7 @@ export function MarketChart() {
           <option value="USD">USD / UNLK2</option>
         </select>
       </div>
-      <p>
-        Price: {unit} per UNLK2 · Volume: {unit} · official-pool executed trades
-      </p>
+      </div>
       {!d?.poolKey ? (
         <div className="chart-empty" role="status">
           <strong>Official-pool state unavailable</strong>
@@ -454,6 +453,7 @@ export function MarketChart() {
           separately dated snapshot.
         </Alert>
       )}
+      <div className="market-footer">
       <button
         disabled={loading || !d?.poolKey}
         onClick={() => setRetry((n) => n + 1)}
@@ -462,6 +462,9 @@ export function MarketChart() {
       </button>
       <p className="chart-freshness helper">{updated ? `History read ${new Date(updated).toUTCString()}` : "History not read yet"} · Official pool only</p>
       <details className="chart-provenance"><summary>Source, block window and price methodology</summary>
+      <p>
+        Price: {unit} per UNLK2 · Volume: {unit} · official-pool executed trades
+      </p>
       <p className="helper">
         Source:{" "}
         <a href={r.d.network.rpcUrls[0]} target="_blank" rel="noreferrer">
@@ -481,6 +484,7 @@ export function MarketChart() {
         .
       </p>
       </details>
+      </div>
     </>
   );
 }

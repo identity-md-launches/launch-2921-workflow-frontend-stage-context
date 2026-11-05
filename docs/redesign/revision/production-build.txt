@@ -1,0 +1,8 @@
+
+  ...he/tmp/unlock-offline-build-gzZO4Q/site/assets/index-OIYOCBEI.js  740.0kb
+  ...he/tmp/unlock-offline-build-gzZO4Q/site/assets/chunk-MUSPBBTZ.js  125.5kb
+  ...e/tmp/unlock-offline-build-gzZO4Q/site/assets/index-INMOMK5T.css   39.8kb
+
+⚡ Done in 78ms
+Verified ABIs; exported dist/ and web/site/ with 37 SHA-256 assets.
+Offline source build complete. This transpilation does not replace npm run typecheck.

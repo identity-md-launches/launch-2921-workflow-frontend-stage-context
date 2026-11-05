@@ -205,6 +205,35 @@ async function check(name, fn) {
 const routes = ["trade", "gates", "migrate", "my-rights", "burn-points", "weekly-imd-rewards", "golden-vault", "rules-contracts", "integration-status"];
 try {
   const {p, s, context} = await setup({activated:false}, 1440);
+  await check('Desktop reference composition keeps progress, swap action and both previews on the first screen',async()=>{
+    await p.setViewportSize({width:1440,height:1000});
+    await p.evaluate(async()=>{await document.fonts.ready;await Promise.all([...document.images].map(im=>im.decode().catch(()=>{})))});
+    await p.locator('.chart-empty').waitFor();
+    const boxes=await p.evaluate(()=>Object.fromEntries(['.gate-disclosure','.dashboard-grid','.swap-panel .action','.art-panels'].map(sel=>{
+      const r=document.querySelector(sel).getBoundingClientRect();
+      return [sel,{y:r.y,height:r.height,bottom:r.bottom}];
+    })));
+    assert(boxes['.gate-disclosure'].height>=60 && boxes['.gate-disclosure'].height<=85,JSON.stringify(boxes));
+    assert(boxes['.dashboard-grid'].y>=330 && boxes['.dashboard-grid'].y<=390,JSON.stringify(boxes));
+    assert(boxes['.dashboard-grid'].height>=320 && boxes['.dashboard-grid'].height<=400,JSON.stringify(boxes));
+    assert(boxes['.swap-panel .action'].bottom<800,JSON.stringify(boxes));
+    assert(boxes['.art-panels'].y>=650 && boxes['.art-panels'].y<=725,JSON.stringify(boxes));
+    assert(boxes['.art-panels'].bottom<1000,JSON.stringify(boxes));
+    assert.equal(await p.locator('.gate-three progress:visible').count(),3);
+    assert.equal(await p.locator('.gate-three .progress-row').filter({hasText:'Remaining:'}).count(),3);
+    await p.locator('.slippage-setting input').fill('0.75');
+    assert.equal(await p.locator('#slippage').inputValue(),'0.75');
+    assert.match(await p.locator('.visible-route').innerText(),/IMD → UNLK2/);
+    await p.locator('.swap-context summary').click();
+    assert.match(await p.locator('.swap-context').innerText(),/three-minute router/);
+    assert.match(await p.locator('#shortcut-context').innerText(),/available IMD balance/);
+    await p.locator('.swap-context summary').click();
+    await p.locator('.observation-details summary').click();
+    assert.match(await p.locator('.observation-details').innerText(),/Indicative live FDV/);
+    assert.match(await p.locator('.observation-details').innerText(),/Last processed gate FDV/);
+    await p.locator('.observation-details summary').click();
+    report.desktopComposition=boxes;
+  });
   await check("All nine routes: 390/1440, assets, fonts, overflow, heading and keyboard skip", async () => {
     for (const width of [1440,390]) {
       await p.setViewportSize({width,height:width===1440?1000:844});
@@ -251,6 +280,15 @@ try {
     await p.goto(url+'#trade');
     await p.locator('.gate-hall-heading a').click();
     assert(await p.locator('#active-gate').evaluate(el=>el===document.activeElement));
+    for(const width of [390,1440]) {
+      await p.setViewportSize({width,height:width===1440?1000:844});
+      assert.match(await p.locator('.preview-action').innerText(),/Contribute UNLK2/);
+      await p.locator('.preview-action').focus();
+      await p.keyboard.press('Enter');
+      assert(await p.locator('#active-gate').evaluate(el=>el===document.activeElement));
+      await p.keyboard.press('Tab');
+      assert(await p.locator('#active-gate input').first().evaluate(el=>el===document.activeElement));
+    }
     await p.getByRole('button',{name:'Explore Golden Vault →',exact:true}).click();
     await p.locator('main[data-screen="golden-vault"]').waitFor();
     assert.match(await p.locator('main').innerText(),/Opens at gate 10/);
@@ -263,6 +301,22 @@ try {
     assert.equal(s.sends.length,0);
   });
   await context.close();
+  await check('Gate ten preview names voluntary burning and transfers keyboard focus without signing',async()=>{
+    const item=await setup({gates:10,activated:true},390);
+    await connect(item.p);
+    for(const width of [390,1440]) {
+      await item.p.setViewportSize({width,height:width===1440?1000:844});
+      assert.equal(await item.p.locator('.preview-action').innerText(),'Burn for points ↓');
+      assert.match(await item.p.locator('#active-gate h2').first().innerText(),/Golden Vault · voluntary burning/);
+      await item.p.locator('.preview-action').focus();
+      await item.p.keyboard.press('Enter');
+      assert(await item.p.locator('#active-gate').evaluate(el=>el===document.activeElement));
+      await item.p.keyboard.press('Tab');
+      assert(await item.p.locator('#active-gate input').first().evaluate(el=>el===document.activeElement));
+    }
+    assert.equal(item.s.sends.length,0);
+    await item.context.close();
+  });
   await check("Unavailable chain state on all nine routes at mobile and desktop; no signing enabled", async()=>{
     const outage=await setup({failRpc:true},390);
     await outage.p.locator('.wallet-button').click();

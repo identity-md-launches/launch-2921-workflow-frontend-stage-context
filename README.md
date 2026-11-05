@@ -4,7 +4,7 @@ A redesign of the existing **https://unlock-v2.imd.site/** website, continuing j
 
 The approved reference was retrieved successfully. The redesign adds six original optimized artwork assets, local licensed fonts, ten live portals on Home and Gates, independent gate progress, a visible fixed swap route, illustrated core/vault previews and a consistent system across all nine screens. Migration, rights, native claim credit, transfers, burns, rewards, owner/setup safeguards and transaction protections are retained. See [DESIGN.md](DESIGN.md) and [asset provenance](docs/redesign/ASSETS.md).
 
-**Publication is pending the existing publishing service.** The public URL returned HTTPS 200 with its older 17-asset build; it did not match this export. This worker has no publishing connector and is prohibited from modifying `.git/` or running `imd` commands, so no new commit, publication or post-publication pass is claimed. See [PUBLISH.md](docs/redesign/PUBLISH.md).
+**Publication is pending the existing publishing service.** The public URL returned HTTPS 200 with its older 17-asset build; it did not match this export. This worker has no publishing connector and the assignment prohibits touching `.git/`, so no new commit, publication or post-publication pass is claimed. See [PUBLISH.md](docs/redesign/PUBLISH.md).
 
 No contracts were deployed, trading was not activated, and no mainnet signing, funding, registration, transfer or economic change occurred. Live read-only verification found trading closed. The four Solidity route tests and six browser transaction flows execute only on an isolated fork.
 
@@ -34,6 +34,8 @@ Open `http://localhost:4173/`. This builder compiles the actual source, verifies
 Artwork and fonts are local. Chain reads, wallet connections and transaction submission need the visitor’s network access. There is no private credential or backend in the export.
 
 ## Checks and evidence
+
+The focused revision fixes desktop composition and both burn-preview findings. Current results, before/after measurements, screenshots and remaining publication limits are in [REVISION.md](docs/redesign/REVISION.md); reviewer responses are in [.imd-responses.json](.imd-responses.json). The result counts below describe the original redesign; the revision report distinguishes checks rerun on this export.
 
 ```sh
 node --import ./web/scripts/offline-register.mjs --experimental-strip-types --test web/tests/core.test.ts web/tests/repair.test.mjs web/tests/routes.test.ts web/tests/gate-history.test.ts

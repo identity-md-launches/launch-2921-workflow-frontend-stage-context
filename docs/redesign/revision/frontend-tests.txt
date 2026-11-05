@@ -1,0 +1,14 @@
+PASS Ten onchain doors, independent target progress, mobile primary action, keyboard and disclosure
+PASS IMD shortcuts floor fresh balance; sell shortcuts use current sell allowance
+PASS IMD quote, review, account invalidation and failed signing preserve funds
+PASS Gate-ten cold load uses voluntary burn and distinct gold visual; failed burn never animates
+PASS Confirmed burn animates only with matching receipt log; reward share is separate
+PASS Later gate opening changes doors and announces FDV/volume/burn alternatives without burn success
+PASS Closed trading is separate from completed setup and later activation is detected
+PASS ETH selector stops honestly when full-route RPC is unsupported; no IMD approvals
+PASS Responsive 320, 390, 768 and 1440 layouts, reduced motion and desktop sticky swap
+PASS Outage keeps first-screen product/action, prices unavailable and wallet keyboard escape restores focus
+PASS Migration allowance, permanent-lock confirmation and weekly reward claim remain usable
+PASS Authentic native proof enters the installed adapter flow and duplicate credit is refused
+PASS Wrong-network event invalidates trading and the header switches back to Ethereum
+PASS Quotes expire after 45 seconds; invalid USD stays unavailable instead of zero

@@ -43,18 +43,20 @@ Numbers use tabular figures. Explanatory paragraphs retain a 76ch maximum measur
 
 ## Layout
 
-The content maximum width is 1600px. Desktop main padding is 20px 28px; mobile is 14px 14px 30px. Common gaps are 8, 12, 16, 18, 20 and 24px. Fields and data groups retain spacing from the existing application.
+The content maximum width is 1600px. Desktop main padding is 20px 28px (the Trade screen uses 4px top padding above 1250px); mobile is 14px 14px 30px. Compact desktop control gaps are 3–6px; common content gaps are 8, 12, 14, 16, 18, 20 and 24px. Fields and data groups retain spacing from the existing application.
 
 - Above 1250px: compact single-row brand, primary navigation, More menu and wallet utilities.
 - 761–1250px: desktop navigation wraps below the brand/utilities.
 - At 760px and below: a native route selector replaces desktop navigation; the brand and wallet action stay at the top.
 - Ten portals use ten columns on desktop and five columns/two rows on mobile. There is no horizontally hidden gate carousel.
 - Gate progress uses three independent columns on desktop and three stacked bars on mobile. The FDV/observation explanation is a labeled disclosure; amounts and remaining values stay visible.
-- The dashboard uses `minmax(0,1fr) minmax(340px,.45fr)` with an 18px gap. Below 1050px the swap column is 330px. At 800px and below, the swap precedes the chart in a single column.
-- Two illustrated previews are side by side above 800px and stacked below. The complete contribution form follows them.
+- The dashboard uses `minmax(0,1fr) minmax(340px,.45fr)` with an 18px gap (14px above 1250px). Below 1050px the swap column is 330px. At 800px and below, the swap precedes the chart in a single column.
+- Above 1250px, Trade uses a horizontal gate summary: gate/status at the left, three independent progress columns in the center, and contribution/accounting controls at the right. Current, target and remaining amounts stay visible; only the duplicate remaining percentage is omitted. Expanded accounting and errors grow in normal flow.
+- The compact desktop chart/swap panels use 10px 16px padding. Swap heading/tabs, amount/balance/input, and route/slippage share rows; shortcut/USD explanations remain in the existing route disclosure. Inputs stay editable, the fixed route stays visible, and quote minimum/fees and transaction reviews are retained. The desktop chart canvas is 190px high; the honest empty chart has a 180px minimum. Mobile chart heights and touch controls retain their existing overrides.
+- Two illustrated previews are side by side above 800px and stacked below. Above 1250px their energy scenes are 205px high, with 14px between previews. The complete contribution form follows them. At 1440×1000 with verified closed trading, the summary is about 78px high, chart/swap begins at y≈360 and the previews at y≈698; both previews end before y=941.
 - Shared `.two-col` sections stack at 760px. Secondary content never depends on a fixed page height.
 
-All nine routes were rendered at 390px and 1440px in Chromium and WebKit. The probe and existing interaction suite also check homepage reflow at 320px, with the interaction suite checking 768px. Physical devices and native browser zoom are unverified.
+The original redesign rendered all nine routes at 390px and 1440px in Chromium and WebKit. Current revision coverage and limitations are recorded in `docs/redesign/REVISION.md`. The probe and existing interaction suite also check homepage reflow at 320px, with the interaction suite checking 768px. Physical devices and native browser zoom are unverified.
 
 ## Elevation & Depth
 
@@ -80,7 +82,7 @@ The selected portal has a structural border. Focus uses a separate 2px outline w
 | `Trade.tsx` | Existing quote/approval/swap logic with visible fixed route and honest shortcut invalidation feedback. No transaction calldata or economic changes. |
 | `Charts.tsx` | Genuine official-pool candles/volume; existing timeframes, price unit, crosshair and accessible data table. Closed, empty, loading, invalid USD, stale and RPC-error states remain distinct. Methodology is disclosed below the chart. |
 | `EnergyCore.tsx` | Separate emerald and gold art variants, ambient illumination and confirmation-only finite burn flow. Decorative images have empty alt text. |
-| `ArtPanels.tsx` | Live burn/points/share and Golden Vault previews with working contribution/navigation controls. |
+| `ArtPanels.tsx` | Live burn/points/share and Golden Vault previews. The primary preview scrolls and focuses `#active-gate`, so the next Tab enters the amount field. Its verified gate-ten state says “Burn for points”; earlier gates say “Contribute UNLK2”. |
 | `Screens.tsx` | Existing migration, rights/claim/transfer, burn, weekly rewards, vault and rules controls. Rights now explicitly separates matured/pending/other credits, balance, sales and allowance. Weekly fee share is labeled conditional, with no promised yield. |
 | `Founder.tsx` | Retained read-only integration/setup verification. There are no activation, registration or funding transaction controls. |
 

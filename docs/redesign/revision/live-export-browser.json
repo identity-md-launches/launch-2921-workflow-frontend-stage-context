@@ -1,0 +1,52 @@
+{
+  "mode": "Production dist export at local /preview/ with real mainnet RPC reads forwarded unchanged by Node. No mock data, wallet, signer or broadcast. This is not evidence of public deployment.",
+  "checkedAt": "2026-11-05T12:21:55.832Z",
+  "pageErrors": [],
+  "resourceFailures": [],
+  "viewports": [
+    {
+      "width": 320,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 390,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 768,
+      "noHorizontalOverflow": true
+    },
+    {
+      "width": 1440,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "readStatus": "● Trading closed\nRefresh",
+  "title": "UNLOCK V2 | Ten Gates. Permanent Progress.",
+  "doors": 10,
+  "desktopComposition": {
+    ".gate-disclosure": {
+      "y": 270.375,
+      "height": 77.5625,
+      "bottom": 347.9375
+    },
+    ".dashboard-grid": {
+      "y": 359.9375,
+      "height": 324.46875,
+      "bottom": 684.40625
+    },
+    ".swap-panel .action": {
+      "y": 588.421875,
+      "height": 36,
+      "bottom": 624.421875
+    },
+    ".art-panels": {
+      "y": 698.40625,
+      "height": 242.578125,
+      "bottom": 940.984375
+    }
+  },
+  "integrationStatus": "Integration status\n● Trading closed\nRefresh\nLive integration status\n\nThis site reads the completed setup. Trading opens only when the hook reports activation; this page refreshes automatically.\n\nToken and hook bindings\nVerified\nOfficial pool initialized\nVerified\nUniversal Router registered\nVerified\nWalletQuoter registered\nVerified\nNative adapter registered\nVerified\nRemaining backing ≥ capacity\nVerified\nPricing reference\nVerified\nTrading\nClosed; awaiting activation\nRemaining backing\n650,403,086.1257 UNLK2\nRemaining capacity\n650,403,086.1257 UNLK2\nReviewed installations\n\nRuntime hashes and contract bindings are checked before transactions are enabled.\n\nNative claims adapter\n0x17565820374DE9d122519D5e701E8c2345622058\nCopy\nWalletQuoter\n0xB36788ea2612B72eB4FE07364c2406AAf47f67a6\nCopy\nUniversal Router\n0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af\nCopy\n\nRegistration and the initial 700 million UNLK2 migration funding are complete. Backing falls with successful migrations; it is compared with remaining capacity, not the original cap.",
+  "setupWriteButtons": 0,
+  "result": "PASS"
+}

@@ -281,6 +281,7 @@ try {
       await p.waitForFunction(
         () => document.querySelector("#swap-amount")?.value === "100",
       );
+      await p.locator('.swap-context summary').click();
       assert.match(
         await p.locator("#shortcut-context").innerText(),
         /CURRENTLY SELLABLE/,

@@ -537,8 +537,8 @@ export function Trade() {
     ? "Reading verified pool state."
     : !d.activated
       ? d.setupReady
-        ? "Trading is closed. Setup is verified complete; activation is detected automatically."
-        : "Trading is closed. Review the live integration status."
+        ? "Trading closed · setup verified; awaiting activation."
+        : "Trading closed · review live integration status."
       : !d.routerSupported
         ? "Pinned Universal Router unavailable."
         : eth && !ETH_ROUTE_VERIFIED
@@ -548,9 +548,9 @@ export function Trade() {
             : undefined;
   return (
     <section className="panel swap-panel" aria-label="Swap UNLK2">
+      <div className="swap-topbar">
       <div className="spread">
         <h2>Swap UNLK2</h2>
-        <span className="mint">Official route</span>
       </div>
       <div className="segmented">
         <button aria-pressed={buy} onClick={() => setBuy(true)}>
@@ -559,6 +559,7 @@ export function Trade() {
         <button aria-pressed={!buy} onClick={() => setBuy(false)}>
           Sell UNLK2
         </button>
+      </div>
       </div>
       {buy && (
         <div className="payment-choice" role="group" aria-label="Pay with">
@@ -583,6 +584,7 @@ export function Trade() {
           </button>
         </div>
       )}
+      <div className="swap-input-row">
       <div className="spread">
         <label htmlFor="swap-amount">You pay · {from}</label>
         <span className="muted">
@@ -601,6 +603,7 @@ export function Trade() {
           error ? "shortcut-context swap-error" : "shortcut-context"
         }
       />
+      </div>
       <div className="shortcuts" role="group" aria-label="Amount shortcuts">
         {[20, 50, 75, 100].map((p) => (
           <button
@@ -618,33 +621,15 @@ export function Trade() {
           </button>
         ))}
       </div>
-      <p id="shortcut-context" className="helper">
-        {shortcutPending
-          ? "Reading fresh balance and gas…"
-          : !buy
-            ? "Percentages are portions of your CURRENTLY SELLABLE amount, capped by balance and onchain allowance."
-            : eth
-              ? "Shortcuts use spendable ETH after a fresh gas estimate, 20% gas margin and 25% fee buffer."
-              : "Percentages use your available IMD balance. Keep ETH for network fees."}
-      </p>
-      {!eth && (
-        <UsdValue
-          value={(() => {
-            try {
-              return amount(input);
-            } catch {
-              return undefined;
-            }
-          })()}
-          token={buy ? "IMD" : "UNLK2"}
-        />
-      )}
+      {shortcutPending && <p className="helper" role="status">Reading fresh balance and gas…</p>}
       <div className="receive-line">
         <span className="muted">You receive · {to}</span>
         <strong>
           {quoting ? "Quoting…" : quote ? display(quote.out) : "Unavailable"}
         </strong>
       </div>
+      <div className="swap-settings-row">
+      <p className="visible-route"><span>Fixed official route</span><strong>{eth ? "ETH → IMD → UNLK2" : buy ? "IMD → UNLK2" : "UNLK2 → IMD"}</strong></p>
       <div className="slippage-setting">
         <label htmlFor="slippage">Slippage %</label>
         <input
@@ -653,6 +638,7 @@ export function Trade() {
           value={slippage}
           onChange={(e) => setSlippage(e.target.value)}
         />
+      </div>
       </div>
       {quote && (
         <dl className="compact-dl">
@@ -709,9 +695,29 @@ export function Trade() {
               : "Review swap"
           : "Get live quote"}
       </Action>
-      <p className="visible-route"><span>Fixed official route</span><strong>{eth ? "ETH → IMD → UNLK2" : buy ? "IMD → UNLK2" : "UNLK2 → IMD"}</strong></p>
       <details className="swap-context">
         <summary>Route, fees and protections</summary>
+      <p id="shortcut-context" className="helper">
+        {shortcutPending
+          ? "Reading fresh balance and gas…"
+          : !buy
+            ? "Percentages are portions of your CURRENTLY SELLABLE amount, capped by balance and onchain allowance."
+            : eth
+              ? "Shortcuts use spendable ETH after a fresh gas estimate, 20% gas margin and 25% fee buffer."
+              : "Percentages use your available IMD balance. Keep ETH for network fees."}
+      </p>
+      {!eth && (
+        <UsdValue
+          value={(() => {
+            try {
+              return amount(input);
+            } catch {
+              return undefined;
+            }
+          })()}
+          token={buy ? "IMD" : "UNLK2"}
+        />
+      )}
         <p>
           {eth
             ? "Native ETH → ETH/IMD v4 (1% LP) → official IMD/UNLK2 (1.25% LP + 1% IMD reward fee) → connected buyer. Full-route RPC simulation includes first-leg price changes and hook fees. No pre-owned IMD, approvals, split routes or fallback pools. Unsupported simulation stops the trade."

@@ -1,0 +1,45 @@
+{
+  "mode": "Synthetic RPC fixture against original delivered dist; no signing",
+  "desktop": {
+    ".gate-disclosure": {
+      "y": 386.9375,
+      "height": 207.390625,
+      "bottom": 594.328125
+    },
+    ".dashboard-grid": {
+      "y": 616.328125,
+      "height": 722.140625,
+      "bottom": 1338.46875
+    },
+    ".chart-panel": {
+      "y": 616.328125,
+      "height": 597.28125,
+      "bottom": 1213.609375
+    },
+    ".swap-panel": {
+      "y": 616.328125,
+      "height": 722.140625,
+      "bottom": 1338.46875
+    },
+    ".swap-panel .action": {
+      "y": 1126.28125,
+      "height": 44,
+      "bottom": 1170.28125
+    },
+    ".art-panels": {
+      "y": 1356.46875,
+      "height": 278.578125,
+      "bottom": 1635.046875
+    }
+  },
+  "keyboardBeforeFix": {
+    "focusAfterEnter": "Contribute UNLK2 preview button",
+    "focusAfterTab": "Explore Golden Vault preview button",
+    "formTopAfterEnter": 16.203125,
+    "formTopAfterTab": 481.203125
+  },
+  "gateTenBeforeFix": {
+    "label": "Contribute UNLK2 \u2193",
+    "destination": "Golden Vault \u00b7 voluntary burning & continuing fee rewards"
+  }
+}

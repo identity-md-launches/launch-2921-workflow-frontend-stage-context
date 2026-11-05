@@ -132,7 +132,7 @@ export function GateDoors() {
         {historyError && <div className="history-error" role="status"><p className="helper">{historyError}</p><button className="small" onClick={() => retryHistory(n => n + 1)}>Retry gate history</button></div>}
         {history && !current && <p className="helper">Gate {gate} burn total from token Contributed events through block {history.block.toString()}. Other conditions may have opened this gate before its burn target was met.</p>}
         <details className="observation-details">
-          <summary>Live FDV, processed observation &amp; accounting</summary>
+          <summary>FDV &amp; gate accounting</summary>
         <div className="gate-observation">
           <span>Indicative live FDV <strong>{fresh && d?.fdv[1] ? `$${display(d.fdv[0], 18, 2)}` : "Unavailable"}</strong></span>
           <span>Last processed gate FDV <strong>{d && d.lastGateFdv > 0n ? `$${display(d.lastGateFdv, 18, 2)}` : "Not yet observed"}</strong></span>
